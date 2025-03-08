@@ -1,0 +1,78 @@
+#pragma once
+#ifndef MONKEY_HPP
+#define MONKEY_HPP
+
+#include <vector>
+#include <string>
+#include "Util/Animation.hpp"
+#include "Util/GameObject.hpp"
+#include "Attack.hpp"
+#include "Balloon.hpp"
+#include "Range.hpp"
+
+class Monkey : public Util::GameObject {
+public:
+
+      explicit Monkey(glm::vec2 position);
+      void SetPosition(const glm::vec2& Position);
+      void SetImage(const std::string& ImagePath);
+      void SetRadius(int radius);
+      void SetRotation(glm::vec2 Position);
+      void SetCd(int cd);
+      void UpdateRange();
+      void ResetCount();
+
+      [[nodiscard]] virtual std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition);
+      [[nodiscard]] glm::vec2 GetPosition() const { return m_Transform.translation; }
+      [[nodiscard]] int GetRadius() const { return m_Radius; }
+      [[nodiscard]] std::shared_ptr<Range> GetRange() const { return m_Range; }
+      [[nodiscard]] bool IsCollision(const std::shared_ptr<Balloon>& other) const;
+      [[nodiscard]] bool Countdown();
+
+private:
+      std::string m_ImagePath;
+      int m_Radius;
+      int m_Count = 0;
+      int m_Cd;
+      std::shared_ptr<Range> m_Range = std::make_shared<Range>(m_Transform.translation, m_Radius);
+};
+
+#endif //MONKEY_HPP
+
+class DartMonkey : public Monkey {
+public:
+      explicit DartMonkey(glm::vec2 position);
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+};
+
+class NailMonkey : public Monkey {
+public:
+      explicit NailMonkey(glm::vec2 position);
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+};
+
+class SniperMonkey : public Monkey {
+public:
+      explicit SniperMonkey(glm::vec2 position);
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+};
+
+class BoomerangMonkey : public Monkey {
+public:
+      explicit BoomerangMonkey(glm::vec2 position);
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+};
+
+class NinjaMonkey : public Monkey {
+public:
+      explicit NinjaMonkey(glm::vec2 position);
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+};
+
+class Cannon : public Monkey {
+public:
+      explicit Cannon(glm::vec2 position);
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+private:
+      std::vector<std::shared_ptr<Attack>> m_Children;
+};
