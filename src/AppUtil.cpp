@@ -62,6 +62,7 @@ void App::Reset() {
 void App::SetLevel(int level) {
     Level_Coordinates = m_PRM -> GetCoordinates(level-1);
     Level_Balloons = m_PRM -> GetBalloons(level-1);
+    Level_Placeable = m_PRM -> GetPlaceable(level-1);
 
     m_Counters.push_back(std::make_shared<Heart>(20, 20));
     m_Root.AddChild(m_Counters[0]);

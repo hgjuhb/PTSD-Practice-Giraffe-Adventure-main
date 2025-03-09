@@ -53,13 +53,6 @@ std::shared_ptr<Balloon> factory(int num, std::vector<glm::vec2> coordinates) {
     }
 }
 
-int getRandomInt(int min, int max){
-    static std::random_device rd;  // 硬體隨機數生成器
-    static std::mt19937 gen(rd()); // 使用 Mersenne Twister PRNG (比 rand() 更好)
-    std::uniform_int_distribution<int> dist(min, max);
-    return dist(gen);
-}
-
 void App::Update() {
     LOG_TRACE("Update");
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) && m_Phase != Phase::LOBBY){

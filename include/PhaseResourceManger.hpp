@@ -17,11 +17,40 @@ public:
     void NextPhase();
     [[nodiscard]] std::vector<glm::vec2> GetCoordinates(int level) const;
     [[nodiscard]] std::vector<std::vector<int>> GetBalloons(int level) const;
+    [[nodiscard]] std::vector<std::vector<std::vector<glm::vec2>>> GetPlaceable(int level) const;
 
 private:
     std::shared_ptr<TaskText> m_TaskText;
     std::shared_ptr<BackgroundImage> m_Background;
-
+    std::vector<std::vector<std::vector<glm::vec2>>> normal_placeable = {
+        // Level_1
+        {{glm::vec2(-626.0f, 358.0f), glm::vec2(-512.0f, 225.0f)},
+            {glm::vec2(-504.0f, 359.0f), glm::vec2(-378.0f, 304.0f)},
+            {glm::vec2(-504.0f, 359.0f), glm::vec2(-378.0f, 304.0f)},
+            {glm::vec2(130.0f, 358.0f), glm::vec2(256.0f, 297.0f)},
+            {glm::vec2(256.0f, 358.0f), glm::vec2(384.0f, 229.0f)},
+            {glm::vec2(-328.0f, 334.0f), glm::vec2(95.0f, 120.0f)},
+            {glm::vec2(-574.0f, 177.0f), glm::vec2(-335.0f, 124.0f)},
+            {glm::vec2(96.0f, 168.0f), glm::vec2(330.0f, 122.0f)},
+            {glm::vec2(-177.0f, 111.0f), glm::vec2(-69.0f, -17.0f)},
+            {glm::vec2(-577.0f, -25.0f), glm::vec2(332.0f, -84.0f)},
+            {glm::vec2(-467.0f, -90.0f), glm::vec2(213.0f, -161.0f)},
+            {glm::vec2(-467.0f, -90.0f), glm::vec2(213.0f, -161.0f)},
+            {glm::vec2(-334.0f, -180.0f), glm::vec2(84.0f, -242.0f)},
+            {glm::vec2(-211.0f, -249.0f), glm::vec2(-41.0f, -358.0f)},
+            {glm::vec2(-623.0f, -129.0f), glm::vec2(-508.0f, -359.0f)},
+            {glm::vec2(-497.0f, -204.0f), glm::vec2(-381.0f, -357.0f)},
+            {glm::vec2(133.0f, -208.0f), glm::vec2(271.0f, -358.0f)},
+            {glm::vec2(264.0f, -129.0f), glm::vec2(388.0f, -359.0f)}}
+           };
+    std::vector<std::vector<std::vector<glm::vec2>>> water_placeable = {
+        // Level_1
+        {
+            {glm::vec2(-444.0f, 238.0f), glm::vec2(-342.0f, 172.0f)},
+            {glm::vec2(100.0f, 237.0f), glm::vec2(203.0f, 175.0f)},
+            {glm::vec2(23.0f, -306.0f), glm::vec2(127.0f, -356.0f)},
+            {glm::vec2(-371.0f, -310.0f), glm::vec2(-263.0f, -355.0f)},}
+    };
     std::vector<std::vector<glm::vec2>> coordinates = {
             // Level_1
         {glm::vec2(-230.0f, -353.0f),
