@@ -234,3 +234,58 @@ glm::vec2 Airport::ProduceCoordinateByAngle(glm::vec2 position, float angle) {
     rotated_position.y = position.y + rotated.y;
     return rotated_position;
 }
+
+//########################################################################
+
+BuccaneerMonkey::BuccaneerMonkey(glm::vec2 position) : Monkey(position){
+    m_Transform.scale = glm::vec2(1.5f, 1.5f);
+    SetImage(GA_RESOURCE_DIR"/Monkey/BuccaneerMonkey.png");
+    SetCd(120);
+    SetRadius(200);
+    UpdateRange();
+}
+
+std::vector<std::shared_ptr<Attack>> BuccaneerMonkey::ProduceAttack(glm::vec2 goalPosition) {
+    std::vector<std::shared_ptr<Attack>> remove_attacks;
+    ResetCount();
+    SetRotation(goalPosition);
+    std::vector<std::shared_ptr<Attack>> attacks;
+    std::shared_ptr<Attack> attack1 = std::make_shared<Bomb>(GetPosition(), goalPosition);
+    attacks.push_back(attack1);
+    std::shared_ptr<Attack> attack2 = std::make_shared<Explosion>(GetPosition(), goalPosition, attack1);
+    attack2 -> SetVisible(false);
+    attacks.push_back(attack2);
+    return attacks;
+}
+
+//########################################################################
+
+SuperMonkey::SuperMonkey(glm::vec2 position) : Monkey(position){
+    m_Transform.scale = glm::vec2(1.0f, 1.0f);
+    SetImage(GA_RESOURCE_DIR"/Monkey/SuperMonkey.png");
+    SetCd(20);
+    SetRadius(300);
+    UpdateRange();
+}
+
+std::vector<std::shared_ptr<Attack>> SuperMonkey::ProduceAttack(glm::vec2 goalPosition) {
+    std::vector<std::shared_ptr<Attack>> remove_attacks;
+    ResetCount();
+    SetRotation(goalPosition);
+    std::vector<std::shared_ptr<Attack>> attacks;
+
+    glm::vec2 direction = goalPosition - m_Transform.translation;
+    glm::vec2 unit_direction = glm::normalize(direction);
+    double perp_x = -unit_direction.y;
+    double perp_y = unit_direction.x;
+    int distance = 15;
+
+    glm::vec2 movePosition = glm::vec2(distance * perp_x, distance * perp_y);
+
+    std::shared_ptr<Attack> attack = std::make_shared<Ray>(GetPosition()+movePosition, goalPosition+movePosition);
+    attacks.push_back(attack);
+    attack = std::make_shared<Ray>(GetPosition()-movePosition, goalPosition-movePosition);
+    attacks.push_back(attack);
+    return attacks;
+}
+

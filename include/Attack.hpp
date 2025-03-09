@@ -114,5 +114,12 @@ public:
     void RotationImage(glm::vec2 position);
 private:
     int time = 0;
+    int max_Penetration;
+    bool WillNotDisappear = true;
     glm::vec2 m_SourcePosition;
+};
+
+class Ray : public Attack {
+public:
+    explicit Ray(glm::vec2 position, glm::vec2 goal_position);
 };

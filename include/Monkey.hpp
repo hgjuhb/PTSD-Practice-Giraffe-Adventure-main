@@ -85,3 +85,15 @@ private:
       int airplane_num = 1;
       std::vector<std::shared_ptr<Attack>> m_Airplanes;
 };
+
+class BuccaneerMonkey : public Monkey {
+public:
+      explicit BuccaneerMonkey(glm::vec2 position);
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+};
+
+class SuperMonkey : public Monkey {
+public:
+      explicit SuperMonkey(glm::vec2 position);
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+};

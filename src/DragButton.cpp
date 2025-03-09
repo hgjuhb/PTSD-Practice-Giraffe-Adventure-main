@@ -152,3 +152,21 @@ std::shared_ptr<Monkey> AirportButton::ProduceMonkey(glm::vec2 handPosition){
     std::shared_ptr<Monkey> monkey = std::make_shared<Airport>(handPosition);
     return monkey;
 }
+
+BuccaneerMonkeyButton::BuccaneerMonkeyButton(glm::vec2 position) : DragButton(position){
+    SetImage(GA_RESOURCE_DIR"/Monkey/BuccaneerMonkey.png");
+    SetAngle(90);
+}
+std::shared_ptr<Monkey> BuccaneerMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    std::shared_ptr<Monkey> monkey = std::make_shared<BuccaneerMonkey>(handPosition);
+    return monkey;
+}
+
+SuperMonkeyButton::SuperMonkeyButton(glm::vec2 position) : DragButton(position){
+    SetImage(GA_RESOURCE_DIR"/Monkey/SuperMonkey.png");
+    SetAngle(90);
+}
+std::shared_ptr<Monkey> SuperMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    std::shared_ptr<Monkey> monkey = std::make_shared<SuperMonkey>(handPosition);
+    return monkey;
+}

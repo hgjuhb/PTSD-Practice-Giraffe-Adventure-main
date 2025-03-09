@@ -113,4 +113,13 @@ void App::SetLevel(int level) {
     auto m_AirportButton = std::make_shared<AirportButton>(glm::vec2(startX, startY-buttonSpacing*6));
     m_DragButtons.push_back(m_AirportButton);
     m_Root.AddChild(m_AirportButton);
+
+    auto m_BuccaneerMonkeyButton = std::make_shared<BuccaneerMonkeyButton>(glm::vec2(startX+buttonSpacing, startY));
+    m_DragButtons.push_back(m_BuccaneerMonkeyButton);
+    m_Root.AddChild(m_BuccaneerMonkeyButton);
+
+    auto m_SuperMonkeyButton = std::make_shared<SuperMonkeyButton>(glm::vec2(startX+buttonSpacing, startY-buttonSpacing));
+    m_DragButtons.push_back(m_SuperMonkeyButton);
+    m_Root.AddChild(m_SuperMonkeyButton);
+
 }

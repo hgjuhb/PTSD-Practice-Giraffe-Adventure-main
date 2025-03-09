@@ -259,7 +259,7 @@ Explosion::Explosion(glm::vec2 position, glm::vec2 goal_position, std::shared_pt
 }
 
 [[nodiscard]] bool Explosion::IsOut() {
-    if (m_Bomb -> IsAlive()) {
+    if (m_Bomb -> IsAlive() and !m_Bomb -> IsOut()) {
         return false;
     }
     else {
@@ -291,7 +291,8 @@ Airplane::Airplane(glm::vec2 position, glm::vec2 goal_position)
     m_SourcePosition = position;
     SetWidth(102);
     SetHeight(121);
-    SetPenetration(1);
+    SetPenetration(5);
+    max_Penetration = 5;
     SetSpeed(10);
     SetPower(1);
     SetRectangleCorners();
@@ -315,9 +316,16 @@ void Airplane::Move() {
     newPos.y = B * sin(2 * t);  // 計算 Y 軸的運動，形成 8 字形的效果
     newPos.x = m_SourcePosition.x + A * sin(t);
     newPos.y = m_SourcePosition.y + B * sin(2 * t);
+
     RotationImage(newPos);
 
     m_Transform.translation = newPos;
+
+    float distance = sqrt(pow(m_SourcePosition.x - m_Transform.translation.x, 2) + pow(m_SourcePosition.y - m_Transform.translation.y, 2));
+    if (distance < 10) {
+        WillNotDisappear = true;
+        SetPenetration(max_Penetration);
+    }
 
     SetRectangleCorners();  // 更新物體的邊界
 }
@@ -335,5 +343,22 @@ void Airplane::RotationImage(glm::vec2 goal_position) {
 }
 
 [[nodiscard]] bool Airplane::IsAlive() {
-    return true;
+    if (GetPenetration() == 0 && WillNotDisappear){
+        WillNotDisappear = false;
+        return true;
+    }
+    return GetPenetration() > 0;
+}
+
+//###########################################################
+
+Ray::Ray(glm::vec2 position, glm::vec2 goal_position) : Attack(position, goal_position){
+    SetImage(GA_RESOURCE_DIR"/Attack/Ray.png");
+    m_Transform.scale = glm::vec2( 0.5, 0.8);
+    SetWidth(50);
+    SetHeight(32);
+    SetPenetration(1);
+    SetSpeed(60);
+    SetPower(3);
+    SetRectangleCorners();
 }
