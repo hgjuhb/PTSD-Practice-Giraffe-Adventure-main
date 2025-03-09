@@ -177,18 +177,60 @@ std::vector<std::shared_ptr<Attack>> Cannon::ProduceAttack(glm::vec2 goalPositio
     ResetCount();
     SetRotation(goalPosition);
     std::vector<std::shared_ptr<Attack>> attacks;
-    std::shared_ptr<Attack> attack = std::make_shared<Bomb>(GetPosition(), goalPosition);
-    m_Children.push_back(attack);
-    attacks.push_back(attack);
-    for (auto& childPtr : m_Children) {
-        if (!childPtr -> IsAlive()) {
-            attack = std::make_shared<Explosion>(childPtr -> GetPosition());
+    std::shared_ptr<Attack> attack1 = std::make_shared<Bomb>(GetPosition(), goalPosition);
+    attacks.push_back(attack1);
+    std::shared_ptr<Attack> attack2 = std::make_shared<Explosion>(GetPosition(), goalPosition, attack1);
+    attack2 -> SetVisible(false);
+    attacks.push_back(attack2);
+    return attacks;
+}
+
+//########################################################################
+
+Airport::Airport(glm::vec2 position) : Monkey(position){
+    m_Transform.scale = glm::vec2(1.0f, 1.0f);
+    SetImage(GA_RESOURCE_DIR"/Monkey/Airport.png");
+    SetCd(100);
+    SetRadius(20);
+    UpdateRange();
+}
+
+std::vector<std::shared_ptr<Attack>> Airport::ProduceAttack(glm::vec2 goalPosition) {
+    glm::vec2 position = GetPosition();
+    std::vector<std::shared_ptr<Attack>> remove_attacks;
+    ResetCount();
+    std::vector<std::shared_ptr<Attack>> attacks;
+    for (auto& airplanePtr : m_Airplanes) {
+        glm::vec2 position = airplanePtr -> GetPosition();
+        for (int i=0; i < 8; i++) {
+            glm::vec2 rotated_position = ProduceCoordinateByAngle(position, 45*i);
+            std::shared_ptr<Attack> attack = std::make_shared<Dart>(position, rotated_position);
             attacks.push_back(attack);
-            remove_attacks.push_back(childPtr);
         }
     }
-    for (auto& attackPtr : remove_attacks) {
-        m_Children.erase(std::remove(m_Children.begin(), m_Children.end(), attackPtr), m_Children.end());
+
+    if (m_Airplanes.size() < airplane_num) {
+        glm::vec2 rotated_position = ProduceCoordinateByAngle(position, 0);
+        std::shared_ptr<Attack> attack = std::make_shared<Airplane>(position, rotated_position);
+        m_Airplanes.push_back(attack);
+        attacks.push_back(attack);
     }
+
     return attacks;
+}
+
+bool Airport::IsCollision(const std::shared_ptr<Balloon>& other) const{
+    return true;
+}
+
+
+glm::vec2 Airport::ProduceCoordinateByAngle(glm::vec2 position, float angle) {
+    double radian = angle *PI / 180.0;
+    glm::vec2 rotated;
+    glm::vec2 rotated_position;
+    rotated.x = position.x * cos(radian) - position.y* sin(radian);
+    rotated.y = position.x * sin(radian) + position.y * cos(radian);
+    rotated_position.x = position.x + rotated.x;
+    rotated_position.y = position.y + rotated.y;
+    return rotated_position;
 }

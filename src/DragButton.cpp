@@ -143,3 +143,12 @@ std::shared_ptr<Monkey> CannonButton::ProduceMonkey(glm::vec2 handPosition){
     std::shared_ptr<Monkey> monkey = std::make_shared<Cannon>(handPosition);
     return monkey;  
 }
+
+AirportButton::AirportButton(glm::vec2 position) : DragButton(position){
+    SetImage(GA_RESOURCE_DIR"/Monkey/AirplaneMonkey.png");
+    SetAngle(90);
+}
+std::shared_ptr<Monkey> AirportButton::ProduceMonkey(glm::vec2 handPosition){
+    std::shared_ptr<Monkey> monkey = std::make_shared<Airport>(handPosition);
+    return monkey;
+}

@@ -26,7 +26,7 @@ public:
       [[nodiscard]] glm::vec2 GetPosition() const { return m_Transform.translation; }
       [[nodiscard]] int GetRadius() const { return m_Radius; }
       [[nodiscard]] std::shared_ptr<Range> GetRange() const { return m_Range; }
-      [[nodiscard]] bool IsCollision(const std::shared_ptr<Balloon>& other) const;
+      [[nodiscard]] virtual bool IsCollision(const std::shared_ptr<Balloon>& other) const;
       [[nodiscard]] bool Countdown();
 
 private:
@@ -73,6 +73,15 @@ class Cannon : public Monkey {
 public:
       explicit Cannon(glm::vec2 position);
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+};
+
+class Airport : public Monkey {
+public:
+      explicit Airport(glm::vec2 position);
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+      [[nodiscard]] bool IsCollision(const std::shared_ptr<Balloon>& other) const override;
+      glm::vec2 ProduceCoordinateByAngle(glm::vec2 position, float angle);
 private:
-      std::vector<std::shared_ptr<Attack>> m_Children;
+      int airplane_num = 1;
+      std::vector<std::shared_ptr<Attack>> m_Airplanes;
 };

@@ -1,6 +1,6 @@
 #include "Attack.hpp"
 #include <cmath>
-
+#include <random>
 #include "Util/Logger.hpp"
 #define PI 3.14159265358979323846
 
@@ -245,24 +245,95 @@ Bomb::Bomb(glm::vec2 position, glm::vec2 goal_position) : Attack(position, goal_
 
 //###########################################################
 
-Explosion::Explosion(glm::vec2 position) : Attack(position, position) {
+Explosion::Explosion(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attack> bomb)
+: Attack(position, goal_position) {
     SetImage(GA_RESOURCE_DIR"/Attack/Explosion.png");
-    SetWidth(60);
-    SetHeight(60);
+    m_Transform.scale = glm::vec2( 2.0, 2.0);
+    m_Bomb = bomb;
+    SetWidth(120);
+    SetHeight(120);
     SetPenetration(1);
-    SetSpeed(0);
+    SetSpeed(40);
     SetPower(1);
     SetRectangleCorners();
 }
 
 [[nodiscard]] bool Explosion::IsOut() {
-    if (existTime != 0) {
-        existTime -= 1;
+    if (m_Bomb -> IsAlive()) {
         return false;
     }
-    return true;
+    else {
+        if (existTime != 0) {
+            existTime --;
+            return false;
+        }
+        return true;
+    }
 }
 
 [[nodiscard]] bool Explosion::IsAlive() {
+    if (m_Bomb -> IsAlive()) {
+        return false;
+    }
+    else {
+        SetSpeed(0);
+        SetVisible(true);
+        return true;
+    }
+}
+
+//###########################################################
+
+Airplane::Airplane(glm::vec2 position, glm::vec2 goal_position)
+: Attack(position, goal_position) {
+    SetImage(GA_RESOURCE_DIR"/Attack/Airplane.png");
+    m_Transform.scale = glm::vec2( 1.5, 1.5);
+    m_SourcePosition = position;
+    SetWidth(102);
+    SetHeight(121);
+    SetPenetration(1);
+    SetSpeed(10);
+    SetPower(1);
+    SetRectangleCorners();
+}
+
+void Airplane::Move() {
+    if (time == 0) {
+        time = 20000;  // 設定初始時間
+    }
+    time -= 1;
+
+    // 參數化 8 字型運動
+    float A = 450.0f; // 控制 8 字形的寬度
+    float B = 150.0f; // 控制 8 字形的高度
+    float t = time * 0.04f; // 時間變數縮放 (調整速度)
+
+    glm::vec2 newPos;
+
+    // 8 字型路徑公式：sin(t) 和 sin(t) * cos(t)
+    newPos.x = A * sin(t);  // 計算 X 軸的運動
+    newPos.y = B * sin(2 * t);  // 計算 Y 軸的運動，形成 8 字形的效果
+    newPos.x = m_SourcePosition.x + A * sin(t);
+    newPos.y = m_SourcePosition.y + B * sin(2 * t);
+    RotationImage(newPos);
+
+    m_Transform.translation = newPos;
+
+    SetRectangleCorners();  // 更新物體的邊界
+}
+
+void Airplane::RotationImage(glm::vec2 goal_position) {
+    double dx = goal_position.x - m_Transform.translation.x;
+    double dy = goal_position.y - m_Transform.translation.y;
+    double angle_rad = atan2(dy, dx);
+    m_Transform.rotation = angle_rad;
+}
+
+
+[[nodiscard]] bool Airplane::IsOut() {
+    return false;
+}
+
+[[nodiscard]] bool Airplane::IsAlive() {
     return true;
 }

@@ -53,12 +53,12 @@ std::shared_ptr<Balloon> factory(int num, std::vector<glm::vec2> coordinates) {
     }
 }
 
-// int getRandomInt(int min, int max){
-//     static std::random_device rd;  // 硬體隨機數生成器
-//     static std::mt19937 gen(rd()); // 使用 Mersenne Twister PRNG (比 rand() 更好)
-//     std::uniform_int_distribution<int> dist(min, max);
-//     return dist(gen);
-// }
+int getRandomInt(int min, int max){
+    static std::random_device rd;  // 硬體隨機數生成器
+    static std::mt19937 gen(rd()); // 使用 Mersenne Twister PRNG (比 rand() 更好)
+    std::uniform_int_distribution<int> dist(min, max);
+    return dist(gen);
+}
 
 void App::Update() {
     LOG_TRACE("Update");
@@ -82,9 +82,9 @@ void App::Update() {
             m_DragMonkey->SetPosition(mousePosition);
             m_DragMonkey->UpdateRange();
         } else {
-            
             m_Monkeys.push_back(m_DragMonkey);
             m_DragMonkey->SetPosition(mousePosition);
+            m_DragMonkey->UpdateRange();
             // 清除拖拽引用
             m_DragMonkey = nullptr;
         }

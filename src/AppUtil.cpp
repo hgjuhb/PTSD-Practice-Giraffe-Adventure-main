@@ -51,6 +51,12 @@ void App::Reset() {
         }
         m_Monkeys = {};
     }
+    if (!m_Attacks.empty()) {
+        for (auto& attackPtr : m_Attacks) {
+            m_Root.RemoveChild(attackPtr);
+        }
+        m_Monkeys = {};
+    }
 }
 
 void App::SetLevel(int level) {
@@ -70,8 +76,8 @@ void App::SetLevel(int level) {
     m_Root.AddChild(m_Counters[2]->GetCounterText());
 
     // 设置按钮位置的基础坐标和间隔
-    float startX = 0.0f;
-    float startY = 360.0f;
+    float startX = 400.0f;
+    float startY = 300.0f;
     float buttonSpacing = 100.0f;  // 按钮之间的间隔
     
     // 创建飞镖猴子按钮
@@ -102,4 +108,8 @@ void App::SetLevel(int level) {
     auto m_CannonButton = std::make_shared<CannonButton>(glm::vec2(startX, startY-buttonSpacing*5));
     m_DragButtons.push_back(m_CannonButton);    
     m_Root.AddChild(m_CannonButton);
+
+    auto m_AirportButton = std::make_shared<AirportButton>(glm::vec2(startX, startY-buttonSpacing*6));
+    m_DragButtons.push_back(m_AirportButton);
+    m_Root.AddChild(m_AirportButton);
 }

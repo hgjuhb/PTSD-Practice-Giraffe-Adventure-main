@@ -97,9 +97,22 @@ public:
 
 class Explosion : public Attack {
 public:
-    explicit Explosion(glm::vec2 position);
+    explicit Explosion(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attack> bomb);
     [[nodiscard]] bool IsOut() override;
     [[nodiscard]] bool IsAlive() override;
 private:
-    int existTime = 100;
+    int existTime = 2;
+    std::shared_ptr<Attack> m_Bomb;
+};
+
+class Airplane : public Attack {
+public:
+    explicit Airplane(glm::vec2 position, glm::vec2 goal_position);
+    void Move() override;
+    [[nodiscard]] bool IsOut() override;
+    [[nodiscard]] bool IsAlive() override;
+    void RotationImage(glm::vec2 position);
+private:
+    int time = 0;
+    glm::vec2 m_SourcePosition;
 };
