@@ -51,12 +51,6 @@ void App::Reset() {
         }
         m_Monkeys = {};
     }
-    if (!m_Attacks.empty()) {
-        for (auto& attackPtr : m_Attacks) {
-            m_Root.RemoveChild(attackPtr);
-        }
-        m_Monkeys = {};
-    }
 }
 
 void App::SetLevel(int level) {
@@ -77,9 +71,10 @@ void App::SetLevel(int level) {
     m_Root.AddChild(m_Counters[2]->GetCounterText());
 
     // 设置按钮位置的基础坐标和间隔
-    float startX = 400.0f;
-    float startY = 300.0f;
-    float buttonSpacing = 100.0f;  // 按钮之间的间隔
+    float startX = 438.0f;
+    float startY = 303.0f;
+    float buttonYSpacing = 100.0f;  // 按钮之间的间隔
+    float buttonXSpacing = 100.0f;  // 按钮之间的间隔
     
     // 创建飞镖猴子按钮
     auto m_DartMonkeyButton = std::make_shared<DartMonkeyButton>(glm::vec2(startX, startY));
@@ -87,39 +82,38 @@ void App::SetLevel(int level) {
     m_Root.AddChild(m_DartMonkeyButton);
     
     // 创建钉子猴子按钮
-    auto m_NailMonkeyButton = std::make_shared<NailMonkeyButton>(glm::vec2(startX, startY-buttonSpacing));
+    auto m_NailMonkeyButton = std::make_shared<NailMonkeyButton>(glm::vec2(startX, startY-buttonYSpacing));
     m_DragButtons.push_back(m_NailMonkeyButton);    
     m_Root.AddChild(m_NailMonkeyButton);
     
     // 创建狙击手猴子按钮
-    auto m_SniperMonkeyButton = std::make_shared<SniperMonkeyButton>(glm::vec2(startX, startY-buttonSpacing*2));
+    auto m_SniperMonkeyButton = std::make_shared<SniperMonkeyButton>(glm::vec2(startX, startY-buttonYSpacing*2));
     m_DragButtons.push_back(m_SniperMonkeyButton);    
     m_Root.AddChild(m_SniperMonkeyButton);
     
     // 创建回旋镖猴子按钮
-    auto m_BoomerangMonkeyButton = std::make_shared<BoomerangMonkeyButton>(glm::vec2(startX, startY-buttonSpacing*3));
+    auto m_BoomerangMonkeyButton = std::make_shared<BoomerangMonkeyButton>(glm::vec2(startX, startY-buttonYSpacing*3));
     m_DragButtons.push_back(m_BoomerangMonkeyButton);    
     m_Root.AddChild(m_BoomerangMonkeyButton);
     
     // 创建忍者猴子按钮
-    auto m_NinjaMonkeyButton = std::make_shared<NinjaMonkeyButton>(glm::vec2(startX, startY-buttonSpacing*4));
+    auto m_NinjaMonkeyButton = std::make_shared<NinjaMonkeyButton>(glm::vec2(startX, startY-buttonYSpacing*4));
     m_DragButtons.push_back(m_NinjaMonkeyButton);    
     m_Root.AddChild(m_NinjaMonkeyButton);
 
-    auto m_CannonButton = std::make_shared<CannonButton>(glm::vec2(startX, startY-buttonSpacing*5));
+    auto m_CannonButton = std::make_shared<CannonButton>(glm::vec2(startX, startY-buttonYSpacing*5));
     m_DragButtons.push_back(m_CannonButton);    
     m_Root.AddChild(m_CannonButton);
 
-    auto m_AirportButton = std::make_shared<AirportButton>(glm::vec2(startX, startY-buttonSpacing*6));
+    auto m_AirportButton = std::make_shared<AirportButton>(glm::vec2(startX+buttonXSpacing, startY));
     m_DragButtons.push_back(m_AirportButton);
     m_Root.AddChild(m_AirportButton);
 
-    auto m_BuccaneerMonkeyButton = std::make_shared<BuccaneerMonkeyButton>(glm::vec2(startX+buttonSpacing, startY));
+    auto m_BuccaneerMonkeyButton = std::make_shared<BuccaneerMonkeyButton>(glm::vec2(startX+buttonXSpacing, startY-buttonYSpacing));
     m_DragButtons.push_back(m_BuccaneerMonkeyButton);
     m_Root.AddChild(m_BuccaneerMonkeyButton);
 
-    auto m_SuperMonkeyButton = std::make_shared<SuperMonkeyButton>(glm::vec2(startX+buttonSpacing, startY-buttonSpacing));
+    auto m_SuperMonkeyButton = std::make_shared<SuperMonkeyButton>(glm::vec2(startX+buttonXSpacing, startY-buttonYSpacing*2));
     m_DragButtons.push_back(m_SuperMonkeyButton);
     m_Root.AddChild(m_SuperMonkeyButton);
-
 }

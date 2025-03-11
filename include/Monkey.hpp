@@ -21,6 +21,13 @@ public:
       void SetCd(int cd);
       void UpdateRange();
       void ResetCount();
+      bool IsInside(glm::vec2 mousePosition);
+      void CheckRangeVisible();
+      void SetSize(glm::vec2 size);
+      void SetRangeColor(bool is_placeable);
+      bool Touched(Monkey& other);
+      bool IsMonkeyInRectangle(glm::vec2 topLeft, glm::vec2 bottomRight);
+      bool Placeable(std::vector<std::vector<std::vector<glm::vec2>>> Level_Placeable);
 
       [[nodiscard]] virtual std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition);
       [[nodiscard]] glm::vec2 GetPosition() const { return m_Transform.translation; }
@@ -32,6 +39,7 @@ public:
 private:
       std::string m_ImagePath;
       int m_Radius;
+      glm::vec2 m_Size;
       int m_Count = 0;
       int m_Cd;
       std::shared_ptr<Range> m_Range = std::make_shared<Range>(m_Transform.translation, m_Radius);
@@ -74,6 +82,7 @@ public:
       explicit Cannon(glm::vec2 position);
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
 };
+
 
 class Airport : public Monkey {
 public:

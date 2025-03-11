@@ -1,6 +1,9 @@
 #include "Monkey.hpp"
 
 #include "Util/Logger.hpp"
+#include "Util/Input.hpp"
+#include "Util/Keycode.hpp"
+
 #define PI 3.14159265358979323846
 
 Monkey::Monkey(glm::vec2 position)
@@ -20,10 +23,91 @@ void Monkey::SetImage(const std::string& ImagePath) {
 void Monkey::SetRadius(int radius) {
     m_Radius = radius;
 };
-
+void Monkey::SetSize(glm::vec2 size){
+    m_Size = size;
+};
 void Monkey::UpdateRange() {
     m_Range -> SetPosition(m_Transform.translation);
     m_Range -> SetScale(m_Radius);
+};
+bool Monkey::IsInside(glm::vec2 mousePosition){
+    // 计算猴子的边界范围
+    float leftBound = m_Transform.translation.x - m_Size.x / 2.0f;
+    float rightBound = m_Transform.translation.x + m_Size.x / 2.0f;
+    float topBound = m_Transform.translation.y - m_Size.y / 2.0f;
+    float bottomBound = m_Transform.translation.y + m_Size.y / 2.0f;
+    
+    // 判断鼠标点击位置是否在猴子范围内
+    return (mousePosition.x >= leftBound &&
+            mousePosition.x <= rightBound &&
+            mousePosition.y >= topBound &&
+            mousePosition.y <= bottomBound);
+}
+
+// 判断猴子是否在一个矩形区域内
+bool Monkey::IsMonkeyInRectangle(glm::vec2 topLeft, glm::vec2 bottomRight) {
+    // 计算猴子的边界范围
+    float monkeyLeft = m_Transform.translation.x - m_Size.x / 2.0f;
+    float monkeyRight = m_Transform.translation.x + m_Size.x / 2.0f;
+    float monkeyTop = m_Transform.translation.y - m_Size.y / 2.0f;
+    float monkeyBottom = m_Transform.translation.y + m_Size.y / 2.0f;
+    LOG_DEBUG("monkeyLeft: {}, monkeyRight: {}, monkeyTop: {}, monkeyBottom: {}", monkeyLeft, monkeyRight, monkeyTop, monkeyBottom);
+    
+    // 使用 AABB 碰撞检测来判断是否有重叠
+    // 如果一个矩形在另一个矩形的左侧、右侧、上方或下方，则它们不重叠
+    if (monkeyRight < topLeft.x || 
+        monkeyLeft > bottomRight.x || 
+        monkeyBottom > topLeft.y || 
+        monkeyTop < bottomRight.y) {
+        return false;
+    }
+    
+    // 如果没有满足上述任一条件，则矩形重叠
+    return true;
+}
+
+void Monkey::SetRangeColor(bool is_placeable){
+    if (is_placeable){
+        m_Range -> SetImage(GA_RESOURCE_DIR"/Monkey/range.png");
+    } else {
+        m_Range -> SetImage(GA_RESOURCE_DIR"/Monkey/range_red.png");
+    }
+}
+bool Monkey::Touched(Monkey& other){
+    // 计算当前猴子的边界范围
+    float thisLeftBound = m_Transform.translation.x - m_Size.x / 2.0f;
+    float thisRightBound = m_Transform.translation.x + m_Size.x / 2.0f;
+    float thisTopBound = m_Transform.translation.y - m_Size.y / 2.0f;
+    float thisBottomBound = m_Transform.translation.y + m_Size.y / 2.0f;
+    
+    // 计算另一个猴子的边界范围
+    float otherLeftBound = other.m_Transform.translation.x - other.m_Size.x / 2.0f;
+    float otherRightBound = other.m_Transform.translation.x + other.m_Size.x / 2.0f;
+    float otherTopBound = other.m_Transform.translation.y - other.m_Size.y / 2.0f;
+    float otherBottomBound = other.m_Transform.translation.y + other.m_Size.y / 2.0f;
+    
+    // 检查两个矩形是否重叠（AABB碰撞检测）
+    // 如果一个矩形在另一个矩形的左侧、右侧、上方或下方，则它们不重叠
+    if (thisRightBound < otherLeftBound || 
+        thisLeftBound > otherRightBound || 
+        thisBottomBound < otherTopBound || 
+        thisTopBound > otherBottomBound) {
+        return false;
+    }
+    
+    // 如果没有满足上述任一条件，则矩形重叠
+    return true;
+}
+
+void Monkey::CheckRangeVisible() {
+    glm::vec2 mousePosition = Util::Input::GetCursorPosition();
+    if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB)) {
+        if (IsInside(mousePosition)) {
+            m_Range -> SetVisible(true);
+        } else {
+            m_Range -> SetVisible(false);
+        }
+    }
 };
 
 void Monkey::SetCd(int cd) {
@@ -61,10 +145,34 @@ void Monkey::ResetCount(){
     m_Count = 0;
 }
 
+bool Monkey::Placeable(std::vector<std::vector<std::vector<glm::vec2>>> Level_Placeable){
+    // 检查猴子是否在 x >= 388 的区域
+    float monkeyLeft = m_Transform.translation.x - m_Size.x / 2.0f;
+    float monkeyRight = m_Transform.translation.x + m_Size.x / 2.0f;
+    if (monkeyRight >= 388.0) {
+        LOG_DEBUG("猴子位置超出 x=388 的限制");
+        return false;
+    }
+
+    std::vector<std::vector<glm::vec2>> groundplacelist = Level_Placeable[0];
+    for (auto& groundplacestr : groundplacelist) {
+        glm::vec2 topLeft = groundplacestr[0];    // 左上角坐标
+        glm::vec2 bottomRight = groundplacestr[1]; // 右下角坐标
+        LOG_DEBUG("topLeft: {}, bottomRight: {}", topLeft, bottomRight);
+        
+        if (IsMonkeyInRectangle(topLeft, bottomRight)) {
+            LOG_DEBUG("猴子在矩形区域内");
+            return false;
+        }
+    }
+    // 如果猴子不在任何一个矩形区域内，返回true
+    return true;
+}
 // ####################################################################
 
 DartMonkey::DartMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
+    SetSize(glm::vec2(100.0f, 100.0f));
     SetImage(GA_RESOURCE_DIR"/Monkey/DartMonkey.png");
     SetCd(50);
     SetRadius(150);
@@ -85,6 +193,7 @@ std::vector<std::shared_ptr<Attack>> DartMonkey::ProduceAttack(glm::vec2 goalPos
 NailMonkey::NailMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetImage(GA_RESOURCE_DIR"/Monkey/NailMonkey.png");
+    SetSize(glm::vec2(100.0f, 100.0f));
     SetCd(60);
     SetRadius(150);
     UpdateRange();
@@ -107,6 +216,7 @@ std::vector<std::shared_ptr<Attack>> NailMonkey::ProduceAttack(glm::vec2 goalPos
 
 SniperMonkey::SniperMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
+    SetSize(glm::vec2(100.0f, 100.0f));
     SetImage(GA_RESOURCE_DIR"/Monkey/SniperMonkey.png");
     SetCd(120);
     SetRadius(1500);
@@ -132,6 +242,7 @@ BoomerangMonkey::BoomerangMonkey(glm::vec2 position) : Monkey(position){
     SetCd(80);
     SetRadius(120);
     UpdateRange();
+    SetSize(glm::vec2(100.0f, 100.0f));
 }
 
 std::vector<std::shared_ptr<Attack>> BoomerangMonkey::ProduceAttack(glm::vec2 goalPosition) {
@@ -151,6 +262,7 @@ NinjaMonkey::NinjaMonkey(glm::vec2 position) : Monkey(position){
     SetCd(30);
     SetRadius(150);
     UpdateRange();
+    SetSize(glm::vec2(100.0f, 100.0f));
 }
 
 std::vector<std::shared_ptr<Attack>> NinjaMonkey::ProduceAttack(glm::vec2 goalPosition) {
@@ -170,6 +282,7 @@ Cannon::Cannon(glm::vec2 position) : Monkey(position){
     SetCd(100);
     SetRadius(160);
     UpdateRange();
+    SetSize(glm::vec2(100.0f, 100.0f));
 }
 
 std::vector<std::shared_ptr<Attack>> Cannon::ProduceAttack(glm::vec2 goalPosition) {
@@ -191,8 +304,9 @@ Airport::Airport(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetImage(GA_RESOURCE_DIR"/Monkey/Airport.png");
     SetCd(100);
-    SetRadius(20);
+    SetRadius(50);
     UpdateRange();
+    SetSize(glm::vec2(100.0f, 100.0f));
 }
 
 std::vector<std::shared_ptr<Attack>> Airport::ProduceAttack(glm::vec2 goalPosition) {
@@ -223,12 +337,11 @@ bool Airport::IsCollision(const std::shared_ptr<Balloon>& other) const{
     return true;
 }
 
-
 glm::vec2 Airport::ProduceCoordinateByAngle(glm::vec2 position, float angle) {
-    double radian = angle *PI / 180.0;
+    double radian = angle * PI / 180.0;
     glm::vec2 rotated;
     glm::vec2 rotated_position;
-    rotated.x = position.x * cos(radian) - position.y* sin(radian);
+    rotated.x = position.x * cos(radian) - position.y * sin(radian);
     rotated.y = position.x * sin(radian) + position.y * cos(radian);
     rotated_position.x = position.x + rotated.x;
     rotated_position.y = position.y + rotated.y;
@@ -288,4 +401,3 @@ std::vector<std::shared_ptr<Attack>> SuperMonkey::ProduceAttack(glm::vec2 goalPo
     attacks.push_back(attack);
     return attacks;
 }
-

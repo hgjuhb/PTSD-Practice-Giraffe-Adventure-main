@@ -63,19 +63,16 @@ public:
       explicit NinjaMonkeyButton(glm::vec2 position);
       [[nodiscard]] std::shared_ptr<Monkey> ProduceMonkey(glm::vec2 goalPosition) override;
 };
-
 class CannonButton : public DragButton {
 public:
       explicit CannonButton(glm::vec2 position);
       [[nodiscard]] std::shared_ptr<Monkey> ProduceMonkey(glm::vec2 goalPosition) override;
 };
-
 class AirportButton : public DragButton {
 public:
       explicit AirportButton(glm::vec2 position);
       [[nodiscard]] std::shared_ptr<Monkey> ProduceMonkey(glm::vec2 goalPosition) override;
 };
-
 class BuccaneerMonkeyButton : public DragButton {
 public:
       explicit BuccaneerMonkeyButton(glm::vec2 position);
