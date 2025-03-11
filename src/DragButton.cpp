@@ -171,3 +171,30 @@ std::shared_ptr<Monkey> SuperMonkeyButton::ProduceMonkey(glm::vec2 handPosition)
     std::shared_ptr<Monkey> monkey = std::make_shared<SuperMonkey>(handPosition);
     return monkey;
 }
+
+IceMonkeyButton::IceMonkeyButton(glm::vec2 position) : DragButton(position){
+    SetImage(GA_RESOURCE_DIR"/Monkey/IceMonkey.png");
+    SetAngle(90);
+}
+std::shared_ptr<Monkey> IceMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    std::shared_ptr<Monkey> monkey = std::make_shared<IceMonkey>(handPosition);
+    return monkey;
+}
+
+RubberMonkeyButton::RubberMonkeyButton(glm::vec2 position) : DragButton(position){
+    SetImage(GA_RESOURCE_DIR"/Monkey/RubberMonkey.png");
+    SetAngle(90);
+}
+std::shared_ptr<Monkey> RubberMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    std::shared_ptr<Monkey> monkey = std::make_shared<RubberMonkey>(handPosition);
+    return monkey;
+}
+
+MagicMonkeyButton::MagicMonkeyButton(glm::vec2 position) : DragButton(position){
+    SetImage(GA_RESOURCE_DIR"/Monkey/MagicMonkey.png");
+    SetAngle(90);
+}
+std::shared_ptr<Monkey> MagicMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    std::shared_ptr<Monkey> monkey = std::make_shared<MagicMonkey>(handPosition);
+    return monkey;
+}

@@ -173,6 +173,12 @@ bool Monkey::Placeable(std::vector<std::vector<std::vector<glm::vec2>>> Level_Pl
 DartMonkey::DartMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetSize(glm::vec2(100.0f, 100.0f));
+
+    auto attributes = GetAttributes();
+    attributes -> SetPenetration(1);
+    attributes -> SetPower(1);
+    attributes -> SetSpeed(40);
+
     SetImage(GA_RESOURCE_DIR"/Monkey/DartMonkey.png");
     SetCd(50);
     SetRadius(150);
@@ -183,7 +189,7 @@ std::vector<std::shared_ptr<Attack>> DartMonkey::ProduceAttack(glm::vec2 goalPos
     ResetCount();
     SetRotation(goalPosition);
     std::vector<std::shared_ptr<Attack>> attacks;
-    std::shared_ptr<Attack> attack = std::make_shared<Dart>(GetPosition(), goalPosition);
+    std::shared_ptr<Attack> attack = std::make_shared<Dart>(GetPosition(), goalPosition, GetAttributes());
     attacks.push_back(attack);
     return attacks;
 }
@@ -192,6 +198,12 @@ std::vector<std::shared_ptr<Attack>> DartMonkey::ProduceAttack(glm::vec2 goalPos
 
 NailMonkey::NailMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
+
+    auto attributes = GetAttributes();
+    attributes -> SetPenetration(1);
+    attributes -> SetPower(1);
+    attributes -> SetSpeed(40);
+
     SetImage(GA_RESOURCE_DIR"/Monkey/NailMonkey.png");
     SetSize(glm::vec2(100.0f, 100.0f));
     SetCd(60);
@@ -206,7 +218,7 @@ std::vector<std::shared_ptr<Attack>> NailMonkey::ProduceAttack(glm::vec2 goalPos
         double theta = i * PI / 4;  // 角度轉為弧度
         double x = m_Transform.translation.x + 1 * cos(theta);
         double y = m_Transform.translation.y + 1 * sin(theta);
-        std::shared_ptr<Attack> attack = std::make_shared<Nail>(GetPosition(), glm::vec2(x,y), GetRadius());
+        std::shared_ptr<Attack> attack = std::make_shared<Nail>(GetPosition(), glm::vec2(x,y), GetRadius(), GetAttributes());
         attacks.push_back(attack);
     }
     return attacks;
@@ -217,6 +229,12 @@ std::vector<std::shared_ptr<Attack>> NailMonkey::ProduceAttack(glm::vec2 goalPos
 SniperMonkey::SniperMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetSize(glm::vec2(100.0f, 100.0f));
+
+    auto attributes = GetAttributes();
+    attributes -> SetPenetration(2);
+    attributes -> SetPower(1);
+    attributes -> SetSpeed(100);
+
     SetImage(GA_RESOURCE_DIR"/Monkey/SniperMonkey.png");
     SetCd(120);
     SetRadius(1500);
@@ -227,7 +245,7 @@ std::vector<std::shared_ptr<Attack>> SniperMonkey::ProduceAttack(glm::vec2 goalP
     ResetCount();
     SetRotation(goalPosition);
     std::vector<std::shared_ptr<Attack>> attacks;
-    std::shared_ptr<Attack> attack = std::make_shared<Dart>(GetPosition(), goalPosition);
+    std::shared_ptr<Attack> attack = std::make_shared<Dart>(GetPosition(), goalPosition, GetAttributes());
     attack -> SetSpeed(100);
     attack -> SetPenetration(2);
     attacks.push_back(attack);
@@ -239,6 +257,12 @@ std::vector<std::shared_ptr<Attack>> SniperMonkey::ProduceAttack(glm::vec2 goalP
 BoomerangMonkey::BoomerangMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetImage(GA_RESOURCE_DIR"/Monkey/BoomerangMonkey.png");
+
+    auto attributes = GetAttributes();
+    attributes -> SetPenetration(3);
+    attributes -> SetPower(1);
+    attributes -> SetSpeed(10);
+
     SetCd(80);
     SetRadius(120);
     UpdateRange();
@@ -249,7 +273,7 @@ std::vector<std::shared_ptr<Attack>> BoomerangMonkey::ProduceAttack(glm::vec2 go
     ResetCount();
     SetRotation(goalPosition);
     std::vector<std::shared_ptr<Attack>> attacks;
-    std::shared_ptr<Attack> attack = std::make_shared<Boomerang>(GetPosition(), goalPosition);
+    std::shared_ptr<Attack> attack = std::make_shared<Boomerang>(GetPosition(), goalPosition, GetAttributes());
     attacks.push_back(attack);
     return attacks;
 }
@@ -259,17 +283,23 @@ std::vector<std::shared_ptr<Attack>> BoomerangMonkey::ProduceAttack(glm::vec2 go
 NinjaMonkey::NinjaMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetImage(GA_RESOURCE_DIR"/Monkey/NinjaMonkey.png");
+    SetSize(glm::vec2(100.0f, 100.0f));
+
+    auto attributes = GetAttributes();
+    attributes -> SetPenetration(1);
+    attributes -> SetPower(1);
+    attributes -> SetSpeed(60);
+
     SetCd(30);
     SetRadius(150);
     UpdateRange();
-    SetSize(glm::vec2(100.0f, 100.0f));
 }
 
 std::vector<std::shared_ptr<Attack>> NinjaMonkey::ProduceAttack(glm::vec2 goalPosition) {
     ResetCount();
     SetRotation(goalPosition);
     std::vector<std::shared_ptr<Attack>> attacks;
-    std::shared_ptr<Attack> attack = std::make_shared<Shuriken>(GetPosition(), goalPosition);
+    std::shared_ptr<Attack> attack = std::make_shared<Shuriken>(GetPosition(), goalPosition, GetAttributes());
     attacks.push_back(attack);
     return attacks;
 }
@@ -279,6 +309,12 @@ std::vector<std::shared_ptr<Attack>> NinjaMonkey::ProduceAttack(glm::vec2 goalPo
 Cannon::Cannon(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetImage(GA_RESOURCE_DIR"/Monkey/Cannon.png");
+
+    auto attributes = GetAttributes();
+    attributes -> SetPenetration(1);
+    attributes -> SetPower(1);
+    attributes -> SetSpeed(40);
+
     SetCd(100);
     SetRadius(160);
     UpdateRange();
@@ -290,9 +326,9 @@ std::vector<std::shared_ptr<Attack>> Cannon::ProduceAttack(glm::vec2 goalPositio
     ResetCount();
     SetRotation(goalPosition);
     std::vector<std::shared_ptr<Attack>> attacks;
-    std::shared_ptr<Attack> attack1 = std::make_shared<Bomb>(GetPosition(), goalPosition);
+    std::shared_ptr<Attack> attack1 = std::make_shared<Bomb>(GetPosition(), goalPosition, GetAttributes());
     attacks.push_back(attack1);
-    std::shared_ptr<Attack> attack2 = std::make_shared<Explosion>(GetPosition(), goalPosition, attack1);
+    std::shared_ptr<Attack> attack2 = std::make_shared<Explosion>(GetPosition(), goalPosition, attack1, GetAttributes());
     attack2 -> SetVisible(false);
     attacks.push_back(attack2);
     return attacks;
@@ -303,6 +339,12 @@ std::vector<std::shared_ptr<Attack>> Cannon::ProduceAttack(glm::vec2 goalPositio
 Airport::Airport(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetImage(GA_RESOURCE_DIR"/Monkey/Airport.png");
+
+    auto attributes = GetAttributes();
+    attributes -> SetPenetration(1);
+    attributes -> SetPower(1);
+    attributes -> SetSpeed(40);
+
     SetCd(100);
     SetRadius(50);
     UpdateRange();
@@ -318,14 +360,14 @@ std::vector<std::shared_ptr<Attack>> Airport::ProduceAttack(glm::vec2 goalPositi
         glm::vec2 position = airplanePtr -> GetPosition();
         for (int i=0; i < 8; i++) {
             glm::vec2 rotated_position = ProduceCoordinateByAngle(position, 45*i);
-            std::shared_ptr<Attack> attack = std::make_shared<Dart>(position, rotated_position);
+            std::shared_ptr<Attack> attack = std::make_shared<Dart>(position, rotated_position, GetAttributes());
             attacks.push_back(attack);
         }
     }
 
     if (m_Airplanes.size() < airplane_num) {
         glm::vec2 rotated_position = ProduceCoordinateByAngle(position, 0);
-        std::shared_ptr<Attack> attack = std::make_shared<Airplane>(position, rotated_position);
+        std::shared_ptr<Attack> attack = std::make_shared<Airplane>(position, rotated_position, GetAttributes());
         m_Airplanes.push_back(attack);
         attacks.push_back(attack);
     }
@@ -353,6 +395,12 @@ glm::vec2 Airport::ProduceCoordinateByAngle(glm::vec2 position, float angle) {
 BuccaneerMonkey::BuccaneerMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.5f, 1.5f);
     SetImage(GA_RESOURCE_DIR"/Monkey/BuccaneerMonkey.png");
+
+    auto attributes = GetAttributes();
+    attributes -> SetPenetration(1);
+    attributes -> SetPower(1);
+    attributes -> SetSpeed(40);
+
     SetCd(120);
     SetRadius(200);
     UpdateRange();
@@ -363,9 +411,9 @@ std::vector<std::shared_ptr<Attack>> BuccaneerMonkey::ProduceAttack(glm::vec2 go
     ResetCount();
     SetRotation(goalPosition);
     std::vector<std::shared_ptr<Attack>> attacks;
-    std::shared_ptr<Attack> attack1 = std::make_shared<Bomb>(GetPosition(), goalPosition);
+    std::shared_ptr<Attack> attack1 = std::make_shared<Bomb>(GetPosition(), goalPosition, GetAttributes());
     attacks.push_back(attack1);
-    std::shared_ptr<Attack> attack2 = std::make_shared<Explosion>(GetPosition(), goalPosition, attack1);
+    std::shared_ptr<Attack> attack2 = std::make_shared<Explosion>(GetPosition(), goalPosition, attack1, GetAttributes());
     attack2 -> SetVisible(false);
     attacks.push_back(attack2);
     return attacks;
@@ -376,13 +424,18 @@ std::vector<std::shared_ptr<Attack>> BuccaneerMonkey::ProduceAttack(glm::vec2 go
 SuperMonkey::SuperMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetImage(GA_RESOURCE_DIR"/Monkey/SuperMonkey.png");
+
+    auto attributes = GetAttributes();
+    attributes -> SetPenetration(1);
+    attributes -> SetPower(3);
+    attributes -> SetSpeed(60);
+
     SetCd(20);
     SetRadius(300);
     UpdateRange();
 }
 
 std::vector<std::shared_ptr<Attack>> SuperMonkey::ProduceAttack(glm::vec2 goalPosition) {
-    std::vector<std::shared_ptr<Attack>> remove_attacks;
     ResetCount();
     SetRotation(goalPosition);
     std::vector<std::shared_ptr<Attack>> attacks;
@@ -395,9 +448,89 @@ std::vector<std::shared_ptr<Attack>> SuperMonkey::ProduceAttack(glm::vec2 goalPo
 
     glm::vec2 movePosition = glm::vec2(distance * perp_x, distance * perp_y);
 
-    std::shared_ptr<Attack> attack = std::make_shared<Ray>(GetPosition()+movePosition, goalPosition+movePosition);
+    std::shared_ptr<Attack> attack = std::make_shared<Ray>(GetPosition()+movePosition, goalPosition+movePosition, GetAttributes());
     attacks.push_back(attack);
-    attack = std::make_shared<Ray>(GetPosition()-movePosition, goalPosition-movePosition);
+    attack = std::make_shared<Ray>(GetPosition()-movePosition, goalPosition-movePosition, GetAttributes());
+    attacks.push_back(attack);
+    return attacks;
+}
+
+//########################################################################
+
+IceMonkey::IceMonkey(glm::vec2 position) : Monkey(position){
+    m_Transform.scale = glm::vec2(1.0f, 1.0f);
+    SetImage(GA_RESOURCE_DIR"/Monkey/IceMonkey.png");
+
+    auto attributes = GetAttributes();
+    attributes -> SetPenetration(0);
+    attributes -> SetPower(0);
+    attributes -> SetSpeed(0);
+    attributes -> AddDebuff({0, 2});
+
+    SetCd(1);
+    SetRadius(120);
+    UpdateRange();
+}
+
+std::vector<std::shared_ptr<Attack>> IceMonkey::ProduceAttack(glm::vec2 goalPosition) {
+    SetRotation(goalPosition);
+    ResetCount();
+    std::vector<std::shared_ptr<Attack>> attacks;
+
+    std::shared_ptr<Attack> attack = std::make_shared<Blizzard>(GetPosition(), goalPosition, GetAttributes());
+    attacks.push_back(attack);
+    return attacks;
+}
+
+//########################################################################
+
+RubberMonkey::RubberMonkey(glm::vec2 position) : Monkey(position){
+    m_Transform.scale = glm::vec2(1.0f, 1.0f);
+    SetImage(GA_RESOURCE_DIR"/Monkey/RubberMonkey.png");
+
+    auto attributes = GetAttributes();
+    attributes -> SetPenetration(1);
+    attributes -> SetPower(0);
+    attributes -> SetSpeed(50);
+    attributes -> AddDebuff({2, 100});
+
+    SetCd(60);
+    SetRadius(120);
+    UpdateRange();
+}
+
+std::vector<std::shared_ptr<Attack>> RubberMonkey::ProduceAttack(glm::vec2 goalPosition) {
+    SetRotation(goalPosition);
+    ResetCount();
+    std::vector<std::shared_ptr<Attack>> attacks;
+
+    std::shared_ptr<Attack> attack = std::make_shared<Rubber>(GetPosition(), goalPosition, GetAttributes());
+    attacks.push_back(attack);
+    return attacks;
+}
+
+//########################################################################
+
+MagicMonkey::MagicMonkey(glm::vec2 position) : Monkey(position){
+    m_Transform.scale = glm::vec2(1.0f, 1.0f);
+    SetImage(GA_RESOURCE_DIR"/Monkey/MagicMonkey.png");
+
+    auto attributes = GetAttributes();
+    attributes -> SetPenetration(2);
+    attributes -> SetPower(2);
+    attributes -> SetSpeed(80);
+
+    SetCd(60);
+    SetRadius(120);
+    UpdateRange();
+}
+
+std::vector<std::shared_ptr<Attack>> MagicMonkey::ProduceAttack(glm::vec2 goalPosition) {
+    SetRotation(goalPosition);
+    ResetCount();
+    std::vector<std::shared_ptr<Attack>> attacks;
+
+    std::shared_ptr<Attack> attack = std::make_shared<MagicBall>(GetPosition(), goalPosition, GetAttributes());
     attacks.push_back(attack);
     return attacks;
 }

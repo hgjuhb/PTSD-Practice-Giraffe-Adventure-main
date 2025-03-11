@@ -17,14 +17,15 @@ void Balloon::SetImage(const std::string& ImagePath) {
 }
 
 void Balloon::Move() {
+    float slow = UpdateDebuff();
     if (m_Coordinates.size() != 0){
         glm::vec2 next_coordinates = m_Coordinates[0];
         glm::vec2 direction = next_coordinates - m_Transform.translation;
         float distance = glm::length(direction);
         if (distance > 5.0f) {
             glm::vec2 unit_direction = glm::normalize(direction);
-            m_Transform.translation += unit_direction * m_Speed;
-            m_Distance += m_Speed;
+            m_Transform.translation += unit_direction * m_Speed * slow;
+            m_Distance += m_Speed * slow;
         } else {
             m_Transform.translation = next_coordinates;
             m_Coordinates.erase(m_Coordinates.begin());
@@ -148,10 +149,45 @@ bool Balloon::IsCollision(const std::shared_ptr<Attack>& other) {
 
 void Balloon::Injured() {}
 
+void Balloon::GetDebuff(std::vector<std::vector<int>> debuff) {
+    for (auto tmp : debuff) {
+        if (tmp[0] == 0 and m_Debuff[1] != 0) {
+            continue;
+        }
+        m_Debuff[tmp[0]] += tmp[1];
+    }
+    if (m_Debuff[0] > 350) {
+        m_Debuff[0] = 0;
+        m_Debuff[1] = 100;
+    }
+}
+
+std::vector<std::shared_ptr<Util::GameObject>> Balloon::GetDebuffViews() {
+    return {snow, ice, rubber};
+}
+
+float Balloon::UpdateDebuff() {
+    float slow = 1;
+    for (int i = 0; i < m_Debuff.size(); i++) {
+        if (m_Debuff[i] != 0) {
+            if (i == 0) { snow -> Update(GetPosition(), true); }
+            else if (i == 1) { ice -> Update(GetPosition(), true); }
+            else if (i == 2) { rubber -> Update(GetPosition(), true); }
+            slow *= debuff_slow[i];
+            m_Debuff[i] -= 1;
+        }
+        else if (i == 0) { snow -> Update(GetPosition(), false); }
+        else if (i == 1) { ice -> Update(GetPosition(), false); }
+        else if (i == 2) { rubber -> Update(GetPosition(), false); }
+    }
+    return slow;
+};
+
 // ##############################################################
 
 RED::RED(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/red_balloon.png");
+    m_Transform.scale = glm::vec2(0.8, 0.8);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);

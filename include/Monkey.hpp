@@ -9,6 +9,7 @@
 #include "Attack.hpp"
 #include "Balloon.hpp"
 #include "Range.hpp"
+#include "Attributes.hpp"
 
 class Monkey : public Util::GameObject {
 public:
@@ -35,9 +36,11 @@ public:
       [[nodiscard]] std::shared_ptr<Range> GetRange() const { return m_Range; }
       [[nodiscard]] virtual bool IsCollision(const std::shared_ptr<Balloon>& other) const;
       [[nodiscard]] bool Countdown();
+      [[nodiscard]] std::shared_ptr<Attributes> GetAttributes(){ return m_Attributes; }
 
 private:
       std::string m_ImagePath;
+      std::shared_ptr<Attributes> m_Attributes = std::make_shared<Attributes>();
       int m_Radius;
       glm::vec2 m_Size;
       int m_Count = 0;
@@ -104,5 +107,23 @@ public:
 class SuperMonkey : public Monkey {
 public:
       explicit SuperMonkey(glm::vec2 position);
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+};
+
+class IceMonkey : public Monkey {
+public:
+      explicit IceMonkey(glm::vec2 position);
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+};
+
+class RubberMonkey : public Monkey {
+public:
+      explicit RubberMonkey(glm::vec2 position);
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+};
+
+class MagicMonkey : public Monkey {
+public:
+      explicit MagicMonkey(glm::vec2 position);
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
 };

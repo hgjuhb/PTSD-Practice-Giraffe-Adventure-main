@@ -8,6 +8,7 @@
 #include "Util/Animation.hpp"
 #include "Util/GameObject.hpp"
 #include "Attack.hpp"
+#include "DebuffView.hpp"
 
 
 class Balloon : public Util::GameObject {
@@ -27,6 +28,7 @@ public:
     void SetHeight(int height);
     void SetMoney(int money);
     void LoseHealth(int lose);
+    void GetDebuff(std::vector<std::vector<int>> debuff);
     void Move();
     virtual void Injured();
 
@@ -46,6 +48,8 @@ public:
     [[nodiscard]] float GetDistance() const { return m_Distance; }
     [[nodiscard]] const std::string& GetImagePaths() const { return m_ImagePath; }
     [[nodiscard]] std::vector<glm::vec2> GetConers() const { return m_Corners; }
+    [[nodiscard]] float UpdateDebuff();
+    [[nodiscard]] std::vector<std::shared_ptr<Util::GameObject>> GetDebuffViews();
 
 private:
     int m_Health = 0;
@@ -59,6 +63,12 @@ private:
     std::string m_ImagePath;
     std::vector<glm::vec2> m_Coordinates;
     std::vector<glm::vec2> m_Corners = {glm::vec2(0,0), glm::vec2(0,0), glm::vec2(0,0), glm::vec2(0,0)};
+
+    std::shared_ptr<DebuffView> snow =  std::make_shared<Snow>();
+    std::shared_ptr<DebuffView> ice =  std::make_shared<Ice>();
+    std::shared_ptr<DebuffView> rubber =  std::make_shared<Mucus>();
+    std::vector<int> m_Debuff = {0, 0, 0};
+    std::vector<float> debuff_slow = {0.5, 0, 0.2};
 };
 
 #endif // BALLOON_HPP

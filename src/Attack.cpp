@@ -4,8 +4,9 @@
 #include "Util/Logger.hpp"
 #define PI 3.14159265358979323846
 
-Attack::Attack(glm::vec2 position, glm::vec2 goal_position)
+Attack::Attack(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
 {
+    m_Attributes = std::make_shared<Attributes>(*attributes);
     SetPosition(position);
     SetUnitDirection(goal_position);
     SetRotation(goal_position);
@@ -21,15 +22,15 @@ void Attack::SetImage(const std::string& ImagePath) {
 }
 
 void Attack::SetPenetration(int penetration) {
-    m_Penetration = penetration;
+    m_Attributes -> SetPenetration(penetration);
 }
 
 void Attack::SetSpeed(float speed) {
-    m_Speed = speed;
+    m_Attributes -> SetSpeed(speed);
 }
 
 void Attack::SetPower(int power) {
-    m_Power = power;
+    m_Attributes -> SetPower(power);
 }
 
 void Attack::SetUnitDirection(const glm::vec2& goalPosition) {
@@ -51,7 +52,7 @@ void Attack::SetCorners(const std::vector<glm::vec2>& corners) {
 }
 
 void Attack::Move() {
-    m_Transform.translation += m_UnitDirection * m_Speed;
+    m_Transform.translation += m_UnitDirection * m_Attributes -> GetSpeed();
     SetRectangleCorners();
 }
 
@@ -74,7 +75,7 @@ void Attack::SetRectangleCorners(){
 }
 
 void Attack::LosePenetration() {
-    m_Penetration -= 1;
+    m_Attributes -> SetPenetration(m_Attributes -> GetPenetration() -1);
 }
 
 bool Attack::IsOut() {
@@ -97,27 +98,23 @@ void Attack::RenewUnitDirection(glm::vec2 unitDirection) {
 
 // #########################################################
 
-Dart::Dart(glm::vec2 position, glm::vec2 goal_position) : Attack(position, goal_position){
+Dart::Dart(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
     SetImage(GA_RESOURCE_DIR"/Attack/Dart.png");
     SetWidth(20);
     SetHeight(10);
-    SetPenetration(1);
-    SetSpeed(40);
-    SetPower(1);
     SetRectangleCorners();
 }
 
 // #########################################################
 
-Nail::Nail(glm::vec2 position, glm::vec2 goal_position, int radius) : Attack(position, goal_position){
+Nail::Nail(glm::vec2 position, glm::vec2 goal_position, int radius, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
     SetImage(GA_RESOURCE_DIR"/Attack/Nail.png");
     m_SourcePosition = position;
     m_Radius = radius;
     SetWidth(35);
     SetHeight(15);
-    SetPenetration(1);
-    SetSpeed(40);
-    SetPower(1);
     SetRectangleCorners();
 }
 
@@ -134,7 +131,8 @@ void Nail::Move(){
 
 // #########################################################
 
-Boomerang::Boomerang(glm::vec2 position, glm::vec2 goal_position) : Attack(position, goal_position){
+Boomerang::Boomerang(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
     SetImage(GA_RESOURCE_DIR"/Attack/Boomerang.png");
     m_SourcePosition = position;
 
@@ -150,9 +148,6 @@ Boomerang::Boomerang(glm::vec2 position, glm::vec2 goal_position) : Attack(posit
 
     SetWidth(45);
     SetHeight(45);
-    SetPenetration(3);
-    SetSpeed(10);
-    SetPower(1);
     SetRectangleCorners();
 }
 
@@ -207,13 +202,11 @@ void Boomerang::RotationImahe() {
 
 //###########################################################
 
-Shuriken::Shuriken(glm::vec2 position, glm::vec2 goal_position) : Attack(position, goal_position) {
+Shuriken::Shuriken(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes) {
     SetImage(GA_RESOURCE_DIR"/Attack/Shuriken.png");
     SetWidth(20);
     SetHeight(20);
-    SetPenetration(1);
-    SetSpeed(60);
-    SetPower(1);
     SetRectangleCorners();
 }
 
@@ -233,28 +226,23 @@ void Shuriken::RotationImahe() {
 
 //###########################################################
 
-Bomb::Bomb(glm::vec2 position, glm::vec2 goal_position) : Attack(position, goal_position) {
+Bomb::Bomb(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes) {
     SetImage(GA_RESOURCE_DIR"/Attack/Bomb.png");
     SetWidth(20);
     SetHeight(20);
-    SetPenetration(1);
-    SetSpeed(40);
-    SetPower(1);
     SetRectangleCorners();
 }
 
 //###########################################################
 
-Explosion::Explosion(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attack> bomb)
-: Attack(position, goal_position) {
+Explosion::Explosion(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attack> bomb, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes) {
     SetImage(GA_RESOURCE_DIR"/Attack/Explosion.png");
     m_Transform.scale = glm::vec2( 2.0, 2.0);
     m_Bomb = bomb;
     SetWidth(120);
     SetHeight(120);
-    SetPenetration(1);
-    SetSpeed(40);
-    SetPower(1);
     SetRectangleCorners();
 }
 
@@ -284,17 +272,20 @@ Explosion::Explosion(glm::vec2 position, glm::vec2 goal_position, std::shared_pt
 
 //###########################################################
 
-Airplane::Airplane(glm::vec2 position, glm::vec2 goal_position)
-: Attack(position, goal_position) {
+Airplane::Airplane(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes) {
+    auto m_attributes = GetAttributes();
+    m_attributes = std::make_shared<Attributes>();
+    m_attributes -> SetPenetration(5);
+    m_attributes -> SetPower(1);
+    m_attributes -> SetPenetration(10);
+
     SetImage(GA_RESOURCE_DIR"/Attack/Airplane.png");
     m_Transform.scale = glm::vec2( 1.5, 1.5);
     m_SourcePosition = position;
     SetWidth(102);
     SetHeight(121);
-    SetPenetration(5);
     max_Penetration = 5;
-    SetSpeed(10);
-    SetPower(1);
     SetRectangleCorners();
 }
 
@@ -322,7 +313,8 @@ void Airplane::Move() {
     m_Transform.translation = newPos;
 
     float distance = sqrt(pow(m_SourcePosition.x - m_Transform.translation.x, 2) + pow(m_SourcePosition.y - m_Transform.translation.y, 2));
-    if (distance < 10) {
+    if (distance < 20) {
+        LOG_DEBUG(123);
         WillNotDisappear = true;
         SetPenetration(max_Penetration);
     }
@@ -352,13 +344,59 @@ void Airplane::RotationImage(glm::vec2 goal_position) {
 
 //###########################################################
 
-Ray::Ray(glm::vec2 position, glm::vec2 goal_position) : Attack(position, goal_position){
+Ray::Ray(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
     SetImage(GA_RESOURCE_DIR"/Attack/Ray.png");
     m_Transform.scale = glm::vec2( 0.5, 0.8);
     SetWidth(50);
     SetHeight(32);
-    SetPenetration(1);
-    SetSpeed(60);
-    SetPower(3);
+    SetRectangleCorners();
+}
+
+//##########################################################
+
+Blizzard::Blizzard(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
+    SetImage(GA_RESOURCE_DIR"/Attack/Blizzard.png");
+    m_Transform.scale = glm::vec2( 1, 1);
+    SetWidth(240);
+    SetHeight(2440);
+    SetRectangleCorners();
+}
+
+void Blizzard::Move() {
+    m_Transform.rotation = PI/2;
+}
+
+[[nodiscard]] bool Blizzard::IsOut() {
+    if (exit != 0) {
+        exit -= 1;
+        return false;
+    }
+    return true;
+}
+
+[[nodiscard]] bool Blizzard::IsAlive() {
+    return true;
+}
+
+//#######################################################
+
+Rubber::Rubber (glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
+    SetImage(GA_RESOURCE_DIR"/Attack/Rubber.png");
+    SetWidth(20);
+    SetHeight(15);
+    SetRectangleCorners();
+}
+
+//#######################################################
+
+MagicBall::MagicBall (glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
+    SetImage(GA_RESOURCE_DIR"/Attack/MagicBall.png");
+    m_Transform.scale = glm::vec2( 2, 2);
+    SetWidth(60);
+    SetHeight(60);
     SetRectangleCorners();
 }

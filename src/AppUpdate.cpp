@@ -167,6 +167,7 @@ void App::Update() {
             Level_Balloons[round].erase(Level_Balloons[round].begin());
             m_Balloon = factory(num, Level_Coordinates);
             m_Balloons.push_back(m_Balloon);
+            m_Root.AddChildren(m_Balloon -> GetDebuffViews());
             m_Root.AddChild(m_Balloon);
         }
     }
@@ -185,6 +186,7 @@ void App::Update() {
             if (attackPtr -> IsAlive() && balloonPtr -> IsCollision(attackPtr)){
                 underAttack = true;
                 balloonPtr -> LoseHealth(attackPtr -> GetPower());
+                balloonPtr -> GetDebuff(attackPtr -> GetAttributes() -> GetDebuff());
                 attackPtr -> LosePenetration();
                 if (!attackPtr -> IsAlive()) {
                     remove_attacks.push_back(attackPtr);
@@ -208,8 +210,13 @@ void App::Update() {
             balloonPtr -> Injured();
         }
     }
+
     for (auto& balloonPtr : remove_balloons) {
+        std::vector<std::shared_ptr<Util::GameObject>> debuffView = balloonPtr -> GetDebuffViews();
         m_Balloons.erase(std::remove(m_Balloons.begin(), m_Balloons.end(), balloonPtr), m_Balloons.end());
+        for (auto& debuffPtr : debuffView) {
+            m_Root.RemoveChild(debuffPtr);
+        }
         m_Root.RemoveChild(balloonPtr);
     }
 
@@ -224,12 +231,17 @@ void App::Update() {
     }
 
     for (auto& balloonPtr : remove_balloons) {
+        std::vector<std::shared_ptr<Util::GameObject>> debuffView = balloonPtr -> GetDebuffViews();
         m_Balloons.erase(std::remove(m_Balloons.begin(), m_Balloons.end(), balloonPtr), m_Balloons.end());
+        for (auto& debuffPtr : debuffView) {
+            m_Root.RemoveChild(debuffPtr);
+        }
         m_Root.RemoveChild(balloonPtr);
     }
 
     for (auto& balloonPtr : new_balloons) {
         m_Balloons.push_back(balloonPtr);
+        m_Root.AddChildren(balloonPtr -> GetDebuffViews());
         m_Root.AddChild(balloonPtr);
     }
 

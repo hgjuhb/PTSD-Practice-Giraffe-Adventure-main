@@ -84,3 +84,21 @@ public:
       explicit SuperMonkeyButton(glm::vec2 position);
       [[nodiscard]] std::shared_ptr<Monkey> ProduceMonkey(glm::vec2 goalPosition) override;
 };
+
+class IceMonkeyButton : public DragButton {
+public:
+      explicit IceMonkeyButton(glm::vec2 position);
+      [[nodiscard]] std::shared_ptr<Monkey> ProduceMonkey(glm::vec2 goalPosition) override;
+};
+
+class RubberMonkeyButton : public DragButton {
+public:
+      explicit RubberMonkeyButton(glm::vec2 position);
+      [[nodiscard]] std::shared_ptr<Monkey> ProduceMonkey(glm::vec2 goalPosition) override;
+};
+
+class MagicMonkeyButton : public DragButton {
+public:
+      explicit MagicMonkeyButton (glm::vec2 position);
+      [[nodiscard]] std::shared_ptr<Monkey> ProduceMonkey(glm::vec2 goalPosition) override;
+};
