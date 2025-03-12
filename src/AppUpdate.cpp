@@ -71,7 +71,6 @@ void App::Update() {
         LOG_DEBUG("Mouse position: " + std::to_string(position.x) + ", " + std::to_string(position.y));
     }
 
-
     // 更新所有拖拽按钮
     for (auto& dragButtonPtr : m_DragButtons) {
         dragButtonPtr->Update();
@@ -115,16 +114,20 @@ void App::Update() {
             if (allMonkeysAllowPlacement) {
                 // 添加到猴子集合
                 m_Monkeys.push_back(m_DragMonkey);
-                
                 // 设置位置并更新范围
                 m_DragMonkey->SetPosition(mousePosition);
                 m_DragMonkey->UpdateRange();
-                m_DragMonkey->SetRangeColor(true);                
+                m_DragMonkey->SetRangeColor(true);
+                m_Counters[1] -> MinusValue(m_DragMonkey -> GetCost());
                 // 确保将猴子添加到场景根节点
-                m_Root.AddChild(m_DragMonkey);
+                // m_Root.AddChild(m_DragMonkey);
             }else{
                 m_Root.RemoveChild(m_DragMonkey);
                 m_Root.RemoveChild(m_DragMonkey->GetRange());
+                std::vector<std::shared_ptr<Util::GameObject>> InfortionBoardObject = m_DragMonkey-> GetAllInfortionBoardObject();
+                for (auto& objectPtr : InfortionBoardObject) {
+                    m_Root.RemoveChild(objectPtr);
+                }
             }
             
             // 无论是否成功放置，都清除拖拽引用
@@ -139,10 +142,9 @@ void App::Update() {
                 
                 if (m_DragMonkey) {
                     LOG_DEBUG("Created monkey at: " + std::to_string(mousePosition.x) + ", " + std::to_string(mousePosition.y));
-
                     m_Root.AddChild(m_DragMonkey);
-                    m_Root.AddChild(m_DragMonkey->GetRange());
-                    
+                    m_Root.AddChild(m_DragMonkey-> GetRange());
+                    m_Root.AddChildren(m_DragMonkey-> GetAllInfortionBoardObject());
                     break; // 只处理第一个拖动的按钮
                 }
             }
@@ -255,10 +257,41 @@ void App::Update() {
 
     remove_attacks = {};
     // #################################################################################################
+    if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB)) {
+        glm::vec2 position = Util::Input::GetCursorPosition ();
+        int clickInformationBoard = 0; //0:無, 1:有, 2:關閉, 3:賣掉, 其他:升級(多少錢回多少
+        if (m_ClickedMonkey) {
+            clickInformationBoard = m_ClickedMonkey -> IsInformationBoardClicked(position, m_Counters[1] -> GetCurrent());
+            if (clickInformationBoard == 2) {
+                m_ClickedMonkey -> UpdateAllObjectVisible(false);
+                m_ClickedMonkey = nullptr;
+            }
+            else if (clickInformationBoard == 3) {
+                m_Monkeys.erase(std::remove(m_Monkeys.begin(), m_Monkeys.end(), m_ClickedMonkey), m_Monkeys.end());
+                m_Root.RemoveChild(m_ClickedMonkey);
+                m_Root.RemoveChild(m_ClickedMonkey->GetRange());
+                std::vector<std::shared_ptr<Util::GameObject>> InfortionBoardObject = m_ClickedMonkey-> GetAllInfortionBoardObject();
+                for (auto& objectPtr : InfortionBoardObject) {
+                    m_Root.RemoveChild(objectPtr);
+                }
+                m_Counters[1] -> AddValue(m_ClickedMonkey -> GetCost());
+                m_ClickedMonkey = nullptr;
+            }
+            else if (clickInformationBoard != 0 && clickInformationBoard != 1) {
+                m_Counters[1] -> MinusValue(clickInformationBoard);
+            }
 
+        }
+        if (clickInformationBoard == 0) {
+            m_ClickedMonkey = nullptr;
+            for (auto& monkeyPtr : m_Monkeys) {
+                if (monkeyPtr -> IsClicked(position)) {
+                    m_ClickedMonkey = monkeyPtr;
+                }
+            }
+        }
+    }
     for (auto& monkeyPtr : m_Monkeys) {
-        // add the check of click or not
-        monkeyPtr -> CheckRangeVisible();
         if (monkeyPtr -> Countdown()) {
             for (auto& balloonPtr : m_Balloons) {
                 if (monkeyPtr -> IsCollision(balloonPtr)) {
@@ -272,7 +305,6 @@ void App::Update() {
             }
         }
     }
-
     for (auto& attackPtr : m_Attacks) {
         attackPtr -> Move();
         if (attackPtr -> IsOut()) {
@@ -312,6 +344,5 @@ void App::Update() {
     }
 
     m_EnterDown = Util::Input::IsKeyPressed(Util::Keycode::RETURN);
-
     m_Root.Update();
 }

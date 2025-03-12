@@ -69,7 +69,7 @@ void App::SetLevel(int level) {
     m_Root.AddChild(m_Counters[0]);
     m_Root.AddChild(m_Counters[0]->GetCounterText());
 
-    m_Counters.push_back(std::make_shared<Money>(0,99999));
+    m_Counters.push_back(std::make_shared<Money>(99999,99999));
     m_Root.AddChild(m_Counters[1]);
     m_Root.AddChild(m_Counters[1]->GetCounterText());
 

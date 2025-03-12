@@ -99,20 +99,27 @@ bool Monkey::Touched(Monkey& other){
     return true;
 }
 
-void Monkey::CheckRangeVisible() {
-    glm::vec2 mousePosition = Util::Input::GetCursorPosition();
+bool Monkey::IsClicked(glm::vec2 mousePosition) {
     if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB)) {
         if (IsInside(mousePosition)) {
-            m_Range -> SetVisible(true);
+            UpdateAllObjectVisible(true);
+            return true;
         } else {
-            m_Range -> SetVisible(false);
+            UpdateAllObjectVisible(false);
+            return false;
         }
     }
-};
+    return false;
+}
 
 void Monkey::SetCd(int cd) {
     m_Cd = cd;
 };
+
+void Monkey::SetCost(int cost) {
+    m_Cost = cost;
+    m_Value = cost;
+}
 
 std::vector<std::shared_ptr<Attack>> Monkey::ProduceAttack(glm::vec2 goalPosition){
     SetRotation(goalPosition);
@@ -145,6 +152,22 @@ void Monkey::ResetCount(){
     m_Count = 0;
 }
 
+int Monkey::IsInformationBoardClicked(glm::vec2 mousePosition, int money) {
+    std::vector<int> val = m_InformationBoard -> IsClick(mousePosition, money);
+    int res = val[0];
+    if (val[0] == 4) {
+        level += 1;
+        upgradePath = 1;
+        res = val[1];
+    }
+    else if (val[0] == 5) {
+        level += 1;
+        upgradePath = 2;
+        res = val[1];
+    }
+    return res;
+}
+
 bool Monkey::Placeable(std::vector<std::vector<std::vector<glm::vec2>>> Level_Placeable){
     // 检查猴子是否在 x >= 388 的区域
     float monkeyLeft = m_Transform.translation.x - m_Size.x / 2.0f;
@@ -168,6 +191,19 @@ bool Monkey::Placeable(std::vector<std::vector<std::vector<glm::vec2>>> Level_Pl
     // 如果猴子不在任何一个矩形区域内，返回true
     return true;
 }
+
+std::vector<std::shared_ptr<Util::GameObject>> Monkey::GetAllInfortionBoardObject() {
+    std::vector<std::shared_ptr<Util::GameObject>> infortionBoardObjects = m_InformationBoard -> GetAllChildren();
+    infortionBoardObjects.push_back(m_InformationBoard);
+    return infortionBoardObjects;
+}
+
+void Monkey::UpdateAllObjectVisible(bool isClicked) {
+    m_Range -> SetVisible(isClicked);
+    m_InformationBoard -> SetVisible(isClicked);
+    m_InformationBoard -> UpdateAllObjectVisible(isClicked);
+}
+
 // ####################################################################
 
 DartMonkey::DartMonkey(glm::vec2 position) : Monkey(position){
@@ -179,6 +215,10 @@ DartMonkey::DartMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPower(1);
     attributes -> SetSpeed(40);
 
+    auto &informationBoard = GetInfortionBoard();
+    informationBoard = std::make_shared<DartMonkeyInformationBoard>();
+
+    SetCost(200);
     SetImage(GA_RESOURCE_DIR"/Monkey/DartMonkey.png");
     SetCd(50);
     SetRadius(150);
@@ -194,6 +234,7 @@ std::vector<std::shared_ptr<Attack>> DartMonkey::ProduceAttack(glm::vec2 goalPos
     return attacks;
 }
 
+
 //#####################################################################
 
 NailMonkey::NailMonkey(glm::vec2 position) : Monkey(position){
@@ -204,6 +245,7 @@ NailMonkey::NailMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPower(1);
     attributes -> SetSpeed(40);
 
+    SetCost(360);
     SetImage(GA_RESOURCE_DIR"/Monkey/NailMonkey.png");
     SetSize(glm::vec2(100.0f, 100.0f));
     SetCd(60);
@@ -235,6 +277,7 @@ SniperMonkey::SniperMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPower(1);
     attributes -> SetSpeed(100);
 
+    SetCost(400);
     SetImage(GA_RESOURCE_DIR"/Monkey/SniperMonkey.png");
     SetCd(120);
     SetRadius(1500);
@@ -263,6 +306,7 @@ BoomerangMonkey::BoomerangMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPower(1);
     attributes -> SetSpeed(10);
 
+    SetCost(400);
     SetCd(80);
     SetRadius(120);
     UpdateRange();
@@ -290,6 +334,7 @@ NinjaMonkey::NinjaMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPower(1);
     attributes -> SetSpeed(60);
 
+    SetCost(600);
     SetCd(30);
     SetRadius(150);
     UpdateRange();
@@ -315,6 +360,7 @@ Cannon::Cannon(glm::vec2 position) : Monkey(position){
     attributes -> SetPower(1);
     attributes -> SetSpeed(40);
 
+    SetCost(700);
     SetCd(100);
     SetRadius(160);
     UpdateRange();
@@ -345,6 +391,7 @@ Airport::Airport(glm::vec2 position) : Monkey(position){
     attributes -> SetPower(1);
     attributes -> SetSpeed(40);
 
+    SetCost(950);
     SetCd(100);
     SetRadius(50);
     UpdateRange();
@@ -395,12 +442,14 @@ glm::vec2 Airport::ProduceCoordinateByAngle(glm::vec2 position, float angle) {
 BuccaneerMonkey::BuccaneerMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.5f, 1.5f);
     SetImage(GA_RESOURCE_DIR"/Monkey/BuccaneerMonkey.png");
+    SetSize(glm::vec2(100.0f, 100.0f));
 
     auto attributes = GetAttributes();
     attributes -> SetPenetration(1);
     attributes -> SetPower(1);
     attributes -> SetSpeed(40);
 
+    SetCost(600);
     SetCd(120);
     SetRadius(200);
     UpdateRange();
@@ -424,12 +473,14 @@ std::vector<std::shared_ptr<Attack>> BuccaneerMonkey::ProduceAttack(glm::vec2 go
 SuperMonkey::SuperMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetImage(GA_RESOURCE_DIR"/Monkey/SuperMonkey.png");
+    SetSize(glm::vec2(100.0f, 100.0f));
 
     auto attributes = GetAttributes();
     attributes -> SetPenetration(1);
     attributes -> SetPower(3);
     attributes -> SetSpeed(60);
 
+    SetCost(4000);
     SetCd(20);
     SetRadius(300);
     UpdateRange();
@@ -460,6 +511,7 @@ std::vector<std::shared_ptr<Attack>> SuperMonkey::ProduceAttack(glm::vec2 goalPo
 IceMonkey::IceMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetImage(GA_RESOURCE_DIR"/Monkey/IceMonkey.png");
+    SetSize(glm::vec2(100.0f, 100.0f));
 
     auto attributes = GetAttributes();
     attributes -> SetPenetration(0);
@@ -467,6 +519,7 @@ IceMonkey::IceMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetSpeed(0);
     attributes -> AddDebuff({0, 2});
 
+    SetCost(380);
     SetCd(1);
     SetRadius(120);
     UpdateRange();
@@ -487,6 +540,7 @@ std::vector<std::shared_ptr<Attack>> IceMonkey::ProduceAttack(glm::vec2 goalPosi
 RubberMonkey::RubberMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetImage(GA_RESOURCE_DIR"/Monkey/RubberMonkey.png");
+    SetSize(glm::vec2(100.0f, 100.0f));
 
     auto attributes = GetAttributes();
     attributes -> SetPenetration(1);
@@ -494,6 +548,7 @@ RubberMonkey::RubberMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetSpeed(50);
     attributes -> AddDebuff({2, 100});
 
+    SetCost(300);
     SetCd(60);
     SetRadius(120);
     UpdateRange();
@@ -514,12 +569,14 @@ std::vector<std::shared_ptr<Attack>> RubberMonkey::ProduceAttack(glm::vec2 goalP
 MagicMonkey::MagicMonkey(glm::vec2 position) : Monkey(position){
     m_Transform.scale = glm::vec2(1.0f, 1.0f);
     SetImage(GA_RESOURCE_DIR"/Monkey/MagicMonkey.png");
+    SetSize(glm::vec2(100.0f, 100.0f));
 
     auto attributes = GetAttributes();
     attributes -> SetPenetration(2);
     attributes -> SetPower(2);
     attributes -> SetSpeed(80);
 
+    SetCost(550);
     SetCd(60);
     SetRadius(120);
     UpdateRange();

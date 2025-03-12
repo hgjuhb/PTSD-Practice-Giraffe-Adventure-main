@@ -56,6 +56,7 @@ private:
     std::vector<std::shared_ptr<DragButton>> m_DragButtons;
     std::shared_ptr<Monkey> m_DragMonkey;
     std::shared_ptr<Monkey> m_testMonkey;
+    std::shared_ptr<Monkey> m_ClickedMonkey;
     
 
     bool m_EnterDown = false;
