@@ -158,11 +158,13 @@ int Monkey::IsInformationBoardClicked(glm::vec2 mousePosition, int money) {
     if (val[0] == 4) {
         level += 1;
         upgradePath = 1;
+        m_Value += val[1];
         res = val[1];
     }
     else if (val[0] == 5) {
         level += 1;
         upgradePath = 2;
+        m_Value += val[1];
         res = val[1];
     }
     return res;
@@ -191,6 +193,11 @@ bool Monkey::Placeable(std::vector<std::vector<std::vector<glm::vec2>>> Level_Pl
     // 如果猴子不在任何一个矩形区域内，返回true
     return true;
 }
+
+void Monkey::IsButtonTouch(glm::vec2 mousePosition) {
+    m_InformationBoard -> IsButtonTouch(mousePosition);
+}
+
 
 std::vector<std::shared_ptr<Util::GameObject>> Monkey::GetAllInfortionBoardObject() {
     std::vector<std::shared_ptr<Util::GameObject>> infortionBoardObjects = m_InformationBoard -> GetAllChildren();

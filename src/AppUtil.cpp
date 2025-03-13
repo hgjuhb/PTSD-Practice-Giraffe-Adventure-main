@@ -48,6 +48,10 @@ void App::Reset() {
         for (auto& monkeyPtr : m_Monkeys) {
             m_Root.RemoveChild(monkeyPtr);
             m_Root.RemoveChild(monkeyPtr -> GetRange());
+            std::vector<std::shared_ptr<Util::GameObject>> InfortionBoardObject = monkeyPtr -> GetAllInfortionBoardObject();
+            for (auto& objectPtr : InfortionBoardObject) {
+                m_Root.RemoveChild(objectPtr);
+            }
         }
         m_Monkeys = {};
     }
@@ -69,7 +73,7 @@ void App::SetLevel(int level) {
     m_Root.AddChild(m_Counters[0]);
     m_Root.AddChild(m_Counters[0]->GetCounterText());
 
-    m_Counters.push_back(std::make_shared<Money>(99999,99999));
+    m_Counters.push_back(std::make_shared<Money>(8000,99999));
     m_Root.AddChild(m_Counters[1]);
     m_Root.AddChild(m_Counters[1]->GetCounterText());
 

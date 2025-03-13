@@ -7,6 +7,8 @@
 #include "Util/Animation.hpp"
 #include "Util/GameObject.hpp"
 #include "InformationImage.hpp"
+#include "InformationText.hpp"
+#include "InformationButton.hpp"
 
 class InformationBoard : public Util::GameObject {
 public:
@@ -19,25 +21,39 @@ public:
     void UpdateAllObjectVisible(bool isClicked);
     void UpdateUpgrade();
     void SetUpgradeCost(std::vector<std::vector<int>> upgradeCost);
+    void SetUpgradeText(std::vector<std::vector<std::string>> upgradeText);
+    void IsButtonTouch(glm::vec2 mousePosition);
 
     [[nodiscard]] std::vector<int> IsClick(glm::vec2 mousePosition, int money);
     [[nodiscard]] int GetLevel() { return level;}
     [[nodiscard]] int GetUpgradePath() { return upgradePath;}
+
+    [[nodiscard]] std::vector<std::shared_ptr<GameObject>> GetAllChildren();
     [[nodiscard]] std::shared_ptr<InformationImage> GetMonkeyImage(){ return monkey_image;}
     [[nodiscard]] std::shared_ptr<InformationImage> GetUpgrateImage1(){ return upgrate_image1;}
     [[nodiscard]] std::shared_ptr<InformationImage> GetUpgrateImage2(){ return upgrate_image2;}
-    [[nodiscard]] std::vector<std::shared_ptr<GameObject>> GetAllChildren();
+    [[nodiscard]] std::shared_ptr<InformationText> GetUpgrateText1(){ return upgrate_text1;}
+    [[nodiscard]] std::shared_ptr<InformationText> GetUpgrateText2(){ return upgrate_text2;}
+    [[nodiscard]] std::shared_ptr<InformationButton> GetUpgrateButton1(){ return upgrate_button1;}
+    [[nodiscard]] std::shared_ptr<InformationButton> GetUpgrateButton2(){ return upgrate_button2;}
 
 private:
     int level = 0;
     int upgradePath = 0;
     std::vector<std::vector<int>> m_upgradeCost = {};
+    std::vector<std::vector<std::string>> m_upgradeText = {};
     std::string upgrateName = GA_RESOURCE_DIR"//MonkeyInformation/DartMonkey";
     std::string m_ImagePath;
     std::shared_ptr<InformationImage> monkey_image = std::make_shared<InformationImage>(GA_RESOURCE_DIR"/MonkeyInformation/WithoutImage.png", glm::vec2(-500, 155));
-    std::shared_ptr<InformationImage> upgrate_image1 = std::make_shared<InformationImage>(GA_RESOURCE_DIR"/MonkeyInformation/DartMonkey_1_1.png", glm::vec2(-530, 0));
-    std::shared_ptr<InformationImage> upgrate_image2 = std::make_shared<InformationImage>(GA_RESOURCE_DIR"/MonkeyInformation/DartMonkey_2_1.png", glm::vec2(-530, -125));
+    std::shared_ptr<InformationImage> upgrate_image1 = std::make_shared<InformationImage>(GA_RESOURCE_DIR"/MonkeyInformation/Lock.png", glm::vec2(-530, 0));
+    std::shared_ptr<InformationImage> upgrate_image2 = std::make_shared<InformationImage>(GA_RESOURCE_DIR"/MonkeyInformation/Lock.png", glm::vec2(-530, -125));
+    std::shared_ptr<InformationText> upgrate_text1 = std::make_shared<InformationText>(glm::vec2(-360, 25 ), "00000000", 20);
+    std::shared_ptr<InformationText> upgrate_text2 = std::make_shared<InformationText>(glm::vec2(-360, -100 ), "00000000", 20);
+    std::shared_ptr<InformationButton> upgrate_button1 = std::make_shared<InformationButton>(glm::vec2(-370, -35 ), "0");
+    std::shared_ptr<InformationButton> upgrate_button2 = std::make_shared<InformationButton>(glm::vec2(-370, -160 ), "0");
+    std::shared_ptr<InformationButton> sale_button = std::make_shared<InformationButton>(glm::vec2(-365, -220 ), "Sale");
 };
+
 
 #endif //INFORMATIONBOARD_HPP
 

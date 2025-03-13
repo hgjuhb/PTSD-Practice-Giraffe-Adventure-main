@@ -26,6 +26,7 @@ public:
       void SetRangeColor(bool is_placeable);
       void UpdateAllObjectVisible(bool isClicked);
       void SetCost(int cost);
+      void IsButtonTouch(glm::vec2 mousePosition);
 
       bool Touched(Monkey& other);
       bool IsMonkeyInRectangle(glm::vec2 topLeft, glm::vec2 bottomRight);
@@ -36,7 +37,7 @@ public:
       [[nodiscard]] virtual std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition);
       [[nodiscard]] glm::vec2 GetPosition() const { return m_Transform.translation; }
       [[nodiscard]] int GetCost() const { return m_Cost; }
-      [[nodiscard]] int GetValue() const { return int(m_Value*0.8); }
+      [[nodiscard]] int GetValue() const { return (m_Value * 8) / 10;}
       [[nodiscard]] int GetRadius() const { return m_Radius; }
       [[nodiscard]] virtual bool IsCollision(const std::shared_ptr<Balloon>& other) const;
       [[nodiscard]] bool Countdown();
