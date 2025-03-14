@@ -73,6 +73,7 @@ void Monkey::SetRangeColor(bool is_placeable){
         m_Range -> SetImage(GA_RESOURCE_DIR"/Monkey/range_red.png");
     }
 }
+
 bool Monkey::Touched(Monkey& other){
     // 计算当前猴子的边界范围
     float thisLeftBound = m_Transform.translation.x - m_Size.x / 2.0f;
@@ -158,12 +159,14 @@ int Monkey::IsInformationBoardClicked(glm::vec2 mousePosition, int money) {
     if (val[0] == 4) {
         level += 1;
         upgradePath = 1;
+        UpdateLevel();
         m_Value += val[1];
         res = val[1];
     }
     else if (val[0] == 5) {
         level += 1;
         upgradePath = 2;
+        UpdateLevel();
         m_Value += val[1];
         res = val[1];
     }
@@ -202,7 +205,6 @@ void Monkey::IsButtonTouch(glm::vec2 mousePosition) {
     m_InformationBoard -> IsButtonTouch(mousePosition);
 }
 
-
 std::vector<std::shared_ptr<Util::GameObject>> Monkey::GetAllInfortionBoardObject() {
     std::vector<std::shared_ptr<Util::GameObject>> infortionBoardObjects = m_InformationBoard -> GetAllChildren();
     infortionBoardObjects.push_back(m_InformationBoard);
@@ -214,6 +216,8 @@ void Monkey::UpdateAllObjectVisible(bool isClicked) {
     m_InformationBoard -> SetVisible(isClicked);
     m_InformationBoard -> UpdateAllObjectVisible(isClicked);
 }
+
+void Monkey::UpdateLevel() {}
 
 // ####################################################################
 
@@ -239,12 +243,72 @@ DartMonkey::DartMonkey(glm::vec2 position) : Monkey(position){
 std::vector<std::shared_ptr<Attack>> DartMonkey::ProduceAttack(glm::vec2 goalPosition) {
     ResetCount();
     SetRotation(goalPosition);
+    int level = GetLevel();
+    int upgradePath = GetUpgradePath();
     std::vector<std::shared_ptr<Attack>> attacks;
-    std::shared_ptr<Attack> attack = std::make_shared<Dart>(GetPosition(), goalPosition, GetAttributes());
-    attacks.push_back(attack);
+    if (upgradePath == 1 && level >= 3) {
+        std::shared_ptr<Attack> attack = std::make_shared<Rock>(GetPosition(), goalPosition, GetAttributes());
+        attacks.push_back(attack);
+    }
+    else {
+        std::shared_ptr<Attack> attack = std::make_shared<Dart>(GetPosition(), goalPosition, GetAttributes());
+        attacks.push_back(attack);
+        if (upgradePath == 2 && level >= 3) {
+            double radians = 30 * PI / 180.0;  // 角度轉為弧度
+            double cosA = cos(radians);
+            double sinA = sin(radians);
+            glm::vec2 center = m_Transform.translation;
+            double x = center.x + (goalPosition.x - center.x) * cosA - (goalPosition.y - center.y) * sinA;
+            double y = center.y + (goalPosition.x - center.x) * sinA + (goalPosition.y - center.y) * cosA;
+            attack = std::make_shared<Dart>(GetPosition(), glm::vec2(x,y), GetAttributes());
+            attacks.push_back(attack);
+
+            radians = -30 * PI / 180.0;  // 角度轉為弧度
+            cosA = cos(radians);
+            sinA = sin(radians);
+            center = m_Transform.translation;
+            x = center.x + (goalPosition.x - center.x) * cosA - (goalPosition.y - center.y) * sinA;
+            y = center.y + (goalPosition.x - center.x) * sinA + (goalPosition.y - center.y) * cosA;
+            attack = std::make_shared<Dart>(GetPosition(), glm::vec2(x,y), GetAttributes());
+            attacks.push_back(attack);
+        }
+    }
     return attacks;
 }
 
+void DartMonkey::UpdateLevel() {
+    int level = GetLevel();
+    int upgradePath = GetUpgradePath();
+    auto attributes = GetAttributes();
+    if (upgradePath == 1) {
+        switch (level) {
+            case 1:
+                SetRadius(GetRadius() *1.25);
+                UpdateRange();
+            case 2:
+                SetRadius(GetRadius() *1.25);
+                UpdateRange();
+                attributes -> AddProperty(2);
+            case 3:
+                SetCd(150);
+                ResetCount();
+                attributes -> SetPenetration(18);
+            case 4:
+                attributes -> AddProperty(1);
+                attributes -> AddProperty(3);
+        }
+    }
+    else {
+        switch (level) {
+            case 1:
+                attributes -> SetPenetration(2);
+                attributes -> SetPower(2);
+            case 2:
+                attributes -> SetPenetration(3);
+                attributes -> SetPower(3);
+        }
+    }
+}
 
 //#####################################################################
 
@@ -256,25 +320,90 @@ NailMonkey::NailMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPower(1);
     attributes -> SetSpeed(40);
 
+    auto &informationBoard = GetInfortionBoard();
+    informationBoard = std::make_shared<DartMonkeyInformationBoard>();
+
     SetCost(360);
     SetImage(GA_RESOURCE_DIR"/Monkey/NailMonkey.png");
     SetSize(glm::vec2(50.0f, 50.0f));
-    SetCd(60);
+    SetCd(80);
     SetRadius(150);
     UpdateRange();
 }
 
 std::vector<std::shared_ptr<Attack>> NailMonkey::ProduceAttack(glm::vec2 goalPosition) {
     ResetCount();
+    int level = GetLevel();
+    int upgradePath = GetUpgradePath();
     std::vector<std::shared_ptr<Attack>> attacks;
-    for (int i = 0; i < 8; i++) {
-        double theta = i * PI / 4;  // 角度轉為弧度
-        double x = m_Transform.translation.x + 1 * cos(theta);
-        double y = m_Transform.translation.y + 1 * sin(theta);
-        std::shared_ptr<Attack> attack = std::make_shared<Nail>(GetPosition(), glm::vec2(x,y), GetRadius(), GetAttributes());
+    if (upgradePath == 1 && level == 4) {
+        std::shared_ptr<Attack> attack = std::make_shared<Fire>(GetPosition(), goalPosition, GetAttributes(), GetRadius());
         attacks.push_back(attack);
     }
+    else if (upgradePath == 2 && level >= 3) {
+        if (upgradePath == 2 && level == 4) {
+            for (int i = 0; i < 8; i++) {
+                double theta = i * PI / 4 + PI / 8;  // 角度轉為弧度
+                double x = m_Transform.translation.x + 1 * cos(theta);
+                double y = m_Transform.translation.y + 1 * sin(theta);
+                std::shared_ptr<Attack> attack = std::make_shared<Knife>(GetPosition(), glm::vec2(x,y), GetRadius(), GetAttributes());
+                attacks.push_back(attack);
+            }
+        }
+        for (int i = 0; i < 8; i++) {
+            double theta = i * PI / 4;  // 角度轉為弧度
+            double x = m_Transform.translation.x + 1 * cos(theta);
+            double y = m_Transform.translation.y + 1 * sin(theta);
+            std::shared_ptr<Attack> attack = std::make_shared<Knife>(GetPosition(), glm::vec2(x,y), GetRadius(), GetAttributes());
+            attacks.push_back(attack);
+        }
+    }
+    else {
+        if (upgradePath == 1 && level == 3) {
+            for (int i = 0; i < 8; i++) {
+                double theta = i * PI / 4 + PI / 8;  // 角度轉為弧度
+                double x = m_Transform.translation.x + 1 * cos(theta);
+                double y = m_Transform.translation.y + 1 * sin(theta);
+                std::shared_ptr<Attack> attack = std::make_shared<Nail>(GetPosition(), glm::vec2(x,y), GetRadius(), GetAttributes());
+                attacks.push_back(attack);
+            }
+        }
+        for (int i = 0; i < 8; i++) {
+            double theta = i * PI / 4;  // 角度轉為弧度
+            double x = m_Transform.translation.x + 1 * cos(theta);
+            double y = m_Transform.translation.y + 1 * sin(theta);
+            std::shared_ptr<Attack> attack = std::make_shared<Nail>(GetPosition(), glm::vec2(x,y), GetRadius(), GetAttributes());
+            attacks.push_back(attack);
+        }
+    }
+
     return attacks;
+}
+
+void NailMonkey::UpdateLevel() {
+    int level = GetLevel();
+    int upgradePath = GetUpgradePath();
+    auto attributes = GetAttributes();
+    if (upgradePath == 1) {
+        switch (level) {
+            case 1:
+                SetCd(60);
+                ResetCount();
+            case 2:
+                SetCd(30);
+                ResetCount();
+        }
+    }
+    else {
+        switch (level) {
+            case 1:
+                SetRadius(GetRadius() *1.25);
+                UpdateRange();
+            case 2:
+                SetRadius(GetRadius() *1.25);
+                UpdateRange();
+        }
+    }
 }
 
 //#####################################################################
@@ -287,6 +416,9 @@ SniperMonkey::SniperMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPenetration(2);
     attributes -> SetPower(1);
     attributes -> SetSpeed(100);
+
+    auto &informationBoard = GetInfortionBoard();
+    informationBoard = std::make_shared<DartMonkeyInformationBoard>();
 
     SetCost(400);
     SetImage(GA_RESOURCE_DIR"/Monkey/SniperMonkey.png");
@@ -306,6 +438,44 @@ std::vector<std::shared_ptr<Attack>> SniperMonkey::ProduceAttack(glm::vec2 goalP
     return attacks;
 }
 
+void SniperMonkey::UpdateLevel() {
+    int level = GetLevel();
+    int upgradePath = GetUpgradePath();
+    auto attributes = GetAttributes();
+    if (upgradePath == 1) {
+        switch (level) {
+            case 1:
+                attributes -> SetPenetration(4);
+                attributes -> AddProperty(1);
+                attributes -> AddProperty(4);
+            case 2:
+                attributes -> SetPenetration(7);
+            case 3:
+                attributes -> SetPenetration(18);
+                attributes -> AddProperty(3);
+            case 4:
+                attributes -> AddDebuff({3, 10});
+        }
+    }
+    else {
+        switch (level) {
+            case 1:
+                SetCd(90);
+                ResetCount();
+            case 2:
+                attributes -> AddProperty(2);
+            case 3:
+                attributes -> AddProperty(2);
+                SetCd(30);
+                ResetCount();
+        }
+    }
+}
+
+void Monkey::AddAttackChild(std::shared_ptr<Attack> attack) {
+    m_Attacks.push_back(attack);
+}
+
 //########################################################################
 
 BoomerangMonkey::BoomerangMonkey(glm::vec2 position) : Monkey(position){
@@ -317,6 +487,9 @@ BoomerangMonkey::BoomerangMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPower(1);
     attributes -> SetSpeed(10);
 
+    auto &informationBoard = GetInfortionBoard();
+    informationBoard = std::make_shared<DartMonkeyInformationBoard>();
+
     SetCost(400);
     SetCd(80);
     SetRadius(120);
@@ -327,10 +500,62 @@ BoomerangMonkey::BoomerangMonkey(glm::vec2 position) : Monkey(position){
 std::vector<std::shared_ptr<Attack>> BoomerangMonkey::ProduceAttack(glm::vec2 goalPosition) {
     ResetCount();
     SetRotation(goalPosition);
+    int level = GetLevel();
+    int upgradePath = GetUpgradePath();
     std::vector<std::shared_ptr<Attack>> attacks;
-    std::shared_ptr<Attack> attack = std::make_shared<Boomerang>(GetPosition(), goalPosition, GetAttributes());
-    attacks.push_back(attack);
+    if (upgradePath == 1 && level == 2) {
+        std::shared_ptr<Attack> attack = std::make_shared<BladedDisc>(GetPosition(), goalPosition, GetAttributes());
+        attacks.push_back(attack);
+    }
+    else if (upgradePath == 1 && level >= 3) {
+        std::shared_ptr<Attack> attack = std::make_shared<BladedDisc_Rebound>(GetPosition(), goalPosition, GetAttributes());
+        attacks.push_back(attack);
+    }
+    else {
+        std::shared_ptr<Attack> attack = std::make_shared<Boomerang>(GetPosition(), goalPosition, GetAttributes());
+        attacks.push_back(attack);
+    }
+    if (upgradePath == 1 && level == 4 && !has_BladedDisc_Around) {
+        has_BladedDisc_Around = true;
+        glm::vec2 position = GetPosition();
+        std::shared_ptr<Attack> attack = std::make_shared<BladedDisc_Around>(position, position+glm::vec2(1,0), GetAttributes());
+        attacks.push_back(attack);
+        AddAttackChild(attack);
+        attack = std::make_shared<BladedDisc_Around>(GetPosition(), position-glm::vec2(1,0), GetAttributes());
+        attacks.push_back(attack);
+        AddAttackChild(attack);
+    }
     return attacks;
+}
+
+void BoomerangMonkey::UpdateLevel() {
+    int level = GetLevel();
+    int upgradePath = GetUpgradePath();
+    auto attributes = GetAttributes();
+    if (upgradePath == 1) {
+        switch (level) {
+            case 1:
+                attributes -> SetPenetration(7);
+            case 2:
+                attributes -> SetPower(3);
+                attributes -> SetSpeed(20);
+                SetCd(60);
+                ResetCount();
+            case 4:
+                attributes -> AddProperty(2);
+        }
+    }
+    else {
+        switch (level) {
+            case 1:
+                attributes -> AddProperty(4);
+            case 2:
+                attributes -> AddProperty(1);
+            case 3:
+                SetCd(40);
+                ResetCount();
+        }
+    }
 }
 
 //########################################################################
@@ -427,6 +652,7 @@ std::vector<std::shared_ptr<Attack>> Airport::ProduceAttack(glm::vec2 goalPositi
         glm::vec2 rotated_position = ProduceCoordinateByAngle(position, 0);
         std::shared_ptr<Attack> attack = std::make_shared<Airplane>(position, rotated_position, GetAttributes());
         m_Airplanes.push_back(attack);
+        AddAttackChild(attack);
         attacks.push_back(attack);
     }
 
@@ -566,7 +792,7 @@ std::vector<std::shared_ptr<Attack>> IceMonkey::ProduceAttack(glm::vec2 goalPosi
     ResetCount();
     std::vector<std::shared_ptr<Attack>> attacks;
 
-    std::shared_ptr<Attack> attack = std::make_shared<Blizzard>(GetPosition(), goalPosition, GetAttributes());
+    std::shared_ptr<Attack> attack = std::make_shared<Blizzard>(GetPosition(), goalPosition, GetAttributes(), GetRadius());
     attacks.push_back(attack);
     return attacks;
 }

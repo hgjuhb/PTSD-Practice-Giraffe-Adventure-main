@@ -154,7 +154,9 @@ void Balloon::GetDebuff(std::vector<std::vector<int>> debuff) {
         if (tmp[0] == 0 and m_Debuff[1] != 0) {
             continue;
         }
-        m_Debuff[tmp[0]] += tmp[1];
+        if (tmp[0] != 3 || GetType() == spaceship) {
+            m_Debuff[tmp[0]] += tmp[1];
+        }
     }
     if (m_Debuff[0] > 350) {
         m_Debuff[0] = 0;
@@ -183,11 +185,16 @@ float Balloon::UpdateDebuff() {
     return slow;
 };
 
+void Balloon::SetType(Balloon::Type type) {
+    m_Type = type;
+}
+
 // ##############################################################
 
 RED::RED(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/red_balloon.png");
     m_Transform.scale = glm::vec2(0.8, 0.8);
+    SetType(balloon);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);
@@ -205,6 +212,7 @@ std::vector<std::shared_ptr<Balloon>> RED::Burst() const{
 
 BLUE::BLUE(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/blue_balloon.png");
+    SetType(balloon);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);
@@ -226,6 +234,7 @@ std::vector<std::shared_ptr<Balloon>> BLUE::Burst() const{
 
 GREEN::GREEN(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/green_balloon.png");
+    SetType(balloon);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);
@@ -247,6 +256,7 @@ std::vector<std::shared_ptr<Balloon>> GREEN::Burst() const{
 
 YELLOW::YELLOW(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/yellow_balloon.png");
+    SetType(balloon);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);
@@ -268,6 +278,7 @@ std::vector<std::shared_ptr<Balloon>> YELLOW::Burst() const{
 
 PINK::PINK(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/pink_balloon.png");
+    SetType(balloon);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);
@@ -289,6 +300,7 @@ std::vector<std::shared_ptr<Balloon>> PINK::Burst() const{
 
 BLACK::BLACK(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/black_balloon.png");
+    SetType(balloon);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);
@@ -313,6 +325,7 @@ std::vector<std::shared_ptr<Balloon>> BLACK::Burst() const{
 
 WHITE::WHITE(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/white_balloon.png");
+    SetType(balloon);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);
@@ -337,6 +350,7 @@ std::vector<std::shared_ptr<Balloon>> WHITE::Burst() const{
 
 PURPLE::PURPLE(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/purple_balloon.png");
+    SetType(balloon);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);
@@ -361,6 +375,7 @@ std::vector<std::shared_ptr<Balloon>> PURPLE::Burst() const{
 
 ZEBRA::ZEBRA(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/zebra_balloon.png");
+    SetType(balloon);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);
@@ -386,6 +401,7 @@ std::vector<std::shared_ptr<Balloon>> ZEBRA::Burst() const{
 
 IRON::IRON(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/iron_balloon.png");
+    SetType(balloon);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);
@@ -410,6 +426,7 @@ std::vector<std::shared_ptr<Balloon>> IRON::Burst() const{
 
 RAINBOW::RAINBOW(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/rainbow_balloon.png");
+    SetType(balloon);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);
@@ -434,6 +451,7 @@ std::vector<std::shared_ptr<Balloon>> RAINBOW::Burst() const{
 
 CERAMICS::CERAMICS(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Balloon/ceramics_balloon.png");
+    SetType(balloon);
     SetMoney(1);
     SetWidth(50);
     SetHeight(50);
@@ -459,6 +477,7 @@ std::vector<std::shared_ptr<Balloon>> CERAMICS::Burst() const{
 
 MOAB::MOAB(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Spaceship/M.O.A.B._1.png");
+    SetType(spaceship);
     SetMoney(1);
     SetWidth(200);
     SetHeight(100);
@@ -495,6 +514,7 @@ void MOAB::Injured() {
 
 BFB::BFB(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Spaceship/B.F.B._1.png");
+    SetType(spaceship);
     SetMoney(1);
     SetWidth(200);
     SetHeight(100);
@@ -531,6 +551,7 @@ void BFB::Injured() {
 
 ZOMG::ZOMG(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Spaceship/Z.O.M.G._1.png");
+    SetType(spaceship);
     SetMoney(1);
     SetWidth(200);
     SetHeight(100);
@@ -567,6 +588,7 @@ void ZOMG::Injured() {
 
 DDT::DDT(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Spaceship/D.D.T._1.png");
+    SetType(spaceship);
     SetMoney(1);
     SetWidth(200);
     SetHeight(100);
@@ -603,6 +625,7 @@ void DDT::Injured() {
 
 BAD::BAD(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetImage(GA_RESOURCE_DIR"/Spaceship/B.A.D._1.png");
+    SetType(spaceship);
     SetMoney(1);
     SetWidth(200);
     SetHeight(100);

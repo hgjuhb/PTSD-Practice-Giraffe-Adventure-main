@@ -114,8 +114,8 @@ void InformationBoard::IsButtonTouch(glm::vec2 mousePosition) {
 }
 
 DartMonkeyInformationBoard::DartMonkeyInformationBoard() {
-    SetUpgradeCost({{90, 120, 500, 1500, 2210},
-                       {140, 170, 330, 8000, 8640}});
+    SetUpgradeCost({{90, 120, 500, 1500},
+                       {140, 170, 330, 8000}});
     SetUpgradeText({{"Long Range Darts", "Enhanced Eyesight", "Spike-o-pult", "Juggernaut"},
                           {"Sharp Shots", "Razor Sharp Shots", "Triple Darts", "Super Monkey Fan Club"}});
     auto monkeyImage  = GetMonkeyImage();

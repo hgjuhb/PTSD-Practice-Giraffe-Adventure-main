@@ -1,18 +1,2 @@
-# Giraffe Adventure
-## Description
-This is a [PTSD](https://github.com/ntut-open-source-club/practical-tools-for-simple-design) framework practice for students taking the OOPL course from NTUT.
-
-## Installation
-1. Clone the repository
-```bash
-git clone https://github.com/ntut-open-source-club/PTSD-Practice-Giraffe-Adventure
-```
-## Tasks
-- [ ] Replace the image of m_giraffe with giraffe.png in Resources!,
-- [ ] Make the giraffe move into the red area using the keyboard!
-- [ ] Make the chest disappear when the giraffe touches it!
-- [ ] Write a program to give your bee friend an animation!
-- [ ] Write a program to open the door when your character touches it!
-- [ ] Design a program to countdown, stop animation after OK display
-
-Hint:  Look for `TODO`s if you are lost.
+Property : 1:鋼鐵氣球 2:迷彩氣球 3:陶瓷器球(1擊) 4:冰凍
+debuff : 0:霜 1:凍 2:膠 3:破壞飛船 

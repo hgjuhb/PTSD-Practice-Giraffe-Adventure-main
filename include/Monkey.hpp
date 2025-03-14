@@ -27,6 +27,8 @@ public:
       void UpdateAllObjectVisible(bool isClicked);
       void SetCost(int cost);
       void IsButtonTouch(glm::vec2 mousePosition);
+      void AddAttackChild(std::shared_ptr<Attack> attack);
+      virtual void UpdateLevel();
 
       bool Touched(Monkey& other);
       bool IsMonkeyInRectangle(glm::vec2 topLeft, glm::vec2 bottomRight);
@@ -39,6 +41,8 @@ public:
       [[nodiscard]] int GetCost() const { return m_Cost; }
       [[nodiscard]] int GetValue() const { return (m_Value * 8) / 10;}
       [[nodiscard]] int GetRadius() const { return m_Radius; }
+      [[nodiscard]] int GetLevel() const { return level; }
+      [[nodiscard]] int GetUpgradePath() const { return upgradePath; }
       [[nodiscard]] virtual bool IsCollision(const std::shared_ptr<Balloon>& other) const;
       [[nodiscard]] bool Countdown();
       [[nodiscard]] bool IsClicked(glm::vec2 mousePosition);
@@ -48,6 +52,7 @@ public:
       [[nodiscard]] std::vector<std::shared_ptr<GameObject>> GetAllInfortionBoardObject();
       [[nodiscard]] std::shared_ptr<InformationBoard>& GetInfortionBoard(){ return m_InformationBoard;}
       [[nodiscard]] glm::vec2 GetSize() const { return m_Size; }
+      [[nodiscard]] std::vector<std::shared_ptr<Attack>> GetAttackChildren() const { return m_Attacks; }
 
 
 private:
@@ -63,6 +68,7 @@ private:
       int m_Cd;
       std::shared_ptr<Range> m_Range = std::make_shared<Range>(m_Transform.translation, m_Radius);
       std::shared_ptr<InformationBoard> m_InformationBoard = std::make_shared<InformationBoard>();
+      std::vector<std::shared_ptr<Attack>> m_Attacks = {};
 };
 
 #endif //MONKEY_HPP
@@ -70,25 +76,31 @@ private:
 class DartMonkey : public Monkey {
 public:
       explicit DartMonkey(glm::vec2 position);
+      void UpdateLevel() override;
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
 };
 
 class NailMonkey : public Monkey {
 public:
       explicit NailMonkey(glm::vec2 position);
+      void UpdateLevel() override;
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
 };
 
 class SniperMonkey : public Monkey {
 public:
       explicit SniperMonkey(glm::vec2 position);
+      void UpdateLevel() override;
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
 };
 
 class BoomerangMonkey : public Monkey {
 public:
       explicit BoomerangMonkey(glm::vec2 position);
+      void UpdateLevel() override;
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+private:
+      bool has_BladedDisc_Around = false;
 };
 
 class NinjaMonkey : public Monkey {

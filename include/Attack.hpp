@@ -71,7 +71,7 @@ public:
     [[nodiscard]] bool IsOut() override;
     [[nodiscard]] bool IsAlive() override;
     void RotationUnitDirection();
-    void RotationImahe();
+    void RotationImage();
 private:
     int isTurn = 0;
     int turn = 5;
@@ -126,7 +126,7 @@ public:
 
 class Blizzard : public Attack {
 public:
-    explicit Blizzard(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes);
+    explicit Blizzard(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes, int radius);
     void Move() override;
     [[nodiscard]] bool IsOut() override;
     [[nodiscard]] bool IsAlive() override;
@@ -142,4 +142,73 @@ public:
 class MagicBall : public Attack {
 public:
     explicit MagicBall (glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes);
+};
+
+class Rock : public Attack {
+public:
+    explicit Rock (glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes);
+};
+
+class Fire : public Attack {
+public:
+    explicit Fire (glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes, int radius);
+    void Move() override;
+    [[nodiscard]] bool IsOut() override;
+    [[nodiscard]] bool IsAlive() override;
+private:
+    int exit = 20;
+    float m_scale;
+};
+
+class Knife : public Attack {
+public:
+    explicit Knife (glm::vec2 position, glm::vec2 goal_position, int radius, std::shared_ptr<Attributes> attributes);
+    void Move() override;
+private:
+    int m_Radius;
+    glm::vec2 m_SourcePosition;
+};
+
+class BladedDisc : public Attack {
+public:
+    explicit BladedDisc(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes);
+    void Move() override;
+    [[nodiscard]] bool IsOut() override;
+    [[nodiscard]] bool IsAlive() override;
+    void RotationUnitDirection();
+    void RotationImage();
+private:
+    int isTurn = 0;
+    int turn = 5;
+    int rotation = 0;
+    bool WillNotDisappear = true;
+    glm::vec2 m_GoalPosition;
+    glm::vec2 m_SourcePosition;
+};
+
+class BladedDisc_Rebound : public Attack {
+public:
+    explicit BladedDisc_Rebound(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes);
+    void Move() override;
+    [[nodiscard]] bool IsOut() override;
+    void RotationUnitDirection();
+    void RotationImage();
+private:
+    int rotation = 0;
+    glm::vec2 m_SourcePosition;
+};
+
+class BladedDisc_Around : public Attack {
+public:
+    explicit BladedDisc_Around(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes);
+    void Move() override;
+    [[nodiscard]] bool IsOut() override;
+    [[nodiscard]] bool IsAlive() override;
+    void RotationImage();
+private:
+    int rotation = 0;
+    int renewPenetrationCd;
+    int max_Penetration = 0;
+    bool WillNotDisappear = true;
+    glm::vec2 m_SourcePosition;
 };

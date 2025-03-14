@@ -152,7 +152,7 @@ Boomerang::Boomerang(glm::vec2 position, glm::vec2 goal_position, std::shared_pt
 }
 
 void Boomerang::Move(){
-    RotationImahe();
+    RotationImage();
     if (isTurn != 0) {
         if (isTurn == 1) {
             SetUnitDirection(m_SourcePosition);
@@ -180,7 +180,7 @@ void Boomerang::RotationUnitDirection() {
     RenewUnitDirection(rotated);
 }
 
-void Boomerang::RotationImahe() {
+void Boomerang::RotationImage() {
     float theta = 2*PI - rotation*PI/2;
     m_Transform.rotation = theta;
     rotation += 1;
@@ -314,7 +314,6 @@ void Airplane::Move() {
 
     float distance = sqrt(pow(m_SourcePosition.x - m_Transform.translation.x, 2) + pow(m_SourcePosition.y - m_Transform.translation.y, 2));
     if (distance < 20) {
-        LOG_DEBUG(123);
         WillNotDisappear = true;
         SetPenetration(max_Penetration);
     }
@@ -355,12 +354,13 @@ Ray::Ray(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes
 
 //##########################################################
 
-Blizzard::Blizzard(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+Blizzard::Blizzard(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes, int radius)
 : Attack(position, goal_position, attributes){
     SetImage(GA_RESOURCE_DIR"/Attack/Blizzard.png");
-    m_Transform.scale = glm::vec2( 1, 1);
-    SetWidth(240);
-    SetHeight(2440);
+    float scale = radius*2/240;
+    m_Transform.scale = glm::vec2( scale, scale);
+    SetWidth(radius*2);
+    SetHeight(radius*2);
     SetRectangleCorners();
 }
 
@@ -399,4 +399,244 @@ MagicBall::MagicBall (glm::vec2 position, glm::vec2 goal_position, std::shared_p
     SetWidth(60);
     SetHeight(60);
     SetRectangleCorners();
+}
+
+//#######################################################
+
+Rock::Rock(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
+    SetImage(GA_RESOURCE_DIR"/Attack/Rock.png");
+    SetWidth(50);
+    SetHeight(50);
+    SetRectangleCorners();
+}
+
+//#######################################################
+
+Fire::Fire(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes, int radius)
+: Attack(position, goal_position, attributes){
+    SetImage(GA_RESOURCE_DIR"/Attack/Fire.png");
+    m_scale = (radius*2/100);
+    m_Transform.scale = glm::vec2( m_scale/exit, m_scale/exit);
+    SetWidth(radius*2);
+    SetHeight(radius*2);
+    SetRectangleCorners();
+}
+
+void Fire::Move() {
+    if (exit != 0) {
+        m_Transform.scale = glm::vec2( m_scale/(exit-1), m_scale/(exit-1));
+    }
+}
+
+[[nodiscard]] bool Fire::IsOut() {
+    if (exit == 0) {
+        return true;
+    }
+    exit -= 1;
+    return false;
+}
+
+[[nodiscard]] bool Fire::IsAlive() {
+    if (exit == 1) {
+        return true;
+    }
+    return false;
+}
+
+//###########################################################################
+
+Knife::Knife(glm::vec2 position, glm::vec2 goal_position, int radius, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
+    SetImage(GA_RESOURCE_DIR"/Attack/Knife.png");
+    m_Transform.scale = glm::vec2(1.6,1.6);
+    m_SourcePosition = position;
+    m_Radius = radius;
+    SetWidth(80);
+    SetHeight(80);
+    SetRectangleCorners();
+}
+
+void Knife::Move(){
+    glm::vec2 UnitDirection = GetUnitDirection();
+    m_Transform.translation += UnitDirection * GetSpeed();
+    float distance = sqrt(pow(m_SourcePosition.x - m_Transform.translation.x, 2) + pow(m_SourcePosition.y - m_Transform.translation.y, 2));
+    if (distance > m_Radius) {
+        m_Transform.translation = glm::vec2(-650, -370);
+    }
+    SetRectangleCorners();
+}
+
+//###########################################################
+
+BladedDisc::BladedDisc(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
+    SetImage(GA_RESOURCE_DIR"/Attack/BladedDisc.png");
+    m_Transform.scale = glm::vec2(1.6, 1.6);
+    m_SourcePosition = position;
+
+    glm::vec2 direction = goal_position - m_Transform.translation;  // 計算目標方向
+    float distance = glm::length(direction);  // 計算當前距離
+    glm::vec2 unit_direction = glm::normalize(direction);  // 計算單位方向向量
+
+    // 更新目標位置，方向向量乘上距離並縮放
+    m_GoalPosition = glm::vec2(
+        m_Transform.translation.x + (unit_direction.x * distance * 2.0),  // X 分量
+        m_Transform.translation.y + (unit_direction.y * distance * 2.0)   // Y 分量
+    );
+
+    SetWidth(80);
+    SetHeight(80);
+    SetRectangleCorners();
+}
+
+void BladedDisc::Move(){
+    RotationImage();
+    if (isTurn != 0) {
+        if (isTurn == 1) {
+            SetUnitDirection(m_SourcePosition);
+        }
+        else {
+            isTurn -= 1;
+            RotationUnitDirection();
+        }
+    }
+    glm::vec2 UnitDirection = GetUnitDirection();
+    m_Transform.translation += UnitDirection * GetSpeed();
+    float distance = sqrt(pow(m_GoalPosition.x - m_Transform.translation.x, 2) + pow(m_GoalPosition.y - m_Transform.translation.y, 2));
+    if (distance <= GetSpeed()) {
+        isTurn = turn;
+    }
+    SetRectangleCorners();
+}
+
+void BladedDisc::RotationUnitDirection() {
+    glm::vec2 unitDirection = GetUnitDirection();
+    glm::vec2 rotated;
+    float theta = PI/12;
+    rotated.x = unitDirection.x * cos(theta) - unitDirection.y* sin(theta);
+    rotated.y = unitDirection.x * sin(theta) + unitDirection.y * cos(theta);
+    RenewUnitDirection(rotated);
+}
+
+void BladedDisc::RotationImage() {
+    float theta = 2*PI - rotation*PI/2;
+    m_Transform.rotation = theta;
+    rotation += 1;
+    rotation %= 4;
+};
+
+[[nodiscard]] bool BladedDisc::IsOut() {
+    float distance = sqrt(pow(m_SourcePosition.x - m_Transform.translation.x, 2) + pow(m_SourcePosition.y - m_Transform.translation.y, 2));
+    return isTurn == 1 and distance <= GetSpeed();
+}
+
+[[nodiscard]] bool BladedDisc::IsAlive() {
+    if (GetPenetration() == 0 && WillNotDisappear){
+        WillNotDisappear = false;
+        return true;
+    }
+    return GetPenetration() > 0;
+}
+
+//###########################################################
+
+BladedDisc_Rebound::BladedDisc_Rebound(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
+    SetImage(GA_RESOURCE_DIR"/Attack/BladedDisc.png");
+    m_Transform.scale = glm::vec2(1.6, 1.6);
+    m_SourcePosition = position;
+
+    SetWidth(80);
+    SetHeight(80);
+    SetRectangleCorners();
+}
+
+void BladedDisc_Rebound::Move(){
+    RotationImage();
+    float x = m_Transform.translation.x;
+    float y = m_Transform.translation.y;
+    if (x < -640 || x > 391 || y < -360 || y > 360){
+        RotationUnitDirection();
+    }
+    glm::vec2 UnitDirection = GetUnitDirection();
+    m_Transform.translation += UnitDirection * GetSpeed();
+    SetRectangleCorners();
+}
+
+void BladedDisc_Rebound::RotationUnitDirection() {
+    std::random_device rd;  // 用來獲取隨機種子
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(-60, 60);
+    int random_number = dis(gen);
+    double radians = random_number * PI / 180.0;  // 角度轉為弧度
+    double cosA = cos(radians);
+    double sinA = sin(radians);
+    glm::vec2 center = m_Transform.translation;
+    double x = center.x + (m_SourcePosition.x - center.x) * cosA - (m_SourcePosition.y - center.y) * sinA;
+    double y = center.y + (m_SourcePosition.x - center.x) * sinA + (m_SourcePosition.y - center.y) * cosA;
+    SetUnitDirection(glm::vec2(x, y));
+}
+
+void BladedDisc_Rebound::RotationImage() {
+    float theta = 2*PI - rotation*PI/2;
+    m_Transform.rotation = theta;
+    rotation += 1;
+    rotation %= 4;
+};
+
+[[nodiscard]] bool BladedDisc_Rebound::IsOut() {
+    return false;
+}
+
+//###########################################################
+
+BladedDisc_Around::BladedDisc_Around(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
+    SetImage(GA_RESOURCE_DIR"/Attack/BladedDisc.png");
+    m_Transform.scale = glm::vec2(1.6, 1.6);
+    m_SourcePosition = position;
+    max_Penetration = attributes -> GetPenetration();
+    renewPenetrationCd = 100;
+    SetPosition(goal_position);
+    SetWidth(80);
+    SetHeight(80);
+    SetRectangleCorners();
+}
+
+void BladedDisc_Around::Move(){
+    RotationImage();
+    if (renewPenetrationCd == 0) {
+        auto m_attributes = GetAttributes();
+        m_attributes -> SetPenetration(max_Penetration);
+        renewPenetrationCd = 100;
+        WillNotDisappear = true;
+    }
+    renewPenetrationCd -= 1;
+    glm::vec2 direction = m_Transform.translation - m_SourcePosition;  // 計算當前位置到中心的方向
+    float angle = atan2(direction.y, direction.x) + 0.05;  // 計算新的角度並加上旋轉速度
+    float radius = 80;  // 保持與 m_SourcePosition 的距離
+    m_Transform.translation.x = m_SourcePosition.x + radius * cos(angle);  // 更新 x 座標
+    m_Transform.translation.y = m_SourcePosition.y + radius * sin(angle);  // 更新 y 座標
+    SetRectangleCorners();
+}
+
+
+void BladedDisc_Around::RotationImage() {
+    float theta = 2*PI - rotation*PI/2;
+    m_Transform.rotation = theta;
+    rotation += 1;
+    rotation %= 4;
+};
+
+[[nodiscard]] bool BladedDisc_Around::IsAlive() {
+    if (GetPenetration() == 0 && WillNotDisappear){
+        WillNotDisappear = false;
+        return true;
+    }
+    return GetPenetration() > 0;
+}
+
+[[nodiscard]] bool BladedDisc_Around::IsOut() {
+    return false;
 }
