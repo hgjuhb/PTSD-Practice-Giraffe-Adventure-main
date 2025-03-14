@@ -30,7 +30,7 @@ public:
 
       bool Touched(Monkey& other);
       bool IsMonkeyInRectangle(glm::vec2 topLeft, glm::vec2 bottomRight);
-      bool Placeable(std::vector<std::vector<std::vector<glm::vec2>>> Level_Placeable);
+      virtual bool Placeable(std::vector<std::vector<std::vector<glm::vec2>>> Level_Placeable);
       bool IsInside(glm::vec2 mousePosition);
 
       [[nodiscard]] int IsInformationBoardClicked(glm::vec2 mousePosition, int money);
@@ -47,6 +47,7 @@ public:
       [[nodiscard]] std::shared_ptr<Range> GetRange() const { return m_Range; }
       [[nodiscard]] std::vector<std::shared_ptr<GameObject>> GetAllInfortionBoardObject();
       [[nodiscard]] std::shared_ptr<InformationBoard>& GetInfortionBoard(){ return m_InformationBoard;}
+      [[nodiscard]] glm::vec2 GetSize() const { return m_Size; }
 
 
 private:
@@ -118,6 +119,7 @@ class BuccaneerMonkey : public Monkey {
 public:
       explicit BuccaneerMonkey(glm::vec2 position);
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+      [[nodiscard]] bool Placeable(std::vector<std::vector<std::vector<glm::vec2>>> Level_Placeable) override;
 };
 
 class SuperMonkey : public Monkey {
