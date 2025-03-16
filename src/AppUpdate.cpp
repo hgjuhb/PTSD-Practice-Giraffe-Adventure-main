@@ -71,6 +71,7 @@ void App::Update() {
     // 更新所有拖拽按钮
     for (auto& dragButtonPtr : m_DragButtons) {
         dragButtonPtr->Update();
+        dragButtonPtr->UpdateButtonState(m_Counters[1]->GetCurrent());
     }
 
     glm::vec2 mousePosition = Util::Input::GetCursorPosition();
@@ -133,15 +134,19 @@ void App::Update() {
     } else {
         // 检查是否有按钮开始拖拽
         for (auto& dragButtonPtr : m_DragButtons) {
-            if (dragButtonPtr->IsPointInside(mousePosition) && Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {
-                // 按钮被拖动，创建新猴子
-                m_DragMonkey = dragButtonPtr->ProduceMonkey(mousePosition);
+            if (dragButtonPtr->IsPointInside(mousePosition) && Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB)) {
+                // 點到正確的按鈕
+                // if cant add press to try
+                m_DragMonkey = dragButtonPtr->ProduceMonkey(mousePosition); // 這個地方 按鈕如果是灰的就 必定返回空
+                
                 if (m_DragMonkey) {
                     LOG_DEBUG("Created monkey at: " + std::to_string(mousePosition.x) + ", " + std::to_string(mousePosition.y));
                     m_Root.AddChild(m_DragMonkey);
                     m_Root.AddChild(m_DragMonkey-> GetRange());
                     m_Root.AddChildren(m_DragMonkey-> GetAllInfortionBoardObject());
                     break; // 只处理第一个拖动的按钮
+                }else{
+                    //錢不夠所以不返回猴子
                 }
             }
         }

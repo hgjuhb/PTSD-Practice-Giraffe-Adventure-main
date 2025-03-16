@@ -134,3 +134,268 @@ DartMonkeyInformationBoard::DartMonkeyInformationBoard() {
     auto upgradeButton2  = GetUpgrateButton2();
     upgradeButton2 -> Update("140");
 }
+
+NailMonkeyInformationBoard::NailMonkeyInformationBoard() {
+    // 使用360列的价格数据
+    SetUpgradeCost({{210, 300, 500, 2500},
+                    {100, 230, 680, 2700}});
+    // 设置升级路径名称
+    SetUpgradeText({{"Fast Shooting", "Even Faster Shooting", "Tack Shooter", "Ring of Fire"},
+                    {"Extra Range Tacks", "Super Range Tacks", "Blade Shooter", "Blade Mealstrom"}});
+    auto monkeyImage  = GetMonkeyImage();
+    monkeyImage -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/NailMonkeyImage.png");
+    SetUpgrateName(GA_RESOURCE_DIR"/MonkeyInformation/NailMonkey");
+    auto upgradeImage1  = GetUpgrateImage1();
+    upgradeImage1 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/NailMonkey_1_1.png");
+    auto upgradeImage2  = GetUpgrateImage2();
+    upgradeImage2 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/NailMonkey_2_1.png");
+    auto upgradeText1  = GetUpgrateText1();
+    upgradeText1 -> Update("Fast Shooting");
+    auto upgradeText2  = GetUpgrateText2();
+    upgradeText2 -> Update("Extra Range Tacks");
+    auto upgradeButton1  = GetUpgrateButton1();
+    upgradeButton1 -> Update("210");
+    auto upgradeButton2  = GetUpgrateButton2();
+    upgradeButton2 -> Update("100");
+}
+
+SniperMonkeyInformationBoard::SniperMonkeyInformationBoard() {
+    // 使用400列的价格数据（中等难度）
+    SetUpgradeCost({{350, 2200, 7500, 12000},
+                    {400, 300, 3500, 12500}});
+    // 设置升级路径名称
+    SetUpgradeText({{"Full Metal Jacket", "Point Five Oh", "Deadly Precision", "Cripple MOAB"},
+                    {"Faster Firing", "Night Vision Goggles", "Semi Automatic Rifle", "Supply Drop"}});
+    auto monkeyImage = GetMonkeyImage();
+    monkeyImage -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/SniperMonkeyImage.png");
+    SetUpgrateName(GA_RESOURCE_DIR"/MonkeyInformation/SniperMonkey");
+    auto upgradeImage1 = GetUpgrateImage1();
+    upgradeImage1 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/SniperMonkey_1_1.png");
+    auto upgradeImage2 = GetUpgrateImage2();
+    upgradeImage2 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/SniperMonkey_2_1.png");
+    auto upgradeText1 = GetUpgrateText1();
+    upgradeText1 -> Update("Full Metal Jacket");
+    auto upgradeText2 = GetUpgrateText2();
+    upgradeText2 -> Update("Faster Firing");
+    auto upgradeButton1 = GetUpgrateButton1();
+    upgradeButton1 -> Update("350");
+    auto upgradeButton2 = GetUpgrateButton2();
+    upgradeButton2 -> Update("400");
+}
+
+BoomerangMonkeyInformationBoard::BoomerangMonkeyInformationBoard() {
+    // 使用400列的价格数据（中等难度）
+    SetUpgradeCost({{250, 280, 1100, 2500},
+                    {100, 150, 1000, 3000}});
+    // 设置升级路径名称
+    SetUpgradeText({{"Multi-Target", "Glaive Thrower", "Glaive Riccochet", "Glaive Lord"},
+                    {"Sonic Boom", "Red Hot Rangs", "Bionic Boomer", "Turbo Charge"}});
+    auto monkeyImage = GetMonkeyImage();
+    monkeyImage -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/BoomerangMonkeyImage.png");
+    SetUpgrateName(GA_RESOURCE_DIR"/MonkeyInformation/BoomerangMonkey");
+    auto upgradeImage1 = GetUpgrateImage1();
+    upgradeImage1 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/BoomerangMonkey_1_1.png");
+    auto upgradeImage2 = GetUpgrateImage2();
+    upgradeImage2 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/BoomerangMonkey_2_1.png");
+    auto upgradeText1 = GetUpgrateText1();
+    upgradeText1 -> Update("Multi-Target");
+    auto upgradeText2 = GetUpgrateText2();
+    upgradeText2 -> Update("Sonic Boom");
+    auto upgradeButton1 = GetUpgrateButton1();
+    upgradeButton1 -> Update("250");
+    auto upgradeButton2 = GetUpgrateButton2();
+    upgradeButton2 -> Update("100");
+}
+
+NinjaMonkeyInformationBoard::NinjaMonkeyInformationBoard() {
+    // 使用600列的价格数据（中等难度）
+    SetUpgradeCost({{300, 350, 850, 2750},
+                    {250, 350, 2750, 1800}});
+    // 设置升级路径名称
+    SetUpgradeText({{"Ninja Discipline", "Sharp Shurikens", "Double Shot", "Bloonjitsu"},
+                    {"Seeking Shuriken", "Distraction", "Flash Bomb", "Sabotage Supply Lines"}});
+    auto monkeyImage = GetMonkeyImage();
+    monkeyImage -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/NinjaMonkeyImage.png");
+    SetUpgrateName(GA_RESOURCE_DIR"/MonkeyInformation/NinjaMonkey");
+    auto upgradeImage1 = GetUpgrateImage1();
+    upgradeImage1 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/NinjaMonkey_1_1.png");
+    auto upgradeImage2 = GetUpgrateImage2();
+    upgradeImage2 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/NinjaMonkey_2_1.png");
+    auto upgradeText1 = GetUpgrateText1();
+    upgradeText1 -> Update("Ninja Discipline");
+    auto upgradeText2 = GetUpgrateText2();
+    upgradeText2 -> Update("Seeking Shuriken");
+    auto upgradeButton1 = GetUpgrateButton1();
+    upgradeButton1 -> Update("300");
+    auto upgradeButton2 = GetUpgrateButton2();
+    upgradeButton2 -> Update("250");
+}
+
+CannonInformationBoard::CannonInformationBoard() {
+    // 使用400列的价格数据（中等难度）
+    SetUpgradeCost({{200, 300, 800, 3200},
+                    {400, 400, 900, 3200}});
+    // 设置升级路径名称
+    SetUpgradeText({{"Extra Range", "Frag Bombs", "Cluster Bombs", "Bloon Impact"},
+                    {"Bigger Bombs", "Missile Launcher", "MOAB Mauler", "MOAB Assassin"}});
+    auto monkeyImage = GetMonkeyImage();
+    monkeyImage -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/CannonImage.png");
+    SetUpgrateName(GA_RESOURCE_DIR"/MonkeyInformation/Cannon");
+    auto upgradeImage1 = GetUpgrateImage1();
+    upgradeImage1 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/Cannon_1_1.png");
+    auto upgradeImage2 = GetUpgrateImage2();
+    upgradeImage2 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/Cannon_2_1.png");
+    auto upgradeText1 = GetUpgrateText1();
+    upgradeText1 -> Update("Extra Range");
+    auto upgradeText2 = GetUpgrateText2();
+    upgradeText2 -> Update("Bigger Bombs");
+    auto upgradeButton1 = GetUpgrateButton1();
+    upgradeButton1 -> Update("200");
+    auto upgradeButton2 = GetUpgrateButton2();
+    upgradeButton2 -> Update("400");
+}
+
+IceMonkeyInformationBoard::IceMonkeyInformationBoard() {
+    // 使用380列的价格数据（中等难度）
+    SetUpgradeCost({{230, 400, 6500, 8000},
+                    {100, 350, 2000, 2000}});
+    // 设置升级路径名称
+    SetUpgradeText({{"Enhanced Freeze", "Snap Freeze", "Arctic Wind", "Viral Frost"},
+                    {"Permafrost", "Deep Freeze", "Ice Shards", "Absolute Zero"}});
+    auto monkeyImage = GetMonkeyImage();
+    monkeyImage -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/IceMonkeyImage.png");
+    SetUpgrateName(GA_RESOURCE_DIR"/MonkeyInformation/IceMonkey");
+    auto upgradeImage1 = GetUpgrateImage1();
+    upgradeImage1 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/IceMonkey_1_1.png");
+    auto upgradeImage2 = GetUpgrateImage2();
+    upgradeImage2 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/IceMonkey_2_1.png");
+    auto upgradeText1 = GetUpgrateText1();
+    upgradeText1 -> Update("Enhanced Freeze");
+    auto upgradeText2 = GetUpgrateText2();
+    upgradeText2 -> Update("Permafrost");
+    auto upgradeButton1 = GetUpgrateButton1();
+    upgradeButton1 -> Update("230");
+    auto upgradeButton2 = GetUpgrateButton2();
+    upgradeButton2 -> Update("100");
+}
+
+RubberMonkeyInformationBoard::RubberMonkeyInformationBoard() {
+    // 使用300列的价格数据（中等难度）
+    SetUpgradeCost({{200, 300, 2300, 12500},
+                    {120, 1800, 3250, 5500}});
+    // 设置升级路径名称
+    SetUpgradeText({{"Glue Soak", "Corrosive Glue", "Bloon Dissolver", "Bloon Liquefier"},
+                    {"Sticker Glue", "Glue Splatter", "Glue Hose", "Glue Striker"}});
+    auto monkeyImage = GetMonkeyImage();
+    monkeyImage -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/RubberMonkeyImage.png");
+    SetUpgrateName(GA_RESOURCE_DIR"/MonkeyInformation/RubberMonkey");
+    auto upgradeImage1 = GetUpgrateImage1();
+    upgradeImage1 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/RubberMonkey_1_1.png");
+    auto upgradeImage2 = GetUpgrateImage2();
+    upgradeImage2 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/RubberMonkey_2_1.png");
+    auto upgradeText1 = GetUpgrateText1();
+    upgradeText1 -> Update("Glue Soak");
+    auto upgradeText2 = GetUpgrateText2();
+    upgradeText2 -> Update("Sticker Glue");
+    auto upgradeButton1 = GetUpgrateButton1();
+    upgradeButton1 -> Update("200");
+    auto upgradeButton2 = GetUpgrateButton2();
+    upgradeButton2 -> Update("120");
+}
+
+BuccaneerMonkeyInformationBoard::BuccaneerMonkeyInformationBoard() {
+    // 使用600列的价格数据（中等难度）
+    SetUpgradeCost({{400, 180, 2200, 17500},
+                    {300, 250, 1200, 4500}});
+    // 设置升级路径名称
+    SetUpgradeText({{"Fast Shooting", "Longer Cannon", "Destoryer", "Aircraft Carrier"},
+                    {"Grape Shot", "Crow's Nest", "Cannon Ship", "Monkey Pirates"}});
+    auto monkeyImage = GetMonkeyImage();
+    monkeyImage -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/BuccaneerMonkeyImage.png");
+    SetUpgrateName(GA_RESOURCE_DIR"/MonkeyInformation/BuccaneerMonkey");
+    auto upgradeImage1 = GetUpgrateImage1();
+    upgradeImage1 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/BuccaneerMonkey_1_1.png");
+    auto upgradeImage2 = GetUpgrateImage2();
+    upgradeImage2 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/BuccaneerMonkey_2_1.png");
+    auto upgradeText1 = GetUpgrateText1();
+    upgradeText1 -> Update("Fast Shooting");
+    auto upgradeText2 = GetUpgrateText2();
+    upgradeText2 -> Update("Grape Shot");
+    auto upgradeButton1 = GetUpgrateButton1();
+    upgradeButton1 -> Update("400");
+    auto upgradeButton2 = GetUpgrateButton2();
+    upgradeButton2 -> Update("300");
+}
+
+AirportInformationBoard::AirportInformationBoard() {
+    // 使用950列的价格数据（中等难度）
+    SetUpgradeCost({{700, 500, 2000, 18000},
+                    {200, 350, 3000, 14000}});
+    // 设置升级路径名称
+    SetUpgradeText({{"Rapid Fire", "Sharper Darts", "Neva-Miss Targeting", "Spectre"},
+                    {"Pineapple Present", "Spy plane", "Operation: Dart Storm", "Ground Zero"}});
+    auto monkeyImage = GetMonkeyImage();
+    monkeyImage -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/AirportImage.png");
+    SetUpgrateName(GA_RESOURCE_DIR"/MonkeyInformation/Airport");
+    auto upgradeImage1 = GetUpgrateImage1();
+    upgradeImage1 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/Airport_1_1.png");
+    auto upgradeImage2 = GetUpgrateImage2();
+    upgradeImage2 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/Airport_2_1.png");
+    auto upgradeText1 = GetUpgrateText1();
+    upgradeText1 -> Update("Rapid Fire");
+    auto upgradeText2 = GetUpgrateText2();
+    upgradeText2 -> Update("Pineapple Present");
+    auto upgradeButton1 = GetUpgrateButton1();
+    upgradeButton1 -> Update("700");
+    auto upgradeButton2 = GetUpgrateButton2();
+    upgradeButton2 -> Update("200");
+}
+
+SuperMonkeyInformationBoard::SuperMonkeyInformationBoard() {
+    // 使用4000列的价格数据（中等难度）
+    SetUpgradeCost({{3500, 5000, 16500, 100000},
+                    {1000, 1500, 9000, 25000}});
+    // 设置升级路径名称
+    SetUpgradeText({{"Laser Blasts", "Plasma Blasts", "Sun God", "Temple of the Monkey God"},
+                    {"Super Range", "Epic Range", "Robo-Monkey", "Technological Terror"}});
+    auto monkeyImage = GetMonkeyImage();
+    monkeyImage -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/SuperMonkeyImage.png");
+    SetUpgrateName(GA_RESOURCE_DIR"/MonkeyInformation/SuperMonkey");
+    auto upgradeImage1 = GetUpgrateImage1();
+    upgradeImage1 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/SuperMonkey_1_1.png");
+    auto upgradeImage2 = GetUpgrateImage2();
+    upgradeImage2 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/SuperMonkey_2_1.png");
+    auto upgradeText1 = GetUpgrateText1();
+    upgradeText1 -> Update("Laser Blasts");
+    auto upgradeText2 = GetUpgrateText2();
+    upgradeText2 -> Update("Super Range");
+    auto upgradeButton1 = GetUpgrateButton1();
+    upgradeButton1 -> Update("3500");
+    auto upgradeButton2 = GetUpgrateButton2();
+    upgradeButton2 -> Update("1000");
+}
+
+MagicMonkeyInformationBoard::MagicMonkeyInformationBoard() {
+    // 使用550列的价格数据（中等难度）
+    SetUpgradeCost({{300, 800, 2000, 8000},
+                    {200, 300, 3500, 8000}});
+    // 设置升级路径名称
+    SetUpgradeText({{"Intense Magic", "Lighting Bolt", "Summon Whirlwind", "Tempest Tornado"},
+                    {"Fireball", "Monkey Sense", "Dragon's Breath", "Summon Phoenix"}});
+    auto monkeyImage = GetMonkeyImage();
+    monkeyImage -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/MagicMonkeyImage.png");
+    SetUpgrateName(GA_RESOURCE_DIR"/MonkeyInformation/MagicMonkey");
+    auto upgradeImage1 = GetUpgrateImage1();
+    upgradeImage1 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/MagicMonkey_1_1.png");
+    auto upgradeImage2 = GetUpgrateImage2();
+    upgradeImage2 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/MagicMonkey_2_1.png");
+    auto upgradeText1 = GetUpgrateText1();
+    upgradeText1 -> Update("Intense Magic");
+    auto upgradeText2 = GetUpgrateText2();
+    upgradeText2 -> Update("Fireball");
+    auto upgradeButton1 = GetUpgrateButton1();
+    upgradeButton1 -> Update("300");
+    auto upgradeButton2 = GetUpgrateButton2();
+    upgradeButton2 -> Update("200");
+}
+

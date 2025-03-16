@@ -321,7 +321,7 @@ NailMonkey::NailMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetSpeed(40);
 
     auto &informationBoard = GetInfortionBoard();
-    informationBoard = std::make_shared<DartMonkeyInformationBoard>();
+    informationBoard = std::make_shared<NailMonkeyInformationBoard>();
 
     SetCost(360);
     SetImage(GA_RESOURCE_DIR"/Monkey/NailMonkey.png");
@@ -418,7 +418,7 @@ SniperMonkey::SniperMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetSpeed(100);
 
     auto &informationBoard = GetInfortionBoard();
-    informationBoard = std::make_shared<DartMonkeyInformationBoard>();
+    informationBoard = std::make_shared<SniperMonkeyInformationBoard>();
 
     SetCost(400);
     SetImage(GA_RESOURCE_DIR"/Monkey/SniperMonkey.png");
@@ -488,7 +488,7 @@ BoomerangMonkey::BoomerangMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetSpeed(10);
 
     auto &informationBoard = GetInfortionBoard();
-    informationBoard = std::make_shared<DartMonkeyInformationBoard>();
+    informationBoard = std::make_shared<BoomerangMonkeyInformationBoard>();
 
     SetCost(400);
     SetCd(80);
@@ -570,6 +570,9 @@ NinjaMonkey::NinjaMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPower(1);
     attributes -> SetSpeed(60);
 
+    auto &informationBoard = GetInfortionBoard();
+    informationBoard = std::make_shared<NinjaMonkeyInformationBoard>();
+
     SetCost(600);
     SetCd(30);
     SetRadius(150);
@@ -595,6 +598,9 @@ Cannon::Cannon(glm::vec2 position) : Monkey(position){
     attributes -> SetPenetration(1);
     attributes -> SetPower(1);
     attributes -> SetSpeed(40);
+
+    auto &informationBoard = GetInfortionBoard();
+    informationBoard = std::make_shared<CannonInformationBoard>();
 
     SetCost(700);
     SetCd(100);
@@ -626,6 +632,9 @@ Airport::Airport(glm::vec2 position) : Monkey(position){
     attributes -> SetPenetration(1);
     attributes -> SetPower(1);
     attributes -> SetSpeed(40);
+
+    auto &informationBoard = GetInfortionBoard();
+    informationBoard = std::make_shared<AirportInformationBoard>();
 
     SetCost(950);
     SetCd(100);
@@ -686,6 +695,9 @@ BuccaneerMonkey::BuccaneerMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPower(1);
     attributes -> SetSpeed(40);
 
+    auto &informationBoard = GetInfortionBoard();
+    informationBoard = std::make_shared<BuccaneerMonkeyInformationBoard>();
+
     SetCost(600);
     SetCd(120);
     SetRadius(200);
@@ -742,6 +754,9 @@ SuperMonkey::SuperMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPower(3);
     attributes -> SetSpeed(60);
 
+    auto &informationBoard = GetInfortionBoard();
+    informationBoard = std::make_shared<SuperMonkeyInformationBoard>();
+
     SetCost(4000);
     SetCd(20);
     SetRadius(300);
@@ -781,6 +796,9 @@ IceMonkey::IceMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetSpeed(0);
     attributes -> AddDebuff({0, 2});
 
+    auto &informationBoard = GetInfortionBoard();
+    informationBoard = std::make_shared<IceMonkeyInformationBoard>();
+
     SetCost(380);
     SetCd(1);
     SetRadius(120);
@@ -810,6 +828,9 @@ RubberMonkey::RubberMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetSpeed(50);
     attributes -> AddDebuff({2, 100});
 
+    auto &informationBoard = GetInfortionBoard();
+    informationBoard = std::make_shared<RubberMonkeyInformationBoard>();
+
     SetCost(300);
     SetCd(60);
     SetRadius(120);
@@ -837,6 +858,9 @@ MagicMonkey::MagicMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPenetration(2);
     attributes -> SetPower(2);
     attributes -> SetSpeed(80);
+
+    auto &informationBoard = GetInfortionBoard();
+    informationBoard = std::make_shared<MagicMonkeyInformationBoard>();
 
     SetCost(550);
     SetCd(60);

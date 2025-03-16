@@ -85,116 +85,401 @@ void DragButton::Update() {
 void DragButton::SetImage(const std::string& ImagePath) {
     m_Drawable = std::make_shared<Util::Image>(ImagePath);
 }
+void DragButton::SetOriginImage(const std::string& ImagePath) {
+    // 设置原始图片路径
+    m_ImagePath = ImagePath;
+    
+    // 构建灰色图片路径 - 将文件名和扩展名分开，在文件名后添加_gray
+    size_t lastDot = ImagePath.find_last_of('.');
+    if (lastDot != std::string::npos) {
+        std::string baseName = ImagePath.substr(0, lastDot);
+        std::string extension = ImagePath.substr(lastDot);
+        m_grayImagePath = baseName + "_gray" + extension;
+    } else {
+        m_grayImagePath = ImagePath + "_gray";
+    }
+    
+    // 使用原始图片初始化按钮
+    SetImage(m_ImagePath);
+}
+void DragButton::UpdateButtonState(int money) {
+    // 基类默认实现，子类会根据各自价格覆盖此方法
+}
+
 std::shared_ptr<Monkey> DragButton::ProduceMonkey(glm::vec2 handPosition){
     return nullptr;
 }
 DartMonkeyButton::DartMonkeyButton(glm::vec2 position) : DragButton(position){
-    SetImage(GA_RESOURCE_DIR"/Monkey/DartMonkey.png");
+    SetOriginImage(GA_RESOURCE_DIR"/Monkey/DartMonkey.png");
     SetAngle(90);
 }
 std::shared_ptr<Monkey> DartMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    if (!m_Buyable) {
+        return nullptr;
+    }
     std::shared_ptr<Monkey> monkey = std::make_shared<DartMonkey>(handPosition);
     return monkey;
+}
+
+void DartMonkeyButton::UpdateButtonState(int money) {
+    bool previousBuyable = m_Buyable;
+    
+    if (money < 200) { // DartMonkey价格是200
+        m_Buyable = false;
+    } else {
+        m_Buyable = true;
+    }
+    
+    // 只有当状态改变时才更新图像
+    if (previousBuyable != m_Buyable) {
+        if (m_Buyable) {
+            SetImage(m_ImagePath);
+        } else {
+            SetImage(m_grayImagePath);
+        }
+    }
 }
 
 // 新增按钮类实现
 
 NailMonkeyButton::NailMonkeyButton(glm::vec2 position) : DragButton(position){
-    SetImage(GA_RESOURCE_DIR"/Monkey/NailMonkey.png");
+    SetOriginImage(GA_RESOURCE_DIR"/Monkey/NailMonkey.png");
     SetAngle(90);
 }
 std::shared_ptr<Monkey> NailMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    if (!m_Buyable) {
+        return nullptr;
+    }
     std::shared_ptr<Monkey> monkey = std::make_shared<NailMonkey>(handPosition);
     return monkey;
 }
 
+void NailMonkeyButton::UpdateButtonState(int money) {
+    bool previousBuyable = m_Buyable;
+    
+    if (money < 360) { // NailMonkey价格是360
+        m_Buyable = false;
+    } else {
+        m_Buyable = true;
+    }
+    
+    // 只有当状态改变时才更新图像
+    if (previousBuyable != m_Buyable) {
+        if (m_Buyable) {
+            SetImage(m_ImagePath);
+        } else {
+            SetImage(m_grayImagePath);
+        }
+    }
+}
+
 SniperMonkeyButton::SniperMonkeyButton(glm::vec2 position) : DragButton(position){
-    SetImage(GA_RESOURCE_DIR"/Monkey/SniperMonkey.png");
+    SetOriginImage(GA_RESOURCE_DIR"/Monkey/SniperMonkey.png");
     SetAngle(90);
 }
 std::shared_ptr<Monkey> SniperMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    if (!m_Buyable) {
+        return nullptr;
+    }
     std::shared_ptr<Monkey> monkey = std::make_shared<SniperMonkey>(handPosition);
     return monkey;
 }
 
+void SniperMonkeyButton::UpdateButtonState(int money) {
+    bool previousBuyable = m_Buyable;
+    
+    if (money < 400) { // SniperMonkey价格是400
+        m_Buyable = false;
+    } else {
+        m_Buyable = true;
+    }
+    
+    // 只有当状态改变时才更新图像
+    if (previousBuyable != m_Buyable) {
+        if (m_Buyable) {
+            SetImage(m_ImagePath);
+        } else {
+            SetImage(m_grayImagePath);
+        }
+    }
+}
+
 BoomerangMonkeyButton::BoomerangMonkeyButton(glm::vec2 position) : DragButton(position){
-    SetImage(GA_RESOURCE_DIR"/Monkey/BoomerangMonkey.png");
+    SetOriginImage(GA_RESOURCE_DIR"/Monkey/BoomerangMonkey.png");
     SetAngle(90);
 }
 std::shared_ptr<Monkey> BoomerangMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    if (!m_Buyable) {
+        return nullptr;
+    }
     std::shared_ptr<Monkey> monkey = std::make_shared<BoomerangMonkey>(handPosition);
     return monkey;
 }
 
+void BoomerangMonkeyButton::UpdateButtonState(int money) {
+    bool previousBuyable = m_Buyable;
+    
+    if (money < 400) { // BoomerangMonkey价格是400
+        m_Buyable = false;
+    } else {
+        m_Buyable = true;
+    }
+    
+    // 只有当状态改变时才更新图像
+    if (previousBuyable != m_Buyable) {
+        if (m_Buyable) {
+            SetImage(m_ImagePath);
+        } else {
+            SetImage(m_grayImagePath);
+        }
+    }
+}
+
 NinjaMonkeyButton::NinjaMonkeyButton(glm::vec2 position) : DragButton(position){
-    SetImage(GA_RESOURCE_DIR"/Monkey/NinjaMonkey.png");
+    SetOriginImage(GA_RESOURCE_DIR"/Monkey/NinjaMonkey.png");
     SetAngle(90);
 }
 std::shared_ptr<Monkey> NinjaMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    if (!m_Buyable) {
+        return nullptr;
+    }
     std::shared_ptr<Monkey> monkey = std::make_shared<NinjaMonkey>(handPosition);
     return monkey;
 }
 
+void NinjaMonkeyButton::UpdateButtonState(int money) {
+    bool previousBuyable = m_Buyable;
+    
+    if (money < 600) { // NinjaMonkey价格是600
+        m_Buyable = false;
+    } else {
+        m_Buyable = true;
+    }
+    
+    // 只有当状态改变时才更新图像
+    if (previousBuyable != m_Buyable) {
+        if (m_Buyable) {
+            SetImage(m_ImagePath);
+        } else {
+            SetImage(m_grayImagePath);
+        }
+    }
+}
+
 CannonButton::CannonButton(glm::vec2 position) : DragButton(position){
-    SetImage(GA_RESOURCE_DIR"/Monkey/Cannon.png");
+    SetOriginImage(GA_RESOURCE_DIR"/Monkey/Cannon.png");
     SetAngle(90);
 }
 std::shared_ptr<Monkey> CannonButton::ProduceMonkey(glm::vec2 handPosition){
+    if (!m_Buyable) {
+        return nullptr;
+    }
     std::shared_ptr<Monkey> monkey = std::make_shared<Cannon>(handPosition);
     return monkey;  
 }
 
+void CannonButton::UpdateButtonState(int money) {
+    bool previousBuyable = m_Buyable;
+    
+    if (money < 700) { // Cannon价格是700
+        m_Buyable = false;
+    } else {
+        m_Buyable = true;
+    }
+    
+    // 只有当状态改变时才更新图像
+    if (previousBuyable != m_Buyable) {
+        if (m_Buyable) {
+            SetImage(m_ImagePath);
+        } else {
+            SetImage(m_grayImagePath);
+        }
+    }
+}
+
 AirportButton::AirportButton(glm::vec2 position) : DragButton(position){
-    SetImage(GA_RESOURCE_DIR"/Monkey/AirplaneMonkey.png");
+    SetOriginImage(GA_RESOURCE_DIR"/Monkey/AirplaneMonkey.png");
     SetAngle(90);
 }
 std::shared_ptr<Monkey> AirportButton::ProduceMonkey(glm::vec2 handPosition){
+    if (!m_Buyable) {
+        return nullptr;
+    }
     std::shared_ptr<Monkey> monkey = std::make_shared<Airport>(handPosition);
     return monkey;
 }
 
+void AirportButton::UpdateButtonState(int money) {
+    bool previousBuyable = m_Buyable;
+    
+    if (money < 950) { // Airport价格是950
+        m_Buyable = false;
+    } else {
+        m_Buyable = true;
+    }
+    
+    // 只有当状态改变时才更新图像
+    if (previousBuyable != m_Buyable) {
+        if (m_Buyable) {
+            SetImage(m_ImagePath);
+        } else {
+            SetImage(m_grayImagePath);
+        }
+    }
+}
+
 
 BuccaneerMonkeyButton::BuccaneerMonkeyButton(glm::vec2 position) : DragButton(position){
-    SetImage(GA_RESOURCE_DIR"/Monkey/BuccaneerMonkey.png");
+    SetOriginImage(GA_RESOURCE_DIR"/Monkey/BuccaneerMonkey.png");
     SetAngle(90);
 }
 std::shared_ptr<Monkey> BuccaneerMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    if (!m_Buyable) {
+        return nullptr;
+    }
     std::shared_ptr<Monkey> monkey = std::make_shared<BuccaneerMonkey>(handPosition);
     return monkey;
 }
 
+void BuccaneerMonkeyButton::UpdateButtonState(int money) {
+    bool previousBuyable = m_Buyable;
+    
+    if (money < 600) { // BuccaneerMonkey价格是600
+        m_Buyable = false;
+    } else {
+        m_Buyable = true;
+    }
+    
+    // 只有当状态改变时才更新图像
+    if (previousBuyable != m_Buyable) {
+        if (m_Buyable) {
+            SetImage(m_ImagePath);
+        } else {
+            SetImage(m_grayImagePath);
+        }
+    }
+}
+
 SuperMonkeyButton::SuperMonkeyButton(glm::vec2 position) : DragButton(position){
-    SetImage(GA_RESOURCE_DIR"/Monkey/SuperMonkey.png");
+    SetOriginImage(GA_RESOURCE_DIR"/Monkey/SuperMonkey.png");
     SetAngle(90);
 }
 std::shared_ptr<Monkey> SuperMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    if (!m_Buyable) {
+        return nullptr;
+    }
     std::shared_ptr<Monkey> monkey = std::make_shared<SuperMonkey>(handPosition);
     return monkey;
 }
 
+void SuperMonkeyButton::UpdateButtonState(int money) {
+    bool previousBuyable = m_Buyable;
+    
+    if (money < 4000) { // SuperMonkey价格是4000
+        m_Buyable = false;
+    } else {
+        m_Buyable = true;
+    }
+    
+    // 只有当状态改变时才更新图像
+    if (previousBuyable != m_Buyable) {
+        if (m_Buyable) {
+            SetImage(m_ImagePath);
+        } else {
+            SetImage(m_grayImagePath);
+        }
+    }
+}
+
 IceMonkeyButton::IceMonkeyButton(glm::vec2 position) : DragButton(position){
-    SetImage(GA_RESOURCE_DIR"/Monkey/IceMonkey.png");
+    SetOriginImage(GA_RESOURCE_DIR"/Monkey/IceMonkey.png");
     SetAngle(90);
 }
 std::shared_ptr<Monkey> IceMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    if (!m_Buyable) {
+        return nullptr;
+    }
     std::shared_ptr<Monkey> monkey = std::make_shared<IceMonkey>(handPosition);
     return monkey;
 }
 
+void IceMonkeyButton::UpdateButtonState(int money) {
+    bool previousBuyable = m_Buyable;
+    
+    if (money < 380) { // IceMonkey价格是380
+        m_Buyable = false;
+    } else {
+        m_Buyable = true;
+    }
+    
+    // 只有当状态改变时才更新图像
+    if (previousBuyable != m_Buyable) {
+        if (m_Buyable) {
+            SetImage(m_ImagePath);
+        } else {
+            SetImage(m_grayImagePath);
+        }
+    }
+}
+
 RubberMonkeyButton::RubberMonkeyButton(glm::vec2 position) : DragButton(position){
-    SetImage(GA_RESOURCE_DIR"/Monkey/RubberMonkey.png");
+    SetOriginImage(GA_RESOURCE_DIR"/Monkey/RubberMonkey.png");
     SetAngle(90);
 }
 std::shared_ptr<Monkey> RubberMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    if (!m_Buyable) {
+        return nullptr;
+    }
     std::shared_ptr<Monkey> monkey = std::make_shared<RubberMonkey>(handPosition);
     return monkey;
 }
 
+void RubberMonkeyButton::UpdateButtonState(int money) {
+    bool previousBuyable = m_Buyable;
+    
+    if (money < 300) { // RubberMonkey价格是300
+        m_Buyable = false;
+    } else {
+        m_Buyable = true;
+    }
+    
+    // 只有当状态改变时才更新图像
+    if (previousBuyable != m_Buyable) {
+        if (m_Buyable) {
+            SetImage(m_ImagePath);
+        } else {
+            SetImage(m_grayImagePath);
+        }
+    }
+}
+
 MagicMonkeyButton::MagicMonkeyButton(glm::vec2 position) : DragButton(position){
-    SetImage(GA_RESOURCE_DIR"/Monkey/MagicMonkey.png");
+    SetOriginImage(GA_RESOURCE_DIR"/Monkey/MagicMonkey.png");
     SetAngle(90);
 }
 std::shared_ptr<Monkey> MagicMonkeyButton::ProduceMonkey(glm::vec2 handPosition){
+    if (!m_Buyable) {
+        return nullptr;
+    }
     std::shared_ptr<Monkey> monkey = std::make_shared<MagicMonkey>(handPosition);
     return monkey;
+}
+
+void MagicMonkeyButton::UpdateButtonState(int money) {
+    bool previousBuyable = m_Buyable;
+    
+    if (money < 550) { // MagicMonkey价格是550
+        m_Buyable = false;
+    } else {
+        m_Buyable = true;
+    }
+    
+    // 只有当状态改变时才更新图像
+    if (previousBuyable != m_Buyable) {
+        if (m_Buyable) {
+            SetImage(m_ImagePath);
+        } else {
+            SetImage(m_grayImagePath);
+        }
+    }
 }

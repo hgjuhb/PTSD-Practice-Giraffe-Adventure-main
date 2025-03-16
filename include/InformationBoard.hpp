@@ -61,3 +61,61 @@ class DartMonkeyInformationBoard : public InformationBoard {
 public:
     explicit DartMonkeyInformationBoard();
 };
+
+class NailMonkeyInformationBoard : public InformationBoard {
+public:
+    explicit NailMonkeyInformationBoard();
+};
+
+class SniperMonkeyInformationBoard : public InformationBoard {
+public:
+    explicit SniperMonkeyInformationBoard();
+};
+
+class BoomerangMonkeyInformationBoard : public InformationBoard {
+public:
+    explicit BoomerangMonkeyInformationBoard();
+};
+
+class NinjaMonkeyInformationBoard : public InformationBoard {
+public:
+    explicit NinjaMonkeyInformationBoard();
+};
+
+class CannonInformationBoard : public InformationBoard {
+public:
+    explicit CannonInformationBoard();
+};
+
+class IceMonkeyInformationBoard : public InformationBoard {
+public:
+    explicit IceMonkeyInformationBoard();
+};
+
+class RubberMonkeyInformationBoard : public InformationBoard {
+public:
+    explicit RubberMonkeyInformationBoard();
+};
+
+class BuccaneerMonkeyInformationBoard : public InformationBoard {
+public:
+    explicit BuccaneerMonkeyInformationBoard();
+};
+
+class AirportInformationBoard : public InformationBoard {
+public:
+    explicit AirportInformationBoard();
+};
+
+class SuperMonkeyInformationBoard : public InformationBoard {
+public:
+    explicit SuperMonkeyInformationBoard();
+};
+
+class MagicMonkeyInformationBoard : public InformationBoard {
+public:
+    explicit MagicMonkeyInformationBoard();
+};
+
+
+
