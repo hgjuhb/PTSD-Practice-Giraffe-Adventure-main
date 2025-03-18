@@ -9,6 +9,7 @@
 Monkey::Monkey(glm::vec2 position)
 {
     SetPosition(position);
+    SetSkillTime(600);
 }
 
 void Monkey::SetPosition(const glm::vec2& Position){
@@ -42,6 +43,14 @@ bool Monkey::IsInside(glm::vec2 mousePosition){
             mousePosition.x <= rightBound &&
             mousePosition.y >= bottomBound &&
             mousePosition.y <= topBound);
+}
+
+void Monkey::SetSkillTime(int time) {
+    skill_time = time;
+}
+
+void Monkey::SetSkillCountdown() {
+    skill_countdown = skill_time;
 }
 
 // 判断猴子是否在一个矩形区域内
@@ -142,6 +151,7 @@ void Monkey::SetRotation(glm::vec2 Position) {
 }
 
 bool Monkey::Countdown() {
+    SkillCountdown();
     m_InformationBoard -> SkillCountDown();
     if (m_Count == m_Cd) {
         return true;
@@ -214,11 +224,21 @@ std::vector<std::shared_ptr<Util::GameObject>> Monkey::GetAllInfortionBoardObjec
 
 void Monkey::UpdateAllObjectVisible(bool isClicked) {
     m_Range -> SetVisible(isClicked);
-    m_InformationBoard -> SetVisible(isClicked);
     m_InformationBoard -> UpdateAllObjectVisible(isClicked);
 }
 
 void Monkey::UpdateLevel() {}
+
+void Monkey::UseSkill(){}
+
+void Monkey::EndSkill(){}
+
+void Monkey::SkillCountdown() {
+    skill_countdown -= 1;
+    if (skill_countdown == 0) {
+        EndSkill();
+    }
+}
 
 // ####################################################################
 
@@ -241,13 +261,51 @@ DartMonkey::DartMonkey(glm::vec2 position) : Monkey(position){
     UpdateRange();
 }
 
+void DartMonkey::UseSkill() {
+    skillEffect = true;
+    SetSkillCountdown();
+    SetImage(GA_RESOURCE_DIR"/Monkey/SuperMonkey.png");
+    cd_radius_tmp = {GetCd(), GetRadius()};
+    SetCd(20);
+    ResetCount();
+    SetRadius(300);
+    UpdateRange();
+    auto informationBoard = GetInfortionBoard();
+    informationBoard -> SetSkillEffect(true);
+}
+
+void DartMonkey::EndSkill() {
+    skillEffect = false;
+    SetImage(GA_RESOURCE_DIR"/Monkey/DartMonkey.png");
+    SetCd(cd_radius_tmp[0]);
+    ResetCount();
+    SetRadius(cd_radius_tmp[1]);
+    UpdateRange();
+    auto informationBoard = GetInfortionBoard();
+    informationBoard -> SetSkillEffect(false);
+}
+
 std::vector<std::shared_ptr<Attack>> DartMonkey::ProduceAttack(glm::vec2 goalPosition) {
     ResetCount();
     SetRotation(goalPosition);
     int level = GetLevel();
     int upgradePath = GetUpgradePath();
     std::vector<std::shared_ptr<Attack>> attacks;
-    if (upgradePath == 1 && level >= 3) {
+    if (skillEffect == true) {
+        glm::vec2 direction = goalPosition - m_Transform.translation;
+        glm::vec2 unit_direction = glm::normalize(direction);
+        double perp_x = -unit_direction.y;
+        double perp_y = unit_direction.x;
+        int distance = 15;
+
+        glm::vec2 movePosition = glm::vec2(distance * perp_x, distance * perp_y);
+
+        std::shared_ptr<Attack> attack = std::make_shared<Ray>(GetPosition()+movePosition, goalPosition+movePosition, GetAttributes());
+        attacks.push_back(attack);
+        attack = std::make_shared<Ray>(GetPosition()-movePosition, goalPosition-movePosition, GetAttributes());
+        attacks.push_back(attack);
+    }
+    else if (upgradePath == 1 && level >= 3) {
         std::shared_ptr<Attack> attack = std::make_shared<Rock>(GetPosition(), goalPosition, GetAttributes());
         attacks.push_back(attack);
     }

@@ -24,6 +24,7 @@ public:
     void SetUpgradeText(std::vector<std::vector<std::string>> upgradeText);
     void IsButtonTouch(glm::vec2 mousePosition);
     void SkillCountDown();
+    void SetSkillEffect(bool b);
 
     [[nodiscard]] std::vector<int> IsClick(glm::vec2 mousePosition, int money);
     [[nodiscard]] int GetLevel() { return level;}
@@ -43,6 +44,7 @@ private:
     int upgradePath = 0;
     int skillCd = 1800;
     int skillCount = 0;
+    bool skillEffect = false;
     std::vector<std::vector<int>> m_upgradeCost = {};
     std::vector<std::vector<std::string>> m_upgradeText = {};
     std::string upgrateName = GA_RESOURCE_DIR"//MonkeyInformation/DartMonkey";

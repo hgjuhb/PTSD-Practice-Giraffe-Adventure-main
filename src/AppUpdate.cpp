@@ -5,6 +5,7 @@
 #include "Util/Keycode.hpp"
 #include "Util/Logger.hpp"
 #include <random>
+#include <cxxabi.h>
 
 int count = 20;
 
@@ -292,6 +293,18 @@ void App::Update() {
                 }
                 m_Counters[1] -> AddValue(m_ClickedMonkey -> GetValue());
                 m_ClickedMonkey = nullptr;
+            }
+            else if (clickInformationBoard == 4) {
+                int status;
+                std::string monkeyType = abi::__cxa_demangle(typeid(*m_ClickedMonkey).name(), 0, 0, &status);
+                if (monkeyType == "DartMonkey") {
+                    for (auto& monkeyPtr : m_Monkeys) {
+                        monkeyType = abi::__cxa_demangle(typeid(*monkeyPtr).name(), 0, 0, &status);
+                        if (monkeyType == "DartMonkey") {
+                            monkeyPtr -> UseSkill();
+                        }
+                    }
+                }
             }
             else if (clickInformationBoard != 0 && clickInformationBoard != 1) {
                 m_Counters[1] -> MinusValue(clickInformationBoard);

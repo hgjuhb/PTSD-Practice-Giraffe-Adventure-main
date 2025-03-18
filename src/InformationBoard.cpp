@@ -34,6 +34,9 @@ std::vector<std::shared_ptr<Util::GameObject>> InformationBoard::GetAllChildren(
 };
 
 std::vector<int> InformationBoard::IsClick(glm::vec2 mousePosition, int money) {
+    if (skillEffect) {
+        return {0};
+    }
     if (mousePosition.x > -625 && mousePosition.x < -275 && mousePosition.y > -250 && mousePosition.y < 250) {
         //關閉選取
         if (mousePosition.x > -307 && mousePosition.x < -279 && mousePosition.y > 221 && mousePosition.y < 247) {
@@ -76,16 +79,24 @@ void InformationBoard::SetUpgrateName(std::string name) {
 }
 
 void InformationBoard::UpdateAllObjectVisible(bool isClicked) {
-    monkey_image -> SetVisible(isClicked);
-    upgrate_image1 -> SetVisible(isClicked);
-    upgrate_image2 -> SetVisible(isClicked);
-    upgrate_text1 -> SetVisible(isClicked);
-    upgrate_text2 -> SetVisible(isClicked);
-    upgrate_button1 -> UpdateVisible(isClicked);
-    upgrate_button2 -> UpdateVisible(isClicked);
-    sale_button -> UpdateVisible(isClicked);
+    SetVisible(isClicked && !skillEffect);
+    monkey_image -> SetVisible(isClicked && !skillEffect);
+    upgrate_image1 -> SetVisible(isClicked && !skillEffect);
+    upgrate_image2 -> SetVisible(isClicked && !skillEffect);
+    upgrate_text1 -> SetVisible(isClicked && !skillEffect);
+    upgrate_text2 -> SetVisible(isClicked && !skillEffect);
+    upgrate_button1 -> UpdateVisible(isClicked && !skillEffect);
+    upgrate_button2 -> UpdateVisible(isClicked && !skillEffect);
+    sale_button -> UpdateVisible(isClicked && !skillEffect);
     if (upgradePath == 2 and level == 4) {
-        skill_button -> UpdateVisible(isClicked);
+        skill_button -> UpdateVisible(isClicked && !skillEffect);
+    }
+}
+
+void InformationBoard::SetSkillEffect(bool b) {
+    skillEffect = b;
+    if (b) {
+        UpdateAllObjectVisible(!b);
     }
 }
 
