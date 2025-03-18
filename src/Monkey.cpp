@@ -142,6 +142,7 @@ void Monkey::SetRotation(glm::vec2 Position) {
 }
 
 bool Monkey::Countdown() {
+    m_InformationBoard -> SkillCountDown();
     if (m_Count == m_Cd) {
         return true;
     }
@@ -156,14 +157,14 @@ void Monkey::ResetCount(){
 int Monkey::IsInformationBoardClicked(glm::vec2 mousePosition, int money) {
     std::vector<int> val = m_InformationBoard -> IsClick(mousePosition, money);
     int res = val[0];
-    if (val[0] == 4) {
+    if (val[0] == 5) {
         level += 1;
         upgradePath = 1;
         UpdateLevel();
         m_Value += val[1];
         res = val[1];
     }
-    else if (val[0] == 5) {
+    else if (val[0] == 6) {
         level += 1;
         upgradePath = 2;
         UpdateLevel();
@@ -569,12 +570,13 @@ NinjaMonkey::NinjaMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPenetration(1);
     attributes -> SetPower(1);
     attributes -> SetSpeed(60);
+    attributes -> AddProperty(2);
 
     auto &informationBoard = GetInfortionBoard();
     informationBoard = std::make_shared<NinjaMonkeyInformationBoard>();
 
     SetCost(600);
-    SetCd(30);
+    SetCd(50);
     SetRadius(150);
     UpdateRange();
 }
@@ -582,10 +584,41 @@ NinjaMonkey::NinjaMonkey(glm::vec2 position) : Monkey(position){
 std::vector<std::shared_ptr<Attack>> NinjaMonkey::ProduceAttack(glm::vec2 goalPosition) {
     ResetCount();
     SetRotation(goalPosition);
+    int level = GetLevel();
+    int upgradePath = GetUpgradePath();
     std::vector<std::shared_ptr<Attack>> attacks;
+    if (upgradePath == 1 && level >= 3) {
+        std::shared_ptr<Attack> attack = std::make_shared<Shuriken>(GetPosition(), goalPosition, GetAttributes());
+        attacks.push_back(attack);
+        if (upgradePath == 1 && level == 4) {
+            for (int i = 0; i < 3; i++) {
+                std::shared_ptr<Attack> attack = std::make_shared<Shuriken>(GetPosition(), goalPosition, GetAttributes());
+                attacks.push_back(attack);
+            }
+        }
+    }
     std::shared_ptr<Attack> attack = std::make_shared<Shuriken>(GetPosition(), goalPosition, GetAttributes());
     attacks.push_back(attack);
     return attacks;
+}
+
+void NinjaMonkey::UpdateLevel() {
+    int level = GetLevel();
+    int upgradePath = GetUpgradePath();
+    auto attributes = GetAttributes();
+    if (upgradePath == 1) {
+        switch (level) {
+            case 1:
+                SetCd(30);
+                ResetCount();
+                SetRadius(GetRadius()*1.5);
+                UpdateRange();
+            case 2:
+                attributes -> SetPenetration(4);
+        }
+    }
+    else {
+    }
 }
 
 //########################################################################

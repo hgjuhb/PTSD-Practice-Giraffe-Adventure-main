@@ -62,6 +62,11 @@ std::shared_ptr<Balloon> factory(int num, std::vector<glm::vec2> coordinates) {
 
 void App::Update() {
     LOG_TRACE("Update");
+    // if (Util::Input::IsKeyPressed(Util::Keycode::W) && m_Phase == Phase::LOBBY) {
+    //     // 添加金钱，假设m_Counters[1]是金钱计数器
+    //     m_Counters[1]->AddValue(100); // 添加100金钱
+    //     LOG_DEBUG("添加了100金钱");
+    // }
 
     if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) && m_Phase != Phase::LOBBY){
         glm::vec2 position = Util::Input::GetCursorPosition ();
@@ -265,7 +270,7 @@ void App::Update() {
 
     if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB)) {
         glm::vec2 position = Util::Input::GetCursorPosition ();
-        int clickInformationBoard = 0; //0:無, 1:有, 2:關閉, 3:賣掉, 其他:升級(多少錢回多少
+        int clickInformationBoard = 0; //0:無, 1:有, 2:關閉, 3:賣掉, 4:使用技能, 其他:升級(多少錢回多少
         if (m_ClickedMonkey) {
             clickInformationBoard = m_ClickedMonkey -> IsInformationBoardClicked(position, m_Counters[1] -> GetCurrent());
             if (clickInformationBoard == 2) {

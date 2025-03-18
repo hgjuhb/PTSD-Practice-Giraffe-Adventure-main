@@ -20,13 +20,15 @@ void InformationBoard::SetImage(const std::string& ImagePath) {
 
 std::vector<std::shared_ptr<Util::GameObject>> InformationBoard::GetAllChildren(){
     std::vector<std::shared_ptr<Util::GameObject>> children =
-        {monkey_image, upgrate_image1, upgrate_image2, upgrate_text1, upgrate_text2, upgrate_button1, upgrate_button2, sale_button};
+        {monkey_image, upgrate_image1, upgrate_image2, upgrate_text1, upgrate_text2, upgrate_button1, upgrate_button2, sale_button, skill_button};
     std::vector<std::shared_ptr<Util::GameObject>> tmp;
     tmp = upgrate_button1->GetAllChildren();
     children.insert(children.end(), tmp.begin(), tmp.end());
     tmp = upgrate_button2->GetAllChildren();
     children.insert(children.end(), tmp.begin(), tmp.end());
     tmp = sale_button->GetAllChildren();
+    children.insert(children.end(), tmp.begin(), tmp.end());
+    tmp = skill_button->GetAllChildren();
     children.insert(children.end(), tmp.begin(), tmp.end());
     return children;
 };
@@ -44,13 +46,17 @@ std::vector<int> InformationBoard::IsClick(glm::vec2 mousePosition, int money) {
             level += 1;
             upgradePath = 1;
             UpdateUpgrade();
-            return {4, m_upgradeCost[0][level-1]};
+            return {5, m_upgradeCost[0][level-1]};
         }
         if (level < 4 && money >= m_upgradeCost[1][level] && upgradePath != 1 && mousePosition.x > -444 && mousePosition.x < -297 && mousePosition.y > -184 && mousePosition.y < -141) {
             level += 1;
             upgradePath = 2;
             UpdateUpgrade();
-            return {5, m_upgradeCost[1][level-1]};
+            return {6, m_upgradeCost[1][level-1]};
+        }
+        if (upgradePath == 2 && level == 4 && skillCount == 0 && mousePosition.x > -605 && mousePosition.x < -456 && mousePosition.y > -239 && mousePosition.y < -203) {
+            skillCount = skillCd;
+            return {4};
         }
         return {1};
     }
@@ -78,12 +84,18 @@ void InformationBoard::UpdateAllObjectVisible(bool isClicked) {
     upgrate_button1 -> UpdateVisible(isClicked);
     upgrate_button2 -> UpdateVisible(isClicked);
     sale_button -> UpdateVisible(isClicked);
+    if (upgradePath == 2 and level == 4) {
+        skill_button -> UpdateVisible(isClicked);
+    }
 }
 
 void InformationBoard::UpdateUpgrade() {
     if (level == 4) {
         if (upgradePath == 1){upgrate_text1 -> Update("Level Max");}
-        else{upgrate_text2 -> Update("Level Max");}
+        else {
+            skill_button -> UpdateVisible(true);
+            upgrate_text2 -> Update("Level Max");
+        }
         upgrate_image1 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/Lock.png");
         upgrate_image2 -> SetImage(GA_RESOURCE_DIR"/MonkeyInformation/Lock.png");
         upgrate_button1 -> Update("None");
@@ -111,6 +123,17 @@ void InformationBoard::IsButtonTouch(glm::vec2 mousePosition) {
     upgrate_button1 -> IsTouch(mousePosition);
     upgrate_button2 -> IsTouch(mousePosition);
     sale_button -> IsTouch(mousePosition);
+    skill_button -> IsTouch(mousePosition);
+}
+
+void InformationBoard::SkillCountDown() {
+    if (skillCount != 0) {
+        skillCount -= 1;
+        skill_button -> Update(std::to_string(int(skillCount/60)));
+    }
+    else {
+        skill_button -> Update("skill");
+    }
 }
 
 DartMonkeyInformationBoard::DartMonkeyInformationBoard() {
