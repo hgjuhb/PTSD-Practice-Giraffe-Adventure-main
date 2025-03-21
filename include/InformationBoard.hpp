@@ -42,7 +42,7 @@ public:
 private:
     int level = 0;
     int upgradePath = 0;
-    int skillCd = 1800;
+    int skillCd = 100; // TODO: 記得換回 1800
     int skillCount = 0;
     bool skillEffect = false;
     std::vector<std::vector<int>> m_upgradeCost = {};

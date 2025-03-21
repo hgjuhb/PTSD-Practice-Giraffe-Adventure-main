@@ -449,11 +449,11 @@ void Fire::Move() {
 Knife::Knife(glm::vec2 position, glm::vec2 goal_position, int radius, std::shared_ptr<Attributes> attributes)
 : Attack(position, goal_position, attributes){
     SetImage(GA_RESOURCE_DIR"/Attack/Knife.png");
-    m_Transform.scale = glm::vec2(1.6,1.6);
+    m_Transform.scale = glm::vec2(1,1);
     m_SourcePosition = position;
     m_Radius = radius;
-    SetWidth(80);
-    SetHeight(80);
+    SetWidth(50);
+    SetHeight(50);
     SetRectangleCorners();
 }
 

@@ -37,6 +37,9 @@ public:
     [[nodiscard]] std::vector<glm::vec2> GetConers() const { return m_Corners; }
     [[nodiscard]] virtual bool IsOut();
     [[nodiscard]] std::shared_ptr<Attributes> GetAttributes() { return m_Attributes; }
+    //修改
+    [[nodiscard]] std::vector<int> GetProperties() { return m_Attributes -> GetProperties(); }
+    //
 
 private:
     int m_Width;

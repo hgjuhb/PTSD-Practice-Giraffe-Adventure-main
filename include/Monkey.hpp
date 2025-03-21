@@ -39,6 +39,9 @@ public:
       bool IsMonkeyInRectangle(glm::vec2 topLeft, glm::vec2 bottomRight);
       virtual bool Placeable(std::vector<std::vector<std::vector<glm::vec2>>> Level_Placeable);
       bool IsInside(glm::vec2 mousePosition);
+      int GetSkillTime() const { return skill_time; }
+      int GetSkillCountdown() const { return skill_countdown; }
+      // bool GetSkillEffect() const { return skillEffect; }
 
       [[nodiscard]] int IsInformationBoardClicked(glm::vec2 mousePosition, int money);
       [[nodiscard]] virtual std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition);
@@ -59,6 +62,9 @@ public:
       [[nodiscard]] std::shared_ptr<InformationBoard>& GetInfortionBoard(){ return m_InformationBoard;}
       [[nodiscard]] glm::vec2 GetSize() const { return m_Size; }
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> GetAttackChildren() const { return m_Attacks; }
+      //修改
+      [[nodiscard]] std::vector<int> GetProperties() { return m_Attributes -> GetProperties(); }
+      //
 
 
 private:
@@ -97,7 +103,11 @@ class NailMonkey : public Monkey {
 public:
       explicit NailMonkey(glm::vec2 position);
       void UpdateLevel() override;
+      void UseSkill() override;
+      void EndSkill() override;
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+private:
+      bool skillEffect = false;
 };
 
 class SniperMonkey : public Monkey {

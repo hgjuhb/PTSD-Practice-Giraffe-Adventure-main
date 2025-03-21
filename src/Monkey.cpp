@@ -9,7 +9,7 @@
 Monkey::Monkey(glm::vec2 position)
 {
     SetPosition(position);
-    SetSkillTime(600);
+    SetSkillTime(600); //技能持續時間
 }
 
 void Monkey::SetPosition(const glm::vec2& Position){
@@ -258,6 +258,7 @@ DartMonkey::DartMonkey(glm::vec2 position) : Monkey(position){
     SetImage(GA_RESOURCE_DIR"/Monkey/DartMonkey.png");
     SetCd(50);
     SetRadius(150);
+    SetSkillTime(600);
     UpdateRange();
 }
 
@@ -387,7 +388,20 @@ NailMonkey::NailMonkey(glm::vec2 position) : Monkey(position){
     SetSize(glm::vec2(50.0f, 50.0f));
     SetCd(80);
     SetRadius(150);
+    SetSkillTime(360);  // 技能持续时间
     UpdateRange();
+}
+
+void NailMonkey::UseSkill() {
+    // 实现技能使用逻辑
+    skillEffect = true;
+    SetSkillCountdown();
+
+}
+
+void NailMonkey::EndSkill() {
+    // 实现技能结束逻辑
+    skillEffect = false;
 }
 
 std::vector<std::shared_ptr<Attack>> NailMonkey::ProduceAttack(glm::vec2 goalPosition) {
@@ -395,6 +409,61 @@ std::vector<std::shared_ptr<Attack>> NailMonkey::ProduceAttack(glm::vec2 goalPos
     int level = GetLevel();
     int upgradePath = GetUpgradePath();
     std::vector<std::shared_ptr<Attack>> attacks;
+    if (skillEffect == true) {
+        // 設置固定半徑
+        float radius = 30.0f;  // 改回合理的半徑值，防止飛太遠看不到
+        int skillTime = GetSkillTime();
+        int skillCountdown = GetSkillCountdown();
+        
+        // 直接使用skillCountdown計算旋轉角度
+        float anglePerTick = PI/15; // 每tick旋转角度
+        float angle = skillCountdown * anglePerTick;
+        
+        // 計算圓周上的點(作為攻擊起始點)
+        float x1 = m_Transform.translation.x + radius * cos(angle);
+        float y1 = m_Transform.translation.y + radius * sin(angle);
+        float x2 = m_Transform.translation.x + radius * cos(angle + PI);
+        float y2 = m_Transform.translation.y + radius * sin(angle + PI);
+        
+        // 計算切線方向(攻擊移動方向)
+        float tangent_x1 = -sin(angle);  // 切線x分量
+        float tangent_y1 = cos(angle);   // 切線y分量
+        float tangent_x2 = -sin(angle + PI);
+        float tangent_y2 = cos(angle + PI);
+        
+        // 計算目標點(沿切線方向)
+        float target_x1 = x1 + tangent_x1 * 100;  // 沿切線前進100單位(可調整)
+        float target_y1 = y1 + tangent_y1 * 100;
+        float target_x2 = x2 + tangent_x2 * 100;
+        float target_y2 = y2 + tangent_y2 * 100;
+        
+        // 創建兩個攻擊，起始點是圓周上的點
+        std::shared_ptr<Attack> attack1 = std::make_shared<Knife>(
+            glm::vec2(x1, y1),  // 從圓周上的點發射
+            glm::vec2(target_x1, target_y1),  // 目標是沿切線方向
+            9999999.0f,  // 極大值作為無限半徑
+            GetAttributes()
+        );
+        std::shared_ptr<Attack> attack2 = std::make_shared<Knife>(
+            glm::vec2(x2, y2),  // 從圓周上的對稱點發射
+            glm::vec2(target_x2, target_y2),  // 目標是沿切線方向
+            9999999.0f,  // 極大值作為無限半徑
+            GetAttributes()
+        );
+        
+        // 調整速度和大小
+        attack1->SetSpeed(attack1->GetSpeed() * 0.5f);
+        attack2->SetSpeed(attack2->GetSpeed() * 0.5f);
+        
+        attacks.push_back(attack1);
+        attacks.push_back(attack2);
+        
+        return attacks;
+    }
+    // if (goalPosition == glm::vec2(100000, 100000)) {
+    //     return {};
+    // }
+
     if (upgradePath == 1 && level == 4) {
         std::shared_ptr<Attack> attack = std::make_shared<Fire>(GetPosition(), goalPosition, GetAttributes(), GetRadius());
         attacks.push_back(attack);

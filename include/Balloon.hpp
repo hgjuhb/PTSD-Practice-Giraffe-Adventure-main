@@ -35,14 +35,18 @@ public:
     void GetDebuff(std::vector<std::vector<int>> debuff);
     void Move();
     void SetType(Balloon::Type type);
+    //修改
+    void AddProperty(int property);
+    //
     virtual void Injured();
 
     [[nodiscard]] virtual std::vector<std::shared_ptr<Balloon>> Burst() const;
-
     [[nodiscard]] bool IsCollision(const std::shared_ptr<Attack>& other);
     [[nodiscard]] bool IsAlive() const { return m_Health > 0;};
     [[nodiscard]] bool IsArrive() const { return m_Coordinates.size() == 0;}
-
+    //修改
+    [[nodiscard]] int IsAttackEffective(std::vector<int> properties, int power);
+    //
     [[nodiscard]] Balloon::Type GetType() const { return m_Type; }
     [[nodiscard]] glm::vec2 GetPosition() const { return m_Transform.translation; }
     [[nodiscard]] std::vector<glm::vec2> GetCoordinates() const { return m_Coordinates; }
@@ -55,6 +59,9 @@ public:
     [[nodiscard]] std::vector<glm::vec2> GetConers() const { return m_Corners; }
     [[nodiscard]] float UpdateDebuff();
     [[nodiscard]] std::vector<std::shared_ptr<Util::GameObject>> GetDebuffViews();
+    //修改
+    [[nodiscard]] int GetProperty(int n);
+    //
 
 private:
     int m_Health = 0;
@@ -69,7 +76,9 @@ private:
     std::string m_ImagePath;
     std::vector<glm::vec2> m_Coordinates;
     std::vector<glm::vec2> m_Corners = {glm::vec2(0,0), glm::vec2(0,0), glm::vec2(0,0), glm::vec2(0,0)};
-
+    //修改
+    std::vector<int> m_Properties = {0};
+    //
     std::shared_ptr<DebuffView> snow =  std::make_shared<Snow>();
     std::shared_ptr<DebuffView> ice =  std::make_shared<Ice>();
     std::shared_ptr<DebuffView> rubber =  std::make_shared<Mucus>();

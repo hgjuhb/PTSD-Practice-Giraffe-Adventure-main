@@ -194,7 +194,9 @@ void App::Update() {
         for (auto& attackPtr : m_Attacks) {
             if (attackPtr -> IsAlive() && balloonPtr -> IsCollision(attackPtr)){
                 underAttack = true;
-                balloonPtr -> LoseHealth(attackPtr -> GetPower());
+                //修改
+                balloonPtr -> LoseHealth(balloonPtr -> IsAttackEffective(attackPtr -> GetProperties(), attackPtr -> GetPower()));
+                //
                 balloonPtr -> GetDebuff(attackPtr -> GetAttributes() -> GetDebuff());
                 attackPtr -> LosePenetration();
                 if (!attackPtr -> IsAlive()) {
@@ -305,6 +307,9 @@ void App::Update() {
                         }
                     }
                 }
+                else if (monkeyType == "NailMonkey") {
+                    m_ClickedMonkey -> UseSkill();
+                }
             }
             else if (clickInformationBoard != 0 && clickInformationBoard != 1) {
                 m_Counters[1] -> MinusValue(clickInformationBoard);
@@ -321,9 +326,20 @@ void App::Update() {
         }
     }
 
+    // fucking shit
     for (auto& monkeyPtr : m_Monkeys) {
         if (monkeyPtr -> Countdown()) {
+            //修改
+            std::vector<int> properties = monkeyPtr -> GetProperties();
+            std::sort(properties.begin(), properties.end());
+            bool camouflage = std::binary_search(properties.begin(), properties.end(), 2);
+            //
             for (auto& balloonPtr : m_Balloons) {
+                //修改
+                if (balloonPtr -> GetProperty(1) == 2 && !camouflage) {
+                    continue;
+                }
+                //
                 if (monkeyPtr -> IsCollision(balloonPtr)) {
                     std::vector<std::shared_ptr<Attack>> attacks = monkeyPtr -> ProduceAttack(balloonPtr->GetPosition());
                     for (auto& attackPtra : attacks) {
@@ -335,6 +351,18 @@ void App::Update() {
             }
         }
     }
+    for (auto& monkeyPtr : m_Monkeys) {
+        int status;
+        std::string monkeyType = abi::__cxa_demangle(typeid(*monkeyPtr).name(), 0, 0, &status);
+        if (monkeyType == "NailMonkey" && monkeyPtr -> GetSkillCountdown() > 0) {
+            std::vector<std::shared_ptr<Attack>> attacks = monkeyPtr -> ProduceAttack(glm::vec2(100000, 100000));
+            for (auto& attackPtr : attacks) {
+                m_Attacks.push_back(attackPtr);
+                m_Root.AddChild(attackPtr);
+            }
+        }
+    }
+
     for (auto& attackPtr : m_Attacks) {
         attackPtr -> Move();
         if (attackPtr -> IsOut()) {
