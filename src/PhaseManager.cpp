@@ -7,10 +7,9 @@ PhaseResourceManger::PhaseResourceManger() {
     m_Background = std::make_shared<BackgroundImage>();
 }
 
-void PhaseResourceManger::NextPhase() {
-    if (m_Phase == 7) return;
-    m_Background->NextPhase(imagePaths[m_Phase]);
-    m_TaskText->NextPhase(m_Phase++);
+void PhaseResourceManger::NextPhase(int next) {
+    LOG_DEBUG(1);
+    m_Background->NextPhase(imagePaths[next]);
 }
 
 std::vector<glm::vec2> PhaseResourceManger::GetCoordinates(int level) const {

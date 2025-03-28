@@ -20,8 +20,6 @@ private:
     std::string m_ImagePath;
 };
 
-#endif //DEBUFFVIEW_HPP
-
 class Snow : public DebuffView {
 public:
     explicit Snow();
@@ -36,3 +34,10 @@ class Mucus : public DebuffView {
 public:
     explicit Mucus();
 };
+
+class RockNinjaDebuff : public DebuffView {
+public:
+    explicit RockNinjaDebuff();
+};
+
+#endif //DEBUFFVIEW_HPP

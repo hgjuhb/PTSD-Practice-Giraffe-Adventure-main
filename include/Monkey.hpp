@@ -62,9 +62,7 @@ public:
       [[nodiscard]] std::shared_ptr<InformationBoard>& GetInfortionBoard(){ return m_InformationBoard;}
       [[nodiscard]] glm::vec2 GetSize() const { return m_Size; }
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> GetAttackChildren() const { return m_Attacks; }
-      //修改
       [[nodiscard]] std::vector<int> GetProperties() { return m_Attributes -> GetProperties(); }
-      //
 
 
 private:
@@ -121,9 +119,13 @@ class BoomerangMonkey : public Monkey {
 public:
       explicit BoomerangMonkey(glm::vec2 position);
       void UpdateLevel() override;
+      void UseSkill() override;
+      void EndSkill() override;
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
 private:
       bool has_BladedDisc_Around = false;
+      bool skillEffect = false;
+      int original_cd;
 };
 
 class NinjaMonkey : public Monkey {
@@ -161,7 +163,11 @@ public:
 class SuperMonkey : public Monkey {
 public:
       explicit SuperMonkey(glm::vec2 position);
+      void UseSkill() override;
+      void EndSkill() override;
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+private:
+      bool skillEffect = false;
 };
 
 class IceMonkey : public Monkey {

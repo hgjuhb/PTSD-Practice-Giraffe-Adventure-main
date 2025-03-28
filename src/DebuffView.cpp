@@ -35,3 +35,10 @@ Mucus::Mucus(){
     SetVisible(false);
     SetZIndex(2);
 };
+
+RockNinjaDebuff::RockNinjaDebuff(){
+    SetImage(GA_RESOURCE_DIR"/Debuff/RockNinja.png");
+    SetVisible(false);
+    SetZIndex(4);
+};
+

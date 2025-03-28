@@ -3,6 +3,11 @@
 #include <random>
 #include "Util/Logger.hpp"
 #define PI 3.14159265358979323846
+Attack::Attack(glm::vec2 position)
+{
+    m_Attributes = std::make_shared<Attributes>();
+    SetPosition(position);
+}
 
 Attack::Attack(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
 {
@@ -31,6 +36,9 @@ void Attack::SetSpeed(float speed) {
 
 void Attack::SetPower(int power) {
     m_Attributes -> SetPower(power);
+}
+void Attack::SetScale(glm::vec2 scale) {
+    m_Transform.scale = scale;
 }
 
 void Attack::SetUnitDirection(const glm::vec2& goalPosition) {
@@ -449,11 +457,11 @@ void Fire::Move() {
 Knife::Knife(glm::vec2 position, glm::vec2 goal_position, int radius, std::shared_ptr<Attributes> attributes)
 : Attack(position, goal_position, attributes){
     SetImage(GA_RESOURCE_DIR"/Attack/Knife.png");
-    m_Transform.scale = glm::vec2(1,1);
+    m_Transform.scale = glm::vec2(1.6,1.6);
     m_SourcePosition = position;
     m_Radius = radius;
-    SetWidth(50);
-    SetHeight(50);
+    SetWidth(80);
+    SetHeight(80);
     SetRectangleCorners();
 }
 
@@ -639,4 +647,280 @@ void BladedDisc_Around::RotationImage() {
 
 [[nodiscard]] bool BladedDisc_Around::IsOut() {
     return false;
+}
+
+//###########################################################
+
+Explosive_cannon::Explosive_cannon(glm::vec2 position)
+: Attack(position){
+    SetPosition(position);
+    
+}
+
+void Explosive_cannon::Move() {
+    return;
+}
+
+[[nodiscard]] bool Explosive_cannon::IsOut() {
+    if (time == 0) {
+        return true;
+    }
+    SetImage(GA_RESOURCE_DIR"/Attack/Explosive_cannon_" + std::to_string(time) + ".png");
+    time -= 1;
+    
+    return false;
+}
+
+[[nodiscard]] bool Explosive_cannon::IsAlive() {
+    return false;
+}
+
+//###########################################################
+
+RockNinja::RockNinja(glm::vec2 position)
+: Attack(position){
+    SetPosition(position);
+    SetImage(GA_RESOURCE_DIR"/Attack/rock_ninja.png");
+}
+
+void RockNinja::Move() {
+    return;
+}
+[[nodiscard]] bool RockNinja::IsOut() {
+    if (time == 0) {
+        return true;
+    }
+    time -= 1;
+    
+    return false;
+}
+
+[[nodiscard]] bool RockNinja::IsAlive() {
+    return false;
+}
+
+//###########################################################
+
+Nuclear_bomb::Nuclear_bomb(glm::vec2 position)
+: Attack(position){
+    SetPosition(glm::vec2(-100.0, 350.0));
+    SetImage(GA_RESOURCE_DIR"/Attack/Airplaneskill.png");
+}
+
+void Nuclear_bomb::Move() {
+    return;
+}
+
+[[nodiscard]] bool Nuclear_bomb::IsOut() {
+    if (time == 0) {
+        return true;
+    }
+    
+    if (time > 18) {
+        // 前120帧执行下落动画
+        SetPosition(glm::vec2(-100.0, 350.0 - (138 - time) * (350.0 / 120)));
+    } else {
+        // 最后18帧切换照片，每6帧切换一次
+        int photoIndex = (time - 1) / 6 + 1; // 1, 2, 3
+        SetImage(GA_RESOURCE_DIR"/Attack/Explosive_cannon_" + std::to_string(photoIndex) + ".png");
+    }
+    
+    time -= 1;
+    return false;
+}
+
+[[nodiscard]] bool Nuclear_bomb::IsAlive() {
+    return false;
+}
+//###########################################################   
+Rope_tail::Rope_tail(glm::vec2 sourcePosition, glm::vec2 targetPosition, std::shared_ptr<Attributes> attributes)
+: Attack(sourcePosition, targetPosition, attributes){
+    SetImage(GA_RESOURCE_DIR"/Attack/ropetail.png");
+    // 開始座標
+    m_SourcePosition = sourcePosition;
+    // 終點座標
+    m_GoalPosition = targetPosition;
+    SetSpeed(20.0f);
+    
+    SetWidth(30);
+    SetHeight(30);
+    SetRectangleCorners();
+}
+
+bool Rope_tail::CheckAndReverse() {
+    // 檢查是否靠近目標點
+    float distanceToTarget = glm::length(m_Transform.translation - m_GoalPosition);
+    float distanceToSource = glm::length(m_Transform.translation - m_SourcePosition);
+    
+    // 如果接近目標點且還沒有返回，則反轉方向
+    if (distanceToTarget <= 20.0f && !m_IsReturning) {
+        m_IsReturning = true;
+        SetSpeed(-20.0f);
+        LOG_DEBUG("reverse====================================");
+    }
+    // 如果正在返回並且接近起點，標記為結束
+    else if (distanceToSource <= 20.0f && m_IsReturning) {
+        m_IsFinished = true;
+    }
+    return m_IsReturning;
+}
+
+[[nodiscard]] bool Rope_tail::IsOut() {
+    return m_IsFinished;
+}
+
+[[nodiscard]] bool Rope_tail::IsAlive() {
+    return false;
+}
+
+glm::vec2 Rope_tail::GetSourcePosition() {
+    return m_SourcePosition;
+}
+
+//###########################################################
+
+Rope::Rope(glm::vec2 sourcePosition, glm::vec2 targetPosition, std::shared_ptr<Attributes> attributes)
+    : Attack(sourcePosition, targetPosition, attributes) {
+    SetImage(GA_RESOURCE_DIR"/Attack/rope.png");  // 透明PNG繩索圖片
+    // 计算方向向量
+    glm::vec2 direction = targetPosition - sourcePosition;
+    float length = glm::length(direction);
+    
+    // 设置缩放比例，使绳索长度匹配两点距离
+    SetScale(glm::vec2(length / 100.0f, 1.0f)); // 假设原图宽度为100
+    
+    // 计算旋转角度
+    // float angle = atan2(direction.y, direction.x);
+    // SetRotation(angle);
+    
+    // 将绳索放置在起点和终点的中间位置
+    SetPosition(sourcePosition + direction * 0.5f);
+}
+
+[[nodiscard]] bool Rope::IsOut() { // every frame automatically remove
+    if (time == 0) {
+        return true;
+    }
+    time -= 1;
+    
+    return false;
+}
+
+[[nodiscard]] bool Rope::IsAlive() {
+    return false;
+}
+// void Rope::SetFinished(bool finished) {
+//     this -> finished = finished;
+// }
+
+// ###########################################################
+
+Dropbox::Dropbox(glm::vec2 position)
+    : Attack(position) {
+    SetImage(GA_RESOURCE_DIR"/Attack/boxdrop.png");
+}   
+
+[[nodiscard]] bool Dropbox::IsOut() {
+    if (time > 20) {
+        // 前100帧：下落阶段
+        m_Transform.translation.y -= 3.0f;  // 每帧下降3单位
+    } else if (time == 20) {
+        // 切换到第二张图片
+        SetImage(GA_RESOURCE_DIR"/Attack/box.png");
+    } else if (time == 10) {
+        // 切换到第三张图片
+        SetImage(GA_RESOURCE_DIR"/Attack/boxopen.png");
+    } else if (time == 0) {
+        return true;
+    }
+    
+    time -= 1;  // 倒计时减少
+    return false;
+}
+
+[[nodiscard]] bool Dropbox::IsAlive() {
+    return false;
+}
+
+
+TheBird::TheBird(glm::vec2 centerPosition, glm::vec2 useless, std::shared_ptr<Attributes> attributes)
+    : Attack(centerPosition, useless, attributes) {
+    // 设置基本属性
+    SetImage(GA_RESOURCE_DIR"/Attack/thebird.png");
+    m_Transform.scale = glm::vec2(1.5, 1.5);
+    m_CenterPosition = centerPosition;
+    m_Radius = 100;
+    m_CurrentAngle = 0.0f;
+    
+    // 初始化穿透值相关变量
+    max_Penetration = 50;         // 设置最大穿透值为50
+    renewPenetrationCd = 5;       // 每5帧恢复一次穿透值
+    WillNotDisappear = true;      // 标记为不会因穿透值为0而消失
+    
+    // 设置初始穿透值
+    auto m_attributes = GetAttributes();
+    m_attributes->SetPenetration(max_Penetration);
+    
+    // 设置初始位置和碰撞区域
+    UpdatePosition();
+    SetWidth(60);
+    SetHeight(60);
+    SetRectangleCorners();
+}
+
+void TheBird::Move() {
+    // 增加角度以在圆周上移动
+    m_CurrentAngle += 0.03f;
+    if (m_CurrentAngle > 2 * PI) {
+        m_CurrentAngle -= 2 * PI;
+    }
+    
+    // 处理穿透值恢复
+    if (GetPenetration() == 0 && renewPenetrationCd > 0) {
+        renewPenetrationCd -= 1;
+        if (renewPenetrationCd == 0) {
+            // 恢复穿透值
+            auto m_attributes = GetAttributes();
+            m_attributes->SetPenetration(max_Penetration);
+            renewPenetrationCd = 5;  // 重置计时器
+            WillNotDisappear = true; // 确保不会消失
+        }
+    }
+    
+    // 更新位置
+    UpdatePosition();
+    
+    // 旋转图像
+    RotateImage();
+    
+    // 更新碰撞区域
+    SetRectangleCorners();
+}
+
+[[nodiscard]] bool TheBird::IsOut() {
+    if (time == 0) {
+        return true;
+    }
+    time -= 1;
+    return false;
+}
+
+[[nodiscard]] bool TheBird::IsAlive() {
+    if (GetPenetration() == 0 && WillNotDisappear) {
+        WillNotDisappear = false;
+        return true;
+    }
+    return GetPenetration() > 0 || WillNotDisappear;
+}
+
+void TheBird::UpdatePosition() {
+    // 计算圆周上的新位置
+    float x = m_CenterPosition.x + m_Radius * cos(m_CurrentAngle);
+    float y = m_CenterPosition.y + m_Radius * sin(m_CurrentAngle);
+    SetPosition(glm::vec2(x, y));
+}
+
+void TheBird::RotateImage() {
+    // 让图像随着移动旋转
+    m_Transform.rotation = m_CurrentAngle + PI/2;
 }

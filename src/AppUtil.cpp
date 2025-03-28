@@ -9,58 +9,91 @@
  * @warning Do not modify this function.
  * @note See README.md for the task details.
  */
-void App::ValidTask() {
-    switch (m_Phase) {
-        case Phase::LOBBY:
-            Reset();
-            SetLevel(1);
-            m_PRM->NextPhase();
+void App::ValidTask(int next_room) {
+    Reset();
+    m_PRM->NextPhase(next_room);
+    switch (next_room) {
+        case 0:
+            m_Phase = Phase::LOBBY;
+            AddBoard();
+            break;
+        case 1:
             m_Phase = Phase::FIRST_LEVEL;
+            SetLevel(1);
+            AddBoard();
             break;
-
-        case Phase::FIRST_LEVEL:
-            Reset();
-            SetLevel(2);
-            m_PRM->NextPhase();
+        case 2:
             m_Phase = Phase::SECOND_LEVEL;
+            SetLevel(2);
+            AddBoard();
             break;
-
-        case Phase::SECOND_LEVEL:
-            m_PRM->NextPhase();
-        m_Phase = Phase::SECOND_LEVEL;
-        break;
     }
 }
 
 void App::Reset() {
-    Level_Coordinates = {};
-    Level_Balloons = {};
-    if (!m_Counters.empty()) {
-        m_Root.RemoveChild(m_Counters[0]);
-        m_Root.RemoveChild(m_Counters[1]);
-        m_Root.RemoveChild(m_Counters[2]);
-        m_Root.RemoveChild(m_Counters[0]->GetCounterText());
-        m_Root.RemoveChild(m_Counters[1]->GetCounterText());
-        m_Root.RemoveChild(m_Counters[2]->GetCounterText());
-        m_Counters = {};
+    if (m_Phase != Phase::LOBBY){
+        Level_Coordinates = {};
+        Level_Balloons = {};
+        if (!m_Counters.empty()) {
+            m_Root.RemoveChild(m_Counters[0]);
+            m_Root.RemoveChild(m_Counters[1]);
+            m_Root.RemoveChild(m_Counters[2]);
+            m_Root.RemoveChild(m_Counters[0]->GetCounterText());
+            m_Root.RemoveChild(m_Counters[1]->GetCounterText());
+            m_Root.RemoveChild(m_Counters[2]->GetCounterText());
+            m_Counters = {};
+        }
+        if (!m_Monkeys.empty()) {
+            for (auto& monkeyPtr : m_Monkeys) {
+                m_Root.RemoveChild(monkeyPtr);
+                m_Root.RemoveChild(monkeyPtr -> GetRange());
+                std::vector<std::shared_ptr<Util::GameObject>> InfortionBoardObject = monkeyPtr -> GetAllInfortionBoardObject();
+                for (auto& objectPtr : InfortionBoardObject) {
+                    m_Root.RemoveChild(objectPtr);
+                }
+            }
+            m_Monkeys = {};
+        }
+
+        if (!m_Attacks.empty()) {
+            for (auto& attackPtr : m_Attacks) {
+                m_Root.RemoveChild(attackPtr);
+            }
+            m_Attacks = {};
+        }
+
+        for (auto& objectPtr : m_DragButtons) {
+            m_Root.RemoveChild(objectPtr);
+        }
+
+        std::vector<std::shared_ptr<Button>> BoardObject = Win_Board -> GetAllChildren();
+        for (auto& objectPtr : BoardObject) {
+            m_Root.RemoveChild(objectPtr);
+        }
+        m_Root.RemoveChild(Win_Board);
+        Win_Board = nullptr;
+
+        BoardObject = Lose_Board -> GetAllChildren();
+        for (auto& objectPtr : BoardObject) {
+            m_Root.RemoveChild(objectPtr);
+        }
+        m_Root.RemoveChild(Lose_Board);
+        Win_Board = nullptr;
     }
-    if (!m_Monkeys.empty()) {
-        for (auto& monkeyPtr : m_Monkeys) {
-            m_Root.RemoveChild(monkeyPtr);
-            m_Root.RemoveChild(monkeyPtr -> GetRange());
-            std::vector<std::shared_ptr<Util::GameObject>> InfortionBoardObject = monkeyPtr -> GetAllInfortionBoardObject();
-            for (auto& objectPtr : InfortionBoardObject) {
+    else {
+        for (auto& objectPtr : Lobby_Buttons) {
+            m_Root.RemoveChild(objectPtr);
+        }
+
+        if (Choose_Level_Board) {
+            std::vector<std::shared_ptr<Button>> BoardObject = Choose_Level_Board -> GetAllChildren();
+            for (auto& objectPtr : BoardObject) {
                 m_Root.RemoveChild(objectPtr);
             }
+            m_Root.RemoveChild(Choose_Level_Board);
+            Choose_Level_Board = nullptr;
         }
-        m_Monkeys = {};
-    }
 
-    if (!m_Attacks.empty()) {
-        for (auto& attackPtr : m_Attacks) {
-            m_Root.RemoveChild(attackPtr);
-        }
-        m_Attacks = {};
     }
 }
 
@@ -69,7 +102,7 @@ void App::SetLevel(int level) {
     Level_Balloons = m_PRM -> GetBalloons(level-1);
     Level_Placeable = m_PRM -> GetPlaceable(level-1);
 
-    m_Counters.push_back(std::make_shared<Heart>(20, 20));
+    m_Counters.push_back(std::make_shared<Heart>(1, 20));
     m_Root.AddChild(m_Counters[0]);
     m_Root.AddChild(m_Counters[0]->GetCounterText());
 
@@ -139,4 +172,68 @@ void App::SetLevel(int level) {
     auto m_MagicMonkeyButton = std::make_shared<MagicMonkeyButton>(glm::vec2(startX+buttonXSpacing, startY-buttonYSpacing*5));
     m_DragButtons.push_back(m_MagicMonkeyButton);
     m_Root.AddChild(m_MagicMonkeyButton);
+}
+
+void App::AddBoard() {
+    if (m_Phase != Phase::LOBBY) {
+        auto win_board = std::make_shared<Board>(GA_RESOURCE_DIR"/Board/board.png", glm::vec2(-100, 0), glm::vec2(2, 2));
+        Win_Board = win_board;
+        m_Root.AddChild(win_board);
+
+        auto button = std::make_shared<Button>(GA_RESOURCE_DIR"/Board/next_level.png", glm::vec2(-100, 75), glm::vec2(1, 1), 400, 100);
+        Win_Board -> AddButton(button);
+        m_Root.AddChild(button);
+
+        button = std::make_shared<Button>(GA_RESOURCE_DIR"/Board/back.png", glm::vec2(-100, -75),glm::vec2(1, 1),  400, 100);
+        Win_Board -> AddButton(button);
+        m_Root.AddChild(button);
+
+        auto lose_board = std::make_shared<Board>(GA_RESOURCE_DIR"/Board/board.png", glm::vec2(-100, 0), glm::vec2(2, 2));
+        Lose_Board = lose_board;
+        m_Root.AddChild(lose_board);
+
+        button = std::make_shared<Button>(GA_RESOURCE_DIR"/Board/restart.png", glm::vec2(-100, 75), glm::vec2(1, 1), 400, 100);
+        Lose_Board -> AddButton(button);
+        m_Root.AddChild(button);
+
+        button = std::make_shared<Button>(GA_RESOURCE_DIR"/Board/back.png", glm::vec2(-100, -75), glm::vec2(1, 1), 400, 100);
+        Lose_Board -> AddButton(button);
+        m_Root.AddChild(button);
+    }
+    else {
+        auto button = std::make_shared<Button>(GA_RESOURCE_DIR"/Board/normal_mode.png", glm::vec2(-280, -25), glm::vec2(0.8, 0.8), 480, 160);
+        button -> SetVisible(true);
+        button -> SetMaxZ(6);
+        Lobby_Buttons.push_back(button);
+        m_Root.AddChild(button);
+
+        button = std::make_shared<Button>(GA_RESOURCE_DIR"/Board/unlimit_mode.png", glm::vec2(-280, -230), glm::vec2(0.8, 0.8), 480, 160);
+        button -> SetVisible(true);
+        button -> SetMaxZ(6);
+        Lobby_Buttons.push_back(button);
+        m_Root.AddChild(button);
+
+        auto chooseLeevelBoard = std::make_shared<Board>(GA_RESOURCE_DIR"/Board/board.png", glm::vec2(0, 0), glm::vec2(3.5, 3.5));
+        Choose_Level_Board = chooseLeevelBoard;
+        m_Root.AddChild(chooseLeevelBoard);
+
+
+        int x = -408;
+        int y = 175;
+        for (int i=0; i < IsLevelUnlock.size(); i++) {
+            if (IsLevelUnlock[i]) {
+                button = std::make_shared<Button>(GA_RESOURCE_DIR"/Map/" + m_PRM -> GetImagePaths(i+1) + ".png", glm::vec2(x, y), glm::vec2(0.1813, 0.1813), 184, 140);
+            }
+            else {
+                button = std::make_shared<Button>(GA_RESOURCE_DIR"/Map/" + m_PRM -> GetImagePaths(i+1) + "_invalid.png", glm::vec2(x, y), glm::vec2(0.1813, 0.1813), 184, 140);
+            }
+            Choose_Level_Board -> AddButton(button);
+            m_Root.AddChild(button);
+            x += 204;
+            if (i == 4) {
+                x = -408;
+                y = -175;
+            }
+        }
+    }
 }

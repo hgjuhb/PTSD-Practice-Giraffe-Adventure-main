@@ -16,7 +16,6 @@ public:
   [[nodiscard]] int GetPower() const { return m_Power; }
   [[nodiscard]] float GetSpeed() const { return m_Speed; }
   [[nodiscard]] std::vector<std::vector<int>> GetDebuff() const { return m_Debuff; }
-  //修改
   [[nodiscard]] std::vector<int> GetProperties() const { return m_Properties; }
   //
 

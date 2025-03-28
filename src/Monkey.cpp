@@ -258,7 +258,6 @@ DartMonkey::DartMonkey(glm::vec2 position) : Monkey(position){
     SetImage(GA_RESOURCE_DIR"/Monkey/DartMonkey.png");
     SetCd(50);
     SetRadius(150);
-    SetSkillTime(600);
     UpdateRange();
 }
 
@@ -345,17 +344,21 @@ void DartMonkey::UpdateLevel() {
             case 1:
                 SetRadius(GetRadius() *1.25);
                 UpdateRange();
+                break;
             case 2:
                 SetRadius(GetRadius() *1.25);
                 UpdateRange();
                 attributes -> AddProperty(2);
+                break;
             case 3:
                 SetCd(150);
                 ResetCount();
                 attributes -> SetPenetration(18);
+                break;
             case 4:
                 attributes -> AddProperty(1);
                 attributes -> AddProperty(3);
+                break;
         }
     }
     else {
@@ -363,9 +366,11 @@ void DartMonkey::UpdateLevel() {
             case 1:
                 attributes -> SetPenetration(2);
                 attributes -> SetPower(2);
+                break;
             case 2:
                 attributes -> SetPenetration(3);
                 attributes -> SetPower(3);
+                break;
         }
     }
 }
@@ -388,7 +393,7 @@ NailMonkey::NailMonkey(glm::vec2 position) : Monkey(position){
     SetSize(glm::vec2(50.0f, 50.0f));
     SetCd(80);
     SetRadius(150);
-    SetSkillTime(360);  // 技能持续时间
+    SetSkillTime(450);  // 技能持续时间
     UpdateRange();
 }
 
@@ -517,9 +522,11 @@ void NailMonkey::UpdateLevel() {
             case 1:
                 SetCd(60);
                 ResetCount();
+                break;
             case 2:
                 SetCd(30);
                 ResetCount();
+                break;
         }
     }
     else {
@@ -527,9 +534,11 @@ void NailMonkey::UpdateLevel() {
             case 1:
                 SetRadius(GetRadius() *1.25);
                 UpdateRange();
+                break;
             case 2:
                 SetRadius(GetRadius() *1.25);
                 UpdateRange();
+                break;
         }
     }
 }
@@ -576,13 +585,17 @@ void SniperMonkey::UpdateLevel() {
                 attributes -> SetPenetration(4);
                 attributes -> AddProperty(1);
                 attributes -> AddProperty(4);
+                break;
             case 2:
                 attributes -> SetPenetration(7);
+                break;
             case 3:
                 attributes -> SetPenetration(18);
                 attributes -> AddProperty(3);
+                break;
             case 4:
                 attributes -> AddDebuff({3, 10});
+                break;
         }
     }
     else {
@@ -590,12 +603,15 @@ void SniperMonkey::UpdateLevel() {
             case 1:
                 SetCd(90);
                 ResetCount();
+                break;
             case 2:
                 attributes -> AddProperty(2);
+                break;
             case 3:
                 attributes -> AddProperty(2);
                 SetCd(30);
                 ResetCount();
+                break;
         }
     }
 }
@@ -623,6 +639,21 @@ BoomerangMonkey::BoomerangMonkey(glm::vec2 position) : Monkey(position){
     SetRadius(120);
     UpdateRange();
     SetSize(glm::vec2(50.0f, 50.0f));
+}
+void BoomerangMonkey::UseSkill() {
+    skillEffect = true;
+    SetImage(GA_RESOURCE_DIR"/Monkey/BoomerangMonkey_skilling.png");
+    original_cd = GetCd();
+    SetCd(10);
+    ResetCount();
+    SetSkillCountdown();
+}
+
+void BoomerangMonkey::EndSkill() {
+    skillEffect = false;
+    SetImage(GA_RESOURCE_DIR"/Monkey/BoomerangMonkey.png");
+    SetCd(original_cd);
+    ResetCount();
 }
 
 std::vector<std::shared_ptr<Attack>> BoomerangMonkey::ProduceAttack(glm::vec2 goalPosition) {
@@ -664,24 +695,30 @@ void BoomerangMonkey::UpdateLevel() {
         switch (level) {
             case 1:
                 attributes -> SetPenetration(7);
+                break;
             case 2:
                 attributes -> SetPower(3);
                 attributes -> SetSpeed(20);
                 SetCd(60);
                 ResetCount();
+                break;
             case 4:
                 attributes -> AddProperty(2);
+                break;
         }
     }
     else {
         switch (level) {
             case 1:
                 attributes -> AddProperty(4);
+                break;
             case 2:
                 attributes -> AddProperty(1);
+                break;
             case 3:
                 SetCd(40);
                 ResetCount();
+                break;
         }
     }
 }
@@ -740,8 +777,10 @@ void NinjaMonkey::UpdateLevel() {
                 ResetCount();
                 SetRadius(GetRadius()*1.5);
                 UpdateRange();
+                break;
             case 2:
                 attributes -> SetPenetration(4);
+                break;
         }
     }
     else {
@@ -913,7 +952,7 @@ SuperMonkey::SuperMonkey(glm::vec2 position) : Monkey(position){
     attributes -> SetPenetration(1);
     attributes -> SetPower(3);
     attributes -> SetSpeed(60);
-
+    SetSkillTime(100);
     auto &informationBoard = GetInfortionBoard();
     informationBoard = std::make_shared<SuperMonkeyInformationBoard>();
 
@@ -923,6 +962,14 @@ SuperMonkey::SuperMonkey(glm::vec2 position) : Monkey(position){
     UpdateRange();
 }
 
+void SuperMonkey::UseSkill() {
+    skillEffect = true;
+
+    SetSkillCountdown();
+}
+void SuperMonkey::EndSkill() {
+    skillEffect = false;
+}
 std::vector<std::shared_ptr<Attack>> SuperMonkey::ProduceAttack(glm::vec2 goalPosition) {
     ResetCount();
     SetRotation(goalPosition);

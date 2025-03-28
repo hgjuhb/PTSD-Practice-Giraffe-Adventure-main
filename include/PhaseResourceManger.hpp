@@ -14,10 +14,12 @@ public:
         return {m_TaskText, m_Background};
     }
 
-    void NextPhase();
+    void NextPhase(int next);
     [[nodiscard]] std::vector<glm::vec2> GetCoordinates(int level) const;
     [[nodiscard]] std::vector<std::vector<int>> GetBalloons(int level) const;
     [[nodiscard]] std::vector<std::vector<std::vector<glm::vec2>>> GetPlaceable(int level) const;
+    [[nodiscard]] std::string GetImagePaths(int num) {return imagePaths[num];}
+
 
 private:
     std::shared_ptr<TaskText> m_TaskText;
@@ -112,12 +114,21 @@ private:
             glm::vec2(384.0f, -227.0f)}
     };
     std::vector<std::string> imagePaths = {
+        "Lobby",
         "InTheWallDouble",
         "InTheWall",
+        "Docks",
+        "Ports",
+        "Mayan",
+        "BasaltColumns",
+        "SandsOfTime",
+        "BloontoniumMines",
+        "BloontoniumMinesDouble",
+        "DinoGraveyard"
     };
 
     std::vector<std::vector<std::vector<int>>> balloons = {
-        {{15,15,15,15}, {1,1,1,1,1,1}, {2,2,2,2,2,2}, {3,3,3,3,3,3}, {4,4,4,4,4,4},
+        {{15}, {0}, {0}, {0}, {0},
             {5,5,5,5,5,5}, {6,6,6,6,6,6}, {7,7,7,7,7,7}, {8,8,8,8,8,8}, {9,9,9,9,9,9} },
 
         {{0,0,0,0,0,0}, {1,1,1,1,1,1}, {2,2,2,2,2,2}, {3,3,3,3,3,3}, {4,4,4,4,4,4},

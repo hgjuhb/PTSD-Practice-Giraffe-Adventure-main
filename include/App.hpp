@@ -11,7 +11,8 @@
 #include "Counter.hpp"
 #include "Monkey.hpp"
 #include "DragButton.hpp"
-#include "Range.hpp"
+#include "Board.hpp"
+#include "Button.hpp"
 
 class App {
 public:
@@ -19,6 +20,12 @@ public:
         START,
         UPDATE,
         END,
+    };
+
+    enum class Phase {
+        LOBBY,
+        FIRST_LEVEL,
+        SECOND_LEVEL,
     };
 
     State GetCurrentState() const { return m_CurrentState; }
@@ -30,16 +37,10 @@ public:
     void End(); // NOLINT(readability-convert-member-functions-to-static)
 
 private:
-    void ValidTask();
+    void ValidTask(int next_room);
     void Reset();
     void SetLevel(int level);
-
-private:
-    enum class Phase {
-        LOBBY,
-        FIRST_LEVEL,
-        SECOND_LEVEL,
-    };
+    void AddBoard();
 
 
     State m_CurrentState = State::START;
@@ -57,6 +58,11 @@ private:
     std::shared_ptr<Monkey> m_DragMonkey;
     std::shared_ptr<Monkey> m_testMonkey;
     std::shared_ptr<Monkey> m_ClickedMonkey;
+    std::shared_ptr<Board> Win_Board;
+    std::shared_ptr<Board> Lose_Board;
+    std::vector<std::shared_ptr<Button>> Lobby_Buttons;
+    std::shared_ptr<Board> Choose_Level_Board;
+    std::vector<bool> IsLevelUnlock = {true, false, false, false, false, false, false, false, false, false};
     
 
     bool m_EnterDown = false;

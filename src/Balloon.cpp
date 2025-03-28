@@ -37,6 +37,16 @@ void Balloon::Move() {
         SetRectangleCorners();
     }
 }
+void Balloon::SetTargetPosition(const glm::vec2& targetPosition) {
+    // glm::vec2 position = m_Coordinates[0];
+    // glm::vec2 origin_position = m_Transform.translation;
+    m_Coordinates.clear();
+    // SetPosition(position);
+    // m_Coordinates.push_back(position);
+    m_Coordinates.push_back(targetPosition);
+    // Move();
+    // SetPosition(origin_position);
+}
 
 void Balloon::SetMoney(int n) {
     m_Money = n;
@@ -70,6 +80,11 @@ void Balloon::SetRotation() {
         m_Radian = angle_rad;
         m_Transform.rotation = angle_rad;
     }
+}
+
+void Balloon::SetRotation(float angle) {
+    m_Radian = angle;
+    m_Transform.rotation = angle;
 }
 
 void Balloon::SetRectangleCorners(){
@@ -146,8 +161,6 @@ bool Balloon::IsCollision(const std::shared_ptr<Attack>& other) {
     }
     return true;
 }
-
-//修改
 void Balloon::AddProperty(int property) {
     m_Properties.push_back(property);
 }
@@ -171,13 +184,15 @@ int Balloon::IsAttackEffective(std::vector<int> properties, int power) {
             return 0;
         }
     }
+    if (GetType() == Balloon::Type::spaceship && std::binary_search(properties.begin(), properties.end(), 5)) {
+        return power*10;
+    }
     return power;
 }
 
 int Balloon::GetProperty(int n) {
     return *(m_Properties.rbegin() + (n - 1));
 }
-//
 
 void Balloon::Injured() {}
 
@@ -194,7 +209,7 @@ void Balloon::GetDebuff(std::vector<std::vector<int>> debuff) {
         m_Debuff[0] = 0;
         m_Debuff[1] = 100;
     }
-    //修改
+    
     if (m_Debuff[1] != 0 && !std::binary_search(m_Properties.begin(), m_Properties.end(), 1)) {
         m_Properties.push_back(1);
     }
@@ -202,7 +217,7 @@ void Balloon::GetDebuff(std::vector<std::vector<int>> debuff) {
 }
 
 std::vector<std::shared_ptr<Util::GameObject>> Balloon::GetDebuffViews() {
-    return {snow, ice, rubber};
+    return {snow, ice, rubber, rock_ninja};
 }
 
 float Balloon::UpdateDebuff() {
@@ -212,9 +227,10 @@ float Balloon::UpdateDebuff() {
             if (i == 0) { snow -> Update(GetPosition(), true); }
             else if (i == 1) { ice -> Update(GetPosition(), true); }
             else if (i == 2) { rubber -> Update(GetPosition(), true); }
+            else if (i == 4) { rock_ninja -> Update(GetPosition(), true); }
             slow *= debuff_slow[i];
             m_Debuff[i] -= 1;
-            //修改
+            
             if (i == 1 && m_Debuff[i] == 0) {
                 m_Properties.pop_back();
             }
@@ -223,6 +239,7 @@ float Balloon::UpdateDebuff() {
         else if (i == 0) { snow -> Update(GetPosition(), false); }
         else if (i == 1) { ice -> Update(GetPosition(), false); }
         else if (i == 2) { rubber -> Update(GetPosition(), false); }
+        else if (i == 4) { rock_ninja -> Update(GetPosition(), false);}
     }
     return slow;
 };
@@ -450,9 +467,7 @@ IRON::IRON(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetSpeed(1.0);
     SetHealth(1);
     SetRectangleCorners();
-    //修改
     AddProperty(1);
-    //
 }
 
 std::vector<std::shared_ptr<Balloon>> IRON::Burst() const{
@@ -503,9 +518,7 @@ CERAMICS::CERAMICS(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetSpeed(2.5);
     SetHealth(10);
     SetRectangleCorners();
-    //修改
     AddProperty(3);
-    //
 }
 
 std::vector<std::shared_ptr<Balloon>> CERAMICS::Burst() const{
@@ -645,10 +658,8 @@ DDT::DDT(std::vector<glm::vec2> coordinates) : Balloon(coordinates){
     SetStageHealth(100);
     SetRotation();
     SetRectangleCorners();
-    //修改
     AddProperty(1);
     AddProperty(2);
-    //
 }
 
 std::vector<std::shared_ptr<Balloon>> DDT::Burst() const{
