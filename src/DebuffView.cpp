@@ -42,3 +42,24 @@ RockNinjaDebuff::RockNinjaDebuff(){
     SetZIndex(4);
 };
 
+Dizzylight::Dizzylight(){
+    SetImage(GA_RESOURCE_DIR"/Debuff/dizzylight.png");
+    SetVisible(false);
+    SetZIndex(4);
+};
+
+Iceburst::Iceburst(){
+    SetImage(GA_RESOURCE_DIR"/Debuff/Iceburst.png");
+    SetVisible(false);
+    m_Transform.scale = glm::vec2(0.5f, 0.5f);
+    SetZIndex(4);
+};
+
+
+Iced::Iced(){
+    SetImage(GA_RESOURCE_DIR"/Debuff/iced.png");
+    SetVisible(false);
+    m_Transform.scale = glm::vec2(0.1f, 0.1f);
+    SetZIndex(4);
+};
+

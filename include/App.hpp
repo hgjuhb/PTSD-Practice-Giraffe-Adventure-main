@@ -45,7 +45,7 @@ private:
 
     State m_CurrentState = State::START;
     Phase m_Phase = Phase::LOBBY;
-    std::vector<glm::vec2> Level_Coordinates;
+    std::vector<std::vector<glm::vec2>> Level_Coordinates;
     std::vector<std::vector<int>> Level_Balloons;
     std::vector<std::vector<std::vector<glm::vec2>>> Level_Placeable;
     Util::Renderer m_Root;

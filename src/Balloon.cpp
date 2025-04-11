@@ -1,5 +1,6 @@
 #include "Balloon.hpp"
 #include "Util/Logger.hpp"
+#include "Attack.hpp"
 
 Balloon::Balloon(std::vector<glm::vec2> coordinates)
     : m_Coordinates(coordinates){
@@ -114,9 +115,14 @@ void Balloon::LoseHealth(int lose) {
     m_Health -= lose;;
 }
 
-std::vector<std::shared_ptr<Balloon>> Balloon::Burst() const {
+
+std::vector<std::shared_ptr<Balloon>> Balloon::Burst() const{
     std::vector<std::shared_ptr<Balloon>> balloons;
+    
     return balloons;
+}
+void Balloon::ClearDebuff() {
+    std::fill(m_Debuff.begin(), m_Debuff.end(), 0);
 }
 
 bool Balloon::IsCollision(const std::shared_ptr<Attack>& other) {
@@ -164,9 +170,7 @@ bool Balloon::IsCollision(const std::shared_ptr<Attack>& other) {
 void Balloon::AddProperty(int property) {
     m_Properties.push_back(property);
 }
-//
 
-//修改
 int Balloon::IsAttackEffective(std::vector<int> properties, int power) {
     std::sort(properties.begin(), properties.end());
     int property = GetProperty(1);
@@ -196,13 +200,21 @@ int Balloon::GetProperty(int n) {
 
 void Balloon::Injured() {}
 
-void Balloon::GetDebuff(std::vector<std::vector<int>> debuff) {
+void Balloon::GetDebuff(std::vector<std::vector<int>> debuff) { // 上debuff的地方
     for (auto tmp : debuff) {
         if (tmp[0] == 0 and m_Debuff[1] != 0) {
             continue;
         }
-        if (tmp[0] != 3 || GetType() == spaceship) {
-            m_Debuff[tmp[0]] += tmp[1];
+        if (tmp[0] != 3 || GetType() == spaceship) { // 上buff的地方
+            if (m_Debuff[5] == 0) { // 如果忍者擊退沒有在
+                m_Debuff[tmp[0]] += tmp[1];
+            }
+        }
+        if (tmp[0] == 5){
+            int random = rand() % 100;
+            if (random < 50) {
+                m_Debuff[tmp[0]] -= tmp[1];
+            }
         }
     }
     if (m_Debuff[0] > 350) {
@@ -210,24 +222,47 @@ void Balloon::GetDebuff(std::vector<std::vector<int>> debuff) {
         m_Debuff[1] = 100;
     }
     
+    
     if (m_Debuff[1] != 0 && !std::binary_search(m_Properties.begin(), m_Properties.end(), 1)) {
         m_Properties.push_back(1);
     }
-    //
+    if (m_Debuff[9] != 0 && m_Debuff[1] != 0) { //上永久凍土
+        m_Debuff[8] = 2000;
+    }
+    if (m_Debuff[12] > 0 && m_Debuff[2] > 0) { //上glue damage
+        LOG_DEBUG("glue damage");
+        LoseHealth(1);
+    }
+    if (m_Debuff[13] > 0 && m_Debuff[2] > 0) { //上super heart glue
+        LOG_DEBUG("super heart glue");
+        LoseHealth(2);
+    }
+    if (m_Debuff[14] > 0 && m_Debuff[2] > 0) { //上super heart glue
+        LOG_DEBUG("super heart glue1");
+        LoseHealth(10);
+    }
+    if (m_Debuff[15] > 0) { //上wind clear debuff
+        LOG_DEBUG("wind clear debuff");
+        m_Debuff[0] = 0;
+        m_Debuff[1] = 0;
+        m_Debuff[2] = 0;
+    }
 }
 
-std::vector<std::shared_ptr<Util::GameObject>> Balloon::GetDebuffViews() {
-    return {snow, ice, rubber, rock_ninja};
-}
-
-float Balloon::UpdateDebuff() {
+float Balloon::UpdateDebuff() { //用來顯示 debuff 特效 和 扣除debuff 持續時間
     float slow = 1;
     for (int i = 0; i < m_Debuff.size(); i++) {
         if (m_Debuff[i] != 0) {
             if (i == 0) { snow -> Update(GetPosition(), true); }
-            else if (i == 1) { ice -> Update(GetPosition(), true); }
+            else if (i == 1) { ice -> Update(GetPosition(), true);}
             else if (i == 2) { rubber -> Update(GetPosition(), true); }
             else if (i == 4) { rock_ninja -> Update(GetPosition(), true); }
+            else if (i == 6) { dizzylight -> Update(GetPosition(), true); }
+            else if (i == 7) { iceburst -> Update(GetPosition(), true); }
+            else if (i == 8) { iced -> Update(GetPosition(), true); }
+            else if (i == 9) { m_Debuff[i] += 1; }
+            else if (i == 11) { m_Debuff[i] += 1;}
+
             slow *= debuff_slow[i];
             m_Debuff[i] -= 1;
             
@@ -240,9 +275,16 @@ float Balloon::UpdateDebuff() {
         else if (i == 1) { ice -> Update(GetPosition(), false); }
         else if (i == 2) { rubber -> Update(GetPosition(), false); }
         else if (i == 4) { rock_ninja -> Update(GetPosition(), false);}
+        else if (i == 6) { dizzylight -> Update(GetPosition(), false); }
+        else if (i == 7) { iceburst -> Update(GetPosition(), false); }
+        else if (i == 8) { iced -> Update(GetPosition(), false); }
     }
     return slow;
 };
+
+std::vector<std::shared_ptr<Util::GameObject>> Balloon::GetDebuffViews() {
+    return {snow, ice, rubber, rock_ninja, dizzylight, iceburst, iced};
+}
 
 void Balloon::SetType(Balloon::Type type) {
     m_Type = type;

@@ -12,7 +12,7 @@ void PhaseResourceManger::NextPhase(int next) {
     m_Background->NextPhase(imagePaths[next]);
 }
 
-std::vector<glm::vec2> PhaseResourceManger::GetCoordinates(int level) const {
+std::vector<std::vector<glm::vec2>> PhaseResourceManger::GetCoordinates(int level) const {
     return coordinates[level];
 }
 

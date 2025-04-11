@@ -11,6 +11,7 @@ public:
   void SetSpeed(int speed){ m_Speed = speed;}
   void AddProperty(int property){ m_Properties.push_back(property);}
   void AddDebuff(std::vector<int> debuff){ m_Debuff.push_back(debuff);}
+  
 
   [[nodiscard]] int GetPenetration() const { return m_Penetration; }
   [[nodiscard]] int GetPower() const { return m_Power; }

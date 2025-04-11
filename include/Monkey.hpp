@@ -42,6 +42,7 @@ public:
       int GetSkillTime() const { return skill_time; }
       int GetSkillCountdown() const { return skill_countdown; }
       // bool GetSkillEffect() const { return skillEffect; }
+      int GetCount() const { return m_Count; }
 
       [[nodiscard]] int IsInformationBoardClicked(glm::vec2 mousePosition, int money);
       [[nodiscard]] virtual std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition);
@@ -63,6 +64,7 @@ public:
       [[nodiscard]] glm::vec2 GetSize() const { return m_Size; }
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> GetAttackChildren() const { return m_Attacks; }
       [[nodiscard]] std::vector<int> GetProperties() { return m_Attributes -> GetProperties(); }
+      [[nodiscard]] virtual bool otheratk();
 
 
 private:
@@ -78,6 +80,7 @@ private:
       glm::vec2 m_Size;
       int m_Count = 0;
       int m_Cd;
+      std::vector<int> otheratk_cd = {0,0,0,0,0,0,0};
       std::shared_ptr<Range> m_Range = std::make_shared<Range>(m_Transform.translation, m_Radius);
       std::shared_ptr<InformationBoard> m_InformationBoard = std::make_shared<InformationBoard>();
       std::vector<std::shared_ptr<Attack>> m_Attacks = {};
@@ -139,6 +142,7 @@ class Cannon : public Monkey {
 public:
       explicit Cannon(glm::vec2 position);
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+      void UpdateLevel() override;
 };
 
 
@@ -148,9 +152,13 @@ public:
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
       [[nodiscard]] bool IsCollision(const std::shared_ptr<Balloon>& other) const override;
       glm::vec2 ProduceCoordinateByAngle(glm::vec2 position, float angle);
+      void UpdateLevel() override;
+      bool otheratk() override;
 private:
       int airplane_num = 1;
       std::vector<std::shared_ptr<Attack>> m_Airplanes;
+      bool attack_type = true;
+      std::vector<int> otheratk_cd = {0,0};
 };
 
 class BuccaneerMonkey : public Monkey {
@@ -158,6 +166,13 @@ public:
       explicit BuccaneerMonkey(glm::vec2 position);
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
       [[nodiscard]] bool Placeable(std::vector<std::vector<std::vector<glm::vec2>>> Level_Placeable) override;
+      void UpdateLevel() override;
+      glm::vec2 ProduceCoordinateByAngle(glm::vec2 position, float angle);
+      bool otheratk() override;
+private:
+      int airplane_num = 1;
+      std::vector<std::shared_ptr<Attack>> m_Airplanes;
+      std::vector<int> otheratk_cd = {0,0};//1 grap 2 bomb
 };
 
 class SuperMonkey : public Monkey {
@@ -173,12 +188,14 @@ private:
 class IceMonkey : public Monkey {
 public:
       explicit IceMonkey(glm::vec2 position);
+      void UpdateLevel() override;
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
 };
 
 class RubberMonkey : public Monkey {
 public:
       explicit RubberMonkey(glm::vec2 position);
+      void UpdateLevel() override;
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
 };
 
@@ -186,4 +203,9 @@ class MagicMonkey : public Monkey {
 public:
       explicit MagicMonkey(glm::vec2 position);
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
+      void UpdateLevel() override;
+      bool otheratk() override;
+
+private:
+      std::vector<int> otheratk_cd = {0,0};
 };

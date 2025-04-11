@@ -61,6 +61,16 @@ void App::Reset() {
             }
             m_Attacks = {};
         }
+        if (!m_Balloons.empty()) {
+            for (auto& balloonPtr : m_Balloons) {
+                std::vector<std::shared_ptr<Util::GameObject>> debuffView = balloonPtr -> GetDebuffViews();
+                for (auto& debuffPtr : debuffView) {
+                    m_Root.RemoveChild(debuffPtr);
+                }
+                m_Root.RemoveChild(balloonPtr);
+            }
+            m_Balloons = {};
+        }
 
         for (auto& objectPtr : m_DragButtons) {
             m_Root.RemoveChild(objectPtr);
@@ -102,7 +112,7 @@ void App::SetLevel(int level) {
     Level_Balloons = m_PRM -> GetBalloons(level-1);
     Level_Placeable = m_PRM -> GetPlaceable(level-1);
 
-    m_Counters.push_back(std::make_shared<Heart>(1, 20));
+    m_Counters.push_back(std::make_shared<Heart>(20, 20));
     m_Root.AddChild(m_Counters[0]);
     m_Root.AddChild(m_Counters[0]->GetCounterText());
 

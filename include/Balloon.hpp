@@ -7,9 +7,10 @@
 #include <memory>
 #include "Util/Animation.hpp"
 #include "Util/GameObject.hpp"
-#include "Attack.hpp"
 #include "DebuffView.hpp"
 
+// 前向聲明
+class Attack;
 
 class Balloon : public Util::GameObject {
 public:
@@ -39,7 +40,8 @@ public:
     void AddProperty(int property);
     void SetTargetPosition(const glm::vec2& targetPosition);
     virtual void Injured();
-    
+    int ShowDebuff(int n){return m_Debuff[n];}
+    void ClearDebuff();
 
 
 
@@ -83,8 +85,11 @@ private:
     std::shared_ptr<DebuffView> ice =  std::make_shared<Ice>();
     std::shared_ptr<DebuffView> rubber =  std::make_shared<Mucus>();
     std::shared_ptr<DebuffView> rock_ninja =  std::make_shared<RockNinjaDebuff>();
-    std::vector<int> m_Debuff = {0, 0, 0, 0, 0};
-    std::vector<float> debuff_slow = {0.5, 0, 0.2, 0, 0.5}; // 減速
+    std::shared_ptr<DebuffView> dizzylight =  std::make_shared<Dizzylight>(); // make debuff step1
+    std::shared_ptr<DebuffView> iceburst =  std::make_shared<Iceburst>(); // make debuff step2
+    std::shared_ptr<DebuffView> iced =  std::make_shared<Iced>(); // make debuff step2
+    std::vector<int> m_Debuff = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0};// make debuff step2
+    std::vector<float> debuff_slow = {0.5, 0, 0.2, 0, 0.5, -0.5, 0, 1, 0.5, 1, 1, 1, 1, 1, 1,-0.2}; // make debuff step3
 };
 
 class RED : public Balloon {
