@@ -8,7 +8,6 @@ PhaseResourceManger::PhaseResourceManger() {
 }
 
 void PhaseResourceManger::NextPhase(int next) {
-    LOG_DEBUG(1);
     m_Background->NextPhase(imagePaths[next]);
 }
 

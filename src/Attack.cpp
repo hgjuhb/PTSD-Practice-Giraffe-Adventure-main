@@ -558,7 +558,10 @@ Airplane::Airplane(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<
     max_Penetration = 5;
     SetRectangleCorners();
 }
-
+void Airplane::SetPosition(const glm::vec2& Position){
+    m_Transform.translation = Position;
+    m_SourcePosition = Position;
+}
 void Airplane::Move() {
     if (time == 0) {
         time = 20000;  // 設定初始時間
@@ -621,6 +624,15 @@ Ray::Ray(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes
     SetHeight(32);
     SetRectangleCorners();
 }
+Superlight::Superlight(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes)
+: Attack(position, goal_position, attributes){
+    SetImage(GA_RESOURCE_DIR"/Attack/superlight.png");
+    m_Transform.scale = glm::vec2( 1, 1);
+    SetWidth(50);
+    SetHeight(50);
+    SetRectangleCorners();
+}
+
 
 //##########################################################
 
@@ -1457,7 +1469,7 @@ WindAttack::WindAttack(glm::vec2 position, glm::vec2 goal_position, std::shared_
     m_HasReachedGoal = false;
     m_StayDuration = 100; // Stay for 100 frames
     GetAttributes() -> AddDebuff({15,2});
-    
+    SetZIndex(100);
     SetWidth(60);
     SetHeight(60);
     

@@ -1,11 +1,10 @@
 #include "App.hpp"
-
 #include "Core/Context.hpp"
 
 int main(int, char**) {
     auto context = Core::Context::GetInstance();
     App app;
-
+    context -> Setup();
     while (!context->GetExit()) {
         switch (app.GetCurrentState()) {
             case App::State::START:

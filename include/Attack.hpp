@@ -14,7 +14,7 @@ public:
     explicit Attack();
     explicit Attack(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes);
     explicit Attack(glm::vec2 position);
-    void SetPosition(const glm::vec2& Position);
+    virtual void SetPosition(const glm::vec2& Position);
     void SetWidth(int width);
     void SetHeight(int height);
     void SetImage(const std::string& ImagePath);
@@ -69,7 +69,10 @@ private:
     int m_Radius;
     glm::vec2 m_SourcePosition;
 };
-
+class Superlight : public Attack {
+public:
+    explicit Superlight(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes);
+};
 class Boomerang : public Attack {
 public:
     explicit Boomerang(glm::vec2 position, glm::vec2 goal_position, std::shared_ptr<Attributes> attributes);
@@ -161,6 +164,7 @@ public:
     void Move() override;
     [[nodiscard]] bool IsOut() override;
     [[nodiscard]] bool IsAlive() override;
+    void SetPosition(const glm::vec2& Position) override;
     void RotationImage(glm::vec2 position);
 private:
     int time = 0;

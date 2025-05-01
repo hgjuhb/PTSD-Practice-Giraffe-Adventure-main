@@ -34,6 +34,11 @@ public:
       void SkillCountdown();
       virtual void UseSkill();
       virtual void EndSkill();
+      void SetTag(const std::string& tag) { m_Tag = tag; }
+      [[nodiscard]] std::string GetTag() const { return m_Tag; }
+      void SetProperties(const std::vector<int>& properties);
+      void addtogethermonkey(std::shared_ptr<Monkey> monkey);
+      std::vector<std::shared_ptr<Monkey>> gettogethermonkey() {return togethersell_monkeys;} ;
 
       bool Touched(Monkey& other);
       bool IsMonkeyInRectangle(glm::vec2 topLeft, glm::vec2 bottomRight);
@@ -68,6 +73,8 @@ public:
 
 
 private:
+      std::string m_Tag = "";
+      std::vector<std::shared_ptr<Monkey>> togethersell_monkeys;
       int skill_time = 0;
       int skill_countdown = 0;
       int level = 0;
@@ -180,9 +187,11 @@ public:
       explicit SuperMonkey(glm::vec2 position);
       void UseSkill() override;
       void EndSkill() override;
+      void UpdateLevel() override;
       [[nodiscard]] std::vector<std::shared_ptr<Attack>> ProduceAttack(glm::vec2 goalPosition) override;
 private:
       bool skillEffect = false;
+      std::vector<std::shared_ptr<Monkey>> absorbed_monkeys;
 };
 
 class IceMonkey : public Monkey {

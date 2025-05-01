@@ -12,6 +12,7 @@ int count = 20;
 bool blocked = false;
 int block_time = 0;
 int nuclear_bomb_time = 0;
+int balloons_round = 0;
 std::vector<std::pair<std::shared_ptr<Balloon>, std::shared_ptr<Rope_tail>>> grabbedBalloons; // 存儲所有正在被拉動的氣球
 std::vector<std::shared_ptr<Balloon>> icetogethers;
 std::vector<std::shared_ptr<Balloon>> icebursts;
@@ -78,12 +79,41 @@ int current_room(App::Phase phase) {
             return 1;
         case App::Phase::SECOND_LEVEL:
             return 2;
+        case App::Phase::THIRD_LEVEL:
+            return 3;
+        case App::Phase::FOURTH_LEVEL:
+            return 4;
+        case App::Phase::FIFTH_LEVEL:
+            return 5;
+        case App::Phase::SIXTH_LEVEL:
+            return 6;
+        case App::Phase::SEVENTH_LEVEL:
+            return 7;
+        case App::Phase::EIGHTH_LEVEL:
+            return 8;
+        case App::Phase::NINTH_LEVEL:
+            return 9;
+        case App::Phase::TENTH_LEVEL:
+            return 10;
+        default:
+            return 0;
+         
     }
 }
 
 void App::Update() {
     LOG_TRACE("Update");
+
     if (m_Phase == Phase::LOBBY) {
+        // Opstate 
+        // 按W鍵增加金錢    
+        if (Util::Input::IsKeyPressed(Util::Keycode::W)) {
+            for (int i = 0; i < IsLevelUnlock.size(); i++) {
+                IsLevelUnlock[i] = true;
+            }
+            ValidTask(0);
+        }
+        // opstate end
         glm::vec2 position = Util::Input::GetCursorPosition ();
         if (!Choose_Level_Board -> GetVisible()) {
             Lobby_Buttons[0] -> IsTouch(position);
@@ -91,9 +121,11 @@ void App::Update() {
             if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB)) {
                 if (Lobby_Buttons[0] -> IsClicked(position)) {
                     Choose_Level_Board -> UpdateVisible(true);
+                    mode = 0;
                 }
                 if (Lobby_Buttons[1] -> IsClicked(position)) {
-                    ValidTask(2);
+                    Choose_Level_Board -> UpdateVisible(true);
+                    mode = 10;
                 }
             }
         }
@@ -102,7 +134,7 @@ void App::Update() {
             if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB)) {
                 int isClick = Choose_Level_Board -> IsClicked(position);
                 if (isClick >= 0 && IsLevelUnlock[isClick]) {
-                    ValidTask(isClick+1);
+                    ValidTask(isClick+1+mode);
                 }
             }
         }
@@ -110,23 +142,37 @@ void App::Update() {
             m_CurrentState = State::END;
         }
     }
-    else if(!Win_Board -> GetVisible() && !Lose_Board -> GetVisible()) {
+    else if(!Win_Board -> GetVisible() && !Lose_Board -> GetVisible() && !Suspend_Board -> GetVisible()) {
         // for ice monkey
         // for (auto& balloonPtr : m_Balloons) { //進入判斷之前，先確定氣球有沒有活着？ 死了，就去掉他的 debuff
         //     if (!balloonPtr -> IsAlive() ) {
         //         balloonPtr -> ClearDebuff();
         //     }
         // }
+        // Opstate 
+    // 按W鍵增加金錢
+
+        glm::vec2 position = Util::Input::GetCursorPosition ();
+        Suspend_Button -> IsTouch(position);
+        if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB) && Suspend_Button -> IsClicked(position)){
+            Suspend_Board -> UpdateVisible(true);
+        }
+
+        if (Util::Input::IsKeyPressed(Util::Keycode::W)) {
+            m_Counters[1]->AddValue(90000); // 每次按W增加1000金錢
+            LOG_DEBUG("按W鍵增加1000金錢");
+        }
+        // opstate end
         for (auto& monkeyPtr : m_Monkeys) {
             int status;
             std::string monkeyType = abi::__cxa_demangle(typeid(*monkeyPtr).name(), 0, 0, &status);
             if (monkeyType == "IceMonkey") {
                 if (monkeyPtr->GetLevel() >= 4 && monkeyPtr->GetUpgradePath() == 1) {
                     for (auto& balloonPtr : m_Balloons) {
-                        if (monkeyPtr->IsCollision(balloonPtr) && !std::any_of(icetogethers.begin(), icetogethers.end(), 
-                            [balloonPtr](const std::shared_ptr<Balloon>& ptr) { 
+                        if (monkeyPtr->IsCollision(balloonPtr) && !std::any_of(icetogethers.begin(), icetogethers.end(),
+                            [balloonPtr](const std::shared_ptr<Balloon>& ptr) {
                             return ptr == balloonPtr; // 比較是否為同一個氣球
-                        })) 
+                        }))
                         {
                             auto attack1 = std::make_shared<Icetogether>(balloonPtr);
                             m_Attacks.push_back(attack1);
@@ -138,14 +184,14 @@ void App::Update() {
                 else if (monkeyPtr->GetLevel() >= 3 && monkeyPtr->GetUpgradePath() == 2 ) {
 
                     for (auto& balloonPtr : m_Balloons) {
-                        if (monkeyPtr->IsCollision(balloonPtr) && !std::any_of(icebursts.begin(), icebursts.end(), 
-                            [balloonPtr](const std::shared_ptr<Balloon>& ptr) { 
+                        if (monkeyPtr->IsCollision(balloonPtr) && !std::any_of(icebursts.begin(), icebursts.end(),
+                            [balloonPtr](const std::shared_ptr<Balloon>& ptr) {
                             return ptr == balloonPtr; // 比較是否為同一個氣球
-                        })) 
+                        }))
                         {
-                            int num_fragments = rand() % 3 + 3; // 隨機產生3到6個碎片
+                            int num_fragments = rand() % 3 + 1; // 隨機產生3到6個碎片
                             float angle_step = 360.0f / num_fragments; // 均分360度
-                            
+
                             for (int i = 0; i < num_fragments; i++) {
                                 float current_angle = i * angle_step; // 計算當前碎片的角度
                                 auto attack1 = std::make_shared<Iceburstsliced>(
@@ -321,20 +367,38 @@ void App::Update() {
             }
         }
         // cd -= 1;
-
-        if (m_Phase != Phase::LOBBY && count == 0) {
+        if (m_Phase == Phase::InfiniteMode && count == 0) {
             int round = m_Counters[2] -> GetCurrent()-1;
-            if (m_Balloons.empty() && Level_Balloons[round].empty()) {
+            if (m_Balloons.empty() && balloons_round == (round+1)*2) {
                 m_Counters[2] -> AddValue(1);
+                balloons_round = 0;
             }
-            std::shared_ptr<Balloon> m_Balloon;
-            if (!Level_Balloons[round].empty() && !blocked) {
-                int num = Level_Balloons[round][0];
-                Level_Balloons[round].erase(Level_Balloons[round].begin());
+            int balloon_level = std::min(16, round/5);
+            if (balloons_round < (round+1)*2) {
+                int num = random_number(balloon_level+1);
+                std::shared_ptr<Balloon> m_Balloon;
                 m_Balloon = factory(num, Level_Coordinates);
                 m_Balloons.push_back(m_Balloon);
                 m_Root.AddChildren(m_Balloon -> GetDebuffViews());
                 m_Root.AddChild(m_Balloon);
+                balloons_round ++;
+            }
+        }
+        else{
+            if (m_Phase != Phase::LOBBY && count == 0) {
+                int round = m_Counters[2] -> GetCurrent()-1;
+                if (m_Balloons.empty() && Level_Balloons[round].empty()) {
+                    m_Counters[2] -> AddValue(1);
+                }
+                std::shared_ptr<Balloon> m_Balloon;
+                if (!Level_Balloons[round].empty() && !blocked) {
+                    int num = Level_Balloons[round][0];
+                    Level_Balloons[round].erase(Level_Balloons[round].begin());
+                    m_Balloon = factory(num, Level_Coordinates);
+                    m_Balloons.push_back(m_Balloon);
+                    m_Root.AddChildren(m_Balloon -> GetDebuffViews());
+                    m_Root.AddChild(m_Balloon);
+                }
             }
         }
 
@@ -481,6 +545,29 @@ void App::Update() {
                     m_ClickedMonkey = nullptr;
                 }
                 else if (clickInformationBoard == 3) {
+                    // 檢查是否為超人猴，如果是，釋放所有被吸收的猴子
+                    int status;
+                    std::string monkeyType = abi::__cxa_demangle(typeid(*m_ClickedMonkey).name(), 0, 0, &status);
+                    if (monkeyType == "SuperMonkey") {
+                        // 釋放被吸收的猴子
+                        auto absorbedMonkeys = m_ClickedMonkey->gettogethermonkey();
+                        
+                        for (auto& absorbedMonkey : absorbedMonkeys) {
+                            m_Monkeys.erase(std::remove(m_Monkeys.begin(), m_Monkeys.end(), absorbedMonkey), m_Monkeys.end());
+                            m_Root.RemoveChild(absorbedMonkey);
+                            m_Root.RemoveChild(absorbedMonkey->GetRange());
+                            std::vector<std::shared_ptr<Util::GameObject>> InfortionBoardObject = absorbedMonkey-> GetAllInfortionBoardObject();
+                            for (auto& objectPtr : InfortionBoardObject) {
+                                m_Root.RemoveChild(objectPtr);
+                            }
+                            std::vector<std::shared_ptr<Attack>> attacks = absorbedMonkey-> GetAttackChildren();
+                            for (auto& attacktPtr : attacks) {
+                                m_Attacks.erase(std::remove(m_Attacks.begin(), m_Attacks.end(), attacktPtr), m_Attacks.end());
+                                m_Root.RemoveChild(attacktPtr);
+                            }
+                        }
+                    }
+                    
                     m_Monkeys.erase(std::remove(m_Monkeys.begin(), m_Monkeys.end(), m_ClickedMonkey), m_Monkeys.end());
                     m_Root.RemoveChild(m_ClickedMonkey);
                     m_Root.RemoveChild(m_ClickedMonkey->GetRange());
@@ -589,12 +676,93 @@ void App::Update() {
                 }
                 else if (clickInformationBoard != 0 && clickInformationBoard != 1) {
                     m_Counters[1] -> MinusValue(clickInformationBoard);
+                    // 打印猴子升級等級和支線資訊
+                    int status;
+                    std::string monkeyType = abi::__cxa_demangle(typeid(*m_ClickedMonkey).name(), 0, 0, &status);
+                    LOG_DEBUG(monkeyType + " 升級至等級: " + std::to_string(m_ClickedMonkey->GetLevel()) + 
+                              " 支線: " + std::to_string(m_ClickedMonkey->GetUpgradePath()));
+                    
+                    // 超人猴等級4支線1特殊功能：吸引周圍猴子
+                    if (monkeyType == "SuperMonkey" && m_ClickedMonkey->GetLevel() == 4 && m_ClickedMonkey->GetUpgradePath() == 1) {
+                        glm::vec2 superMonkeyPos = m_ClickedMonkey->GetPosition();
+                        LOG_DEBUG("超人猴吸引功能啟動！");
+                        // 獲取超人猴的實際攻擊範圍
+                        float superMonkeyRange = m_ClickedMonkey->GetRadius();
+                        // 記錄被吸引的猴子數量
+                        int absorbedCount = 0;
+                        for (auto& monkeyPtr : m_Monkeys) {
+                            std::string monkeyType = abi::__cxa_demangle(typeid(*monkeyPtr).name(), 0, 0, &status);
+                            // 避免自己吸引自己
+                            if (monkeyType != "SuperMonkey" && monkeyPtr->GetTag() != "absorbed" && monkeyType != "BuccaneerMonkey") {
+                                // 使用公共方法添加被吸收的猴子
+                                m_ClickedMonkey->addtogethermonkey(monkeyPtr);
+                                // update now range and power
+                                superMonkeyRange = m_ClickedMonkey->GetRadius();
+                                auto superMonkeyAttr = m_ClickedMonkey->GetAttributes();
+                                int superMonkeyPower = superMonkeyAttr->GetPower();
+                                glm::vec2 otherMonkeyPos = monkeyPtr->GetPosition();
+                                // 計算兩點之間距離
+                                float distance = sqrt(pow(superMonkeyPos.x - otherMonkeyPos.x, 2) + pow(superMonkeyPos.y - otherMonkeyPos.y, 2));
+                                
+                                // 使用超人猴的實際攻擊範圍
+                                if (distance <= superMonkeyRange) {
+                                    LOG_DEBUG("將猴子拉到超人猴位置並隱藏");
+                                    monkeyPtr->SetPosition(superMonkeyPos);
+                                    monkeyPtr->UpdateRange();
+                                    
+                                    // 隱藏猴子視覺顯示與所有相關元素
+                                    monkeyPtr->SetVisible(false);
+                                    monkeyPtr->UpdateAllObjectVisible(false);
+                                    // 標記猴子為"已吸引"狀態
+                                    monkeyPtr->SetTag("absorbed");
+                                    
+                                    // 比較攻擊範圍，取最大值
+                                    float monkeyRange = monkeyPtr->GetRadius();
+                                    if (monkeyRange > superMonkeyRange) {
+                                        m_ClickedMonkey->SetRadius(monkeyRange);
+                                    }
+                                    
+                                    // 比較攻擊力，取最大值
+                                    auto monkeyAttr = monkeyPtr->GetAttributes();
+                                    int monkeyPower = monkeyAttr->GetPower();
+                                    if (monkeyPower > superMonkeyPower) {
+                                        superMonkeyAttr->SetPower(monkeyPower);
+                                    }
+                                    std::vector<std::shared_ptr<Attack>> RELATED_ATTACK = monkeyPtr->GetAttackChildren();
+                                    for (auto& attackPtr : RELATED_ATTACK) {
+                                        attackPtr->SetPosition(superMonkeyPos);
+                                    }
+                                    
+                                    // 獲取並傳遞猴子的屬性
+                                    std::vector<int> monkeyProperties = monkeyPtr->GetProperties();
+                                    std::vector<int> superProperties = m_ClickedMonkey->GetProperties();
+                                   
+                                    
+                                    // 將猴子的屬性合併到超人猴的屬性中
+                                    for (int prop : monkeyProperties) {
+                                        if (std::find(superProperties.begin(), superProperties.end(), prop) == superProperties.end()) {
+                                            superProperties.push_back(prop);
+                                        }
+                                    }
+                                    
+                                    // 更新超人猴的屬性
+                                    m_ClickedMonkey->SetProperties(superProperties);
+                                }
+                            }
+                        }
+                        m_ClickedMonkey->UpdateRange();
+                    }
                 }
 
             }
             if (clickInformationBoard == 0) {
                 m_ClickedMonkey = nullptr;
                 for (auto& monkeyPtr : m_Monkeys) {
+                    // 檢查猴子是否被標記為"已吸引"，如果是則跳過點擊處理
+                    if (monkeyPtr->GetTag() == "absorbed") {
+                        continue;
+                    }
+                    
                     if (monkeyPtr -> IsClicked(position)) {
                         m_ClickedMonkey = monkeyPtr;
                     }
@@ -677,6 +845,9 @@ void App::Update() {
         else if (Lose_Board -> GetVisible()) {
             Lose_Board -> IsTouch(position);
         }
+        else if (Suspend_Board -> GetVisible()) {
+            Suspend_Board -> IsTouch(position);
+        }
         if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB)) {
             bool isClick;
             if (Win_Board -> GetVisible()) {
@@ -684,7 +855,11 @@ void App::Update() {
                 if (isClick >= 0) {
                     switch (isClick) {
                         case 0:
-                            ValidTask(current_room(m_Phase)+1);
+                            if (current_room(m_Phase) != 10) {
+                                ValidTask(current_room(m_Phase)+1);
+                                break;
+                            }
+                            ValidTask(0);
                             break;
                         case 1:
                             ValidTask(0);
@@ -697,11 +872,25 @@ void App::Update() {
                 if (isClick >= 0) {
                     switch (isClick) {
                         case 0:
-                            ValidTask(current_room(m_Phase));
+                            ValidTask(current_room(m_Phase)+mode);
                             break;
                         case 1:
                             ValidTask(0);
                             break;
+                    }
+                }
+            }
+            else if (Suspend_Board -> GetVisible()) {
+                isClick = Suspend_Board -> IsClicked(position);
+                if (isClick >= 0) {
+                    switch (isClick) {
+                        case 0:
+                            Suspend_Board -> UpdateVisible(false);
+                        break;
+                        case 1:
+                            balloons_round = 0;
+                            ValidTask(0);
+                        break;
                     }
                 }
             }

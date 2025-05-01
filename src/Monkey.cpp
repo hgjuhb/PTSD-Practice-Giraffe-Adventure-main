@@ -24,13 +24,47 @@ void Monkey::SetImage(const std::string& ImagePath) {
 void Monkey::SetRadius(int radius) {
     m_Radius = radius;
 };
+
+void Monkey::SetProperties(const std::vector<int>& properties) {
+    // 重設屬性
+    auto attributes = GetAttributes();
+    
+    // 先清除現有屬性列表
+    // 由於 Attributes 類沒有直接清除屬性的方法，我們需要創建一個新的 Attributes 對象
+    std::shared_ptr<Attributes> newAttributes = std::make_shared<Attributes>();
+    
+    // 複製原有的屬性值
+    newAttributes->SetPenetration(attributes->GetPenetration());
+    newAttributes->SetPower(attributes->GetPower());
+    newAttributes->SetSpeed(attributes->GetSpeed());
+    
+    // 複製原有的 debuff
+    for (const auto& debuff : attributes->GetDebuff()) {
+        newAttributes->AddDebuff(debuff);
+    }
+    
+    // 設置新的屬性
+    for (int property : properties) {
+        newAttributes->AddProperty(property);
+    }
+    
+    // 更新猴子的 Attributes
+    m_Attributes = newAttributes;
+}
+
+void Monkey::addtogethermonkey(std::shared_ptr<Monkey> monkey) {
+    togethersell_monkeys.push_back(monkey);
+}
+
 void Monkey::SetSize(glm::vec2 size){
     m_Size = size;
 };
+
 void Monkey::UpdateRange() {
     m_Range -> SetPosition(m_Transform.translation);
     m_Range -> SetScale(m_Radius);
 };
+
 bool Monkey::IsInside(glm::vec2 mousePosition){
     // 计算猴子的边界范围
     float leftBound = m_Transform.translation.x - m_Size.x / 2.0f;
@@ -768,6 +802,10 @@ std::vector<std::shared_ptr<Attack>> NinjaMonkey::ProduceAttack(glm::vec2 goalPo
         std::shared_ptr<Attack> attack = std::make_shared<NinjaShuriken>(GetPosition(), goalPosition, GetAttributes());
         attacks.push_back(attack);
     }
+    else {
+        std::shared_ptr<Attack> attack = std::make_shared<Shuriken>(GetPosition(), goalPosition, GetAttributes());
+        attacks.push_back(attack);
+    }
     if (upgradePath ==2 && level==3){
 
         //have posiblity to produce attack 
@@ -1351,6 +1389,8 @@ std::vector<std::shared_ptr<Attack>> SuperMonkey::ProduceAttack(glm::vec2 goalPo
     ResetCount();
     SetRotation(goalPosition);
     std::vector<std::shared_ptr<Attack>> attacks;
+    int level = GetLevel();
+    int upgradePath = GetUpgradePath();
 
     glm::vec2 direction = goalPosition - m_Transform.translation;
     glm::vec2 unit_direction = glm::normalize(direction);
@@ -1360,11 +1400,77 @@ std::vector<std::shared_ptr<Attack>> SuperMonkey::ProduceAttack(glm::vec2 goalPo
 
     glm::vec2 movePosition = glm::vec2(distance * perp_x, distance * perp_y);
 
-    std::shared_ptr<Attack> attack = std::make_shared<Ray>(GetPosition()+movePosition, goalPosition+movePosition, GetAttributes());
-    attacks.push_back(attack);
-    attack = std::make_shared<Ray>(GetPosition()-movePosition, goalPosition-movePosition, GetAttributes());
-    attacks.push_back(attack);
+    if (upgradePath == 1 && level == 3) {
+        // 第一條射線（中間）
+        std::shared_ptr<Attack> attack = std::make_shared<Superlight>(GetPosition(), goalPosition, GetAttributes());
+   
+        attacks.push_back(attack);
+        
+        // 第二條射線（左側）
+        attack = std::make_shared<Superlight>(GetPosition()+movePosition, goalPosition+movePosition, GetAttributes());
+ 
+        attacks.push_back(attack);
+        
+        // 第三條射線（右側）
+        attack = std::make_shared<Superlight>(GetPosition()-movePosition, goalPosition-movePosition, GetAttributes());
+
+        attacks.push_back(attack);
+    } else if (upgradePath == 1 && level == 4) {
+        // 第一條射線（中間）
+        std::shared_ptr<Attack> attack = std::make_shared<Superlight>(GetPosition(), goalPosition, GetAttributes());
+        attack -> SetScale(glm::vec2(1.5, 1.5));
+        attack -> SetTouchScale(glm::vec2(1.5, 1.5));
+        attacks.push_back(attack);
+    } else {
+        // 原有的兩條射線攻擊模式
+        std::shared_ptr<Attack> attack = std::make_shared<Ray>(GetPosition()+movePosition, goalPosition+movePosition, GetAttributes());
+        attacks.push_back(attack);
+        attack = std::make_shared<Ray>(GetPosition()-movePosition, goalPosition-movePosition, GetAttributes());
+        attacks.push_back(attack);
+    }
+    
     return attacks;
+}
+
+void SuperMonkey::UpdateLevel(){
+    int level = GetLevel();
+    int upgradePath = GetUpgradePath();
+    auto attributes = GetAttributes();
+    if (upgradePath == 1){
+        switch (level) {
+            case 1:
+                attributes -> SetPenetration(attributes -> GetPenetration()*2);
+                attributes -> AddProperty(4);
+                break;
+            case 2:
+                SetCd(GetCd()/2);
+                ResetCount();
+                break;
+            case 3:
+                attributes -> SetPenetration(attributes -> GetPenetration()*3);
+                break;
+            case 4:
+                SetCd(1);
+                attributes -> SetSpeed(20);
+                ResetCount();
+                break;
+        }
+    }else{
+        switch (level) {
+            case 1:
+                SetRadius(GetRadius()*1.5);
+                UpdateRange();
+                break;
+            case 2:
+                SetRadius(GetRadius()*1.5);
+                UpdateRange();
+                break;
+            case 3:
+                attributes -> SetPenetration(attributes -> GetPenetration()*2);
+                break;
+        }
+    }
+
 }
 
 //########################################################################

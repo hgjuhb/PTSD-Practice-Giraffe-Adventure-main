@@ -387,7 +387,7 @@ AirportInformationBoard::AirportInformationBoard() {
 
 SuperMonkeyInformationBoard::SuperMonkeyInformationBoard() {
     // 使用4000列的价格数据（中等难度）
-    SetUpgradeCost({{3500, 5000, 16500, 100000},
+    SetUpgradeCost({{3500, 5000, 16500, 75000},
                     {1000, 1500, 9000, 25000}});
     // 设置升级路径名称
     SetUpgradeText({{"Laser Blasts", "Plasma Blasts", "Sun God", "Temple of the Monkey God"},

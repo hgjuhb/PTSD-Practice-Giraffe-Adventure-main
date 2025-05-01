@@ -11,7 +11,12 @@
  */
 void App::ValidTask(int next_room) {
     Reset();
-    m_PRM->NextPhase(next_room);
+    if (next_room > 10) {
+        m_PRM->NextPhase(next_room%10);
+    }
+    else {
+        m_PRM->NextPhase(next_room);
+    }
     switch (next_room) {
         case 0:
             m_Phase = Phase::LOBBY;
@@ -27,6 +32,55 @@ void App::ValidTask(int next_room) {
             SetLevel(2);
             AddBoard();
             break;
+        case 3:
+            m_Phase = Phase::THIRD_LEVEL;
+            SetLevel(3);
+            AddBoard();
+            break;
+        case 4:
+            m_Phase = Phase::FOURTH_LEVEL;
+            SetLevel(4);
+            AddBoard();
+            break;
+        case 5:
+            m_Phase = Phase::FIFTH_LEVEL;
+            SetLevel(5);
+            AddBoard();
+            break;
+        case 6:
+            m_Phase = Phase::SIXTH_LEVEL;
+            SetLevel(6);
+            AddBoard();
+            break;
+        case 7:
+            m_Phase = Phase::SEVENTH_LEVEL;
+            SetLevel(7);
+            AddBoard();
+            break;
+        case 8:
+            m_Phase = Phase::EIGHTH_LEVEL;
+            SetLevel(8);
+            AddBoard();
+            break;
+        case 9:
+            m_Phase = Phase::NINTH_LEVEL;
+            SetLevel(9);
+            AddBoard();
+            break;
+        case 10:
+            m_Phase = Phase::TENTH_LEVEL;
+            SetLevel(10);
+            AddBoard();
+            break;
+        default:
+            m_Phase = Phase::InfiniteMode;
+            LOG_DEBUG(1);
+            SetLevel(next_room);
+            LOG_DEBUG(2);
+            AddBoard();
+            LOG_DEBUG(3);
+            break;
+            
     }
 }
 
@@ -88,12 +142,23 @@ void App::Reset() {
             m_Root.RemoveChild(objectPtr);
         }
         m_Root.RemoveChild(Lose_Board);
-        Win_Board = nullptr;
+        Lose_Board = nullptr;
+
+        BoardObject = Suspend_Board -> GetAllChildren();
+        for (auto& objectPtr : BoardObject) {
+            m_Root.RemoveChild(objectPtr);
+        }
+        m_Root.RemoveChild(Suspend_Board);
+        Suspend_Board = nullptr;
+
+        m_Root.RemoveChild(Suspend_Button);
+        Suspend_Button = nullptr;
     }
     else {
         for (auto& objectPtr : Lobby_Buttons) {
             m_Root.RemoveChild(objectPtr);
         }
+        Lobby_Buttons = {};
 
         if (Choose_Level_Board) {
             std::vector<std::shared_ptr<Button>> BoardObject = Choose_Level_Board -> GetAllChildren();
@@ -103,14 +168,19 @@ void App::Reset() {
             m_Root.RemoveChild(Choose_Level_Board);
             Choose_Level_Board = nullptr;
         }
-
     }
 }
 
 void App::SetLevel(int level) {
-    Level_Coordinates = m_PRM -> GetCoordinates(level-1);
-    Level_Balloons = m_PRM -> GetBalloons(level-1);
-    Level_Placeable = m_PRM -> GetPlaceable(level-1);
+    if (level <= 10) {
+        Level_Coordinates = m_PRM -> GetCoordinates(level-1);
+        Level_Balloons = m_PRM -> GetBalloons(level-1);
+        Level_Placeable = m_PRM -> GetPlaceable(level-1);
+    }
+    else {
+        Level_Coordinates = m_PRM -> GetCoordinates(level%10-1);
+        Level_Placeable = m_PRM -> GetPlaceable(level%10-1);
+    }
 
     m_Counters.push_back(std::make_shared<Heart>(20, 20));
     m_Root.AddChild(m_Counters[0]);
@@ -120,9 +190,18 @@ void App::SetLevel(int level) {
     m_Root.AddChild(m_Counters[1]);
     m_Root.AddChild(m_Counters[1]->GetCounterText());
 
-    m_Counters.push_back(std::make_shared<Round>(1,10));
-    m_Root.AddChild(m_Counters[2]);
-    m_Root.AddChild(m_Counters[2]->GetCounterText());
+    if (level > 10) {
+        auto counter = std::make_shared<Round>(1,99999);
+        counter -> SetTextPosition(glm::vec2(-300, -330));
+        m_Counters.push_back(counter);
+        m_Root.AddChild(m_Counters[2]);
+        m_Root.AddChild(m_Counters[2]->GetCounterText());
+    }
+    else {
+        m_Counters.push_back(std::make_shared<Round>(1,10));
+        m_Root.AddChild(m_Counters[2]);
+        m_Root.AddChild(m_Counters[2]->GetCounterText());
+    }
 
     // 设置按钮位置的基础坐标和间隔
     float startX = 438.0f;
@@ -182,6 +261,11 @@ void App::SetLevel(int level) {
     auto m_MagicMonkeyButton = std::make_shared<MagicMonkeyButton>(glm::vec2(startX+buttonXSpacing, startY-buttonYSpacing*5));
     m_DragButtons.push_back(m_MagicMonkeyButton);
     m_Root.AddChild(m_MagicMonkeyButton);
+
+    auto button = std::make_shared<Button>(GA_RESOURCE_DIR"/Board/suspend.png", glm::vec2(startX, startY-buttonYSpacing*6), glm::vec2(1, 1), 60, 60);
+    button -> SetVisible(true);
+    Suspend_Button = button;
+    m_Root.AddChild(button);
 }
 
 void App::AddBoard() {
@@ -208,6 +292,18 @@ void App::AddBoard() {
 
         button = std::make_shared<Button>(GA_RESOURCE_DIR"/Board/back.png", glm::vec2(-100, -75), glm::vec2(1, 1), 400, 100);
         Lose_Board -> AddButton(button);
+        m_Root.AddChild(button);
+
+        auto suspend_board = std::make_shared<Board>(GA_RESOURCE_DIR"/Board/board.png", glm::vec2(-100, 0), glm::vec2(2, 2));
+        Suspend_Board = suspend_board;
+        m_Root.AddChild(suspend_board);
+
+        button = std::make_shared<Button>(GA_RESOURCE_DIR"/Board/continue.png", glm::vec2(-100, 75), glm::vec2(1, 1), 400, 100);
+        Suspend_Board -> AddButton(button);
+        m_Root.AddChild(button);
+
+        button = std::make_shared<Button>(GA_RESOURCE_DIR"/Board/back.png", glm::vec2(-100, -75), glm::vec2(1, 1), 400, 100);
+        Suspend_Board -> AddButton(button);
         m_Root.AddChild(button);
     }
     else {

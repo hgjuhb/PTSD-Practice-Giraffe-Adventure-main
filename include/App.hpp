@@ -26,6 +26,15 @@ public:
         LOBBY,
         FIRST_LEVEL,
         SECOND_LEVEL,
+        THIRD_LEVEL,
+        FOURTH_LEVEL,
+        FIFTH_LEVEL,
+        SIXTH_LEVEL,
+        SEVENTH_LEVEL,
+        EIGHTH_LEVEL,
+        NINTH_LEVEL,
+        TENTH_LEVEL,
+        InfiniteMode,
     };
 
     State GetCurrentState() const { return m_CurrentState; }
@@ -60,9 +69,12 @@ private:
     std::shared_ptr<Monkey> m_ClickedMonkey;
     std::shared_ptr<Board> Win_Board;
     std::shared_ptr<Board> Lose_Board;
+    std::shared_ptr<Board> Suspend_Board;
+    std::shared_ptr<Button> Suspend_Button;
     std::vector<std::shared_ptr<Button>> Lobby_Buttons;
     std::shared_ptr<Board> Choose_Level_Board;
     std::vector<bool> IsLevelUnlock = {true, false, false, false, false, false, false, false, false, false};
+    int mode = 0;
     
 
     bool m_EnterDown = false;
