@@ -96,7 +96,7 @@ int current_room(App::Phase phase) {
         case App::Phase::TENTH_LEVEL:
             return 10;
         default:
-            return 0;
+            return 11;
          
     }
 }
@@ -134,6 +134,7 @@ void App::Update() {
             if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB)) {
                 int isClick = Choose_Level_Board -> IsClicked(position);
                 if (isClick >= 0 && IsLevelUnlock[isClick]) {
+                    level = isClick+1;
                     ValidTask(isClick+1+mode);
                 }
             }
@@ -154,8 +155,20 @@ void App::Update() {
 
         glm::vec2 position = Util::Input::GetCursorPosition ();
         Suspend_Button -> IsTouch(position);
-        if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB) && Suspend_Button -> IsClicked(position)){
-            Suspend_Board -> UpdateVisible(true);
+        Accelerate_Button -> IsTouch(position);
+        if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB)){
+            if (Suspend_Button -> IsClicked(position)) {
+                Suspend_Board -> UpdateVisible(true);
+            }
+
+            else if (Accelerate_Button -> IsClicked(position)) {
+                if (GetFPS() == 180) {
+                    SetFPS(60);
+                }
+                else {
+                    SetFPS(180);
+                }
+            }
         }
 
         if (Util::Input::IsKeyPressed(Util::Keycode::W)) {
@@ -872,7 +885,12 @@ void App::Update() {
                 if (isClick >= 0) {
                     switch (isClick) {
                         case 0:
-                            ValidTask(current_room(m_Phase)+mode);
+                            if (current_room(m_Phase) <= 10) {
+                                ValidTask(current_room(m_Phase)+mode);
+                            }
+                            else {
+                                ValidTask(level + mode);
+                            }
                             break;
                         case 1:
                             ValidTask(0);

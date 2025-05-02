@@ -10,6 +10,7 @@
  * @note See README.md for the task details.
  */
 void App::ValidTask(int next_room) {
+    SetFPS(60);
     Reset();
     if (next_room > 10) {
         m_PRM->NextPhase(next_room%10);
@@ -153,6 +154,9 @@ void App::Reset() {
 
         m_Root.RemoveChild(Suspend_Button);
         Suspend_Button = nullptr;
+
+        m_Root.RemoveChild(Accelerate_Button);
+        Accelerate_Button = nullptr;
     }
     else {
         for (auto& objectPtr : Lobby_Buttons) {
@@ -265,6 +269,11 @@ void App::SetLevel(int level) {
     auto button = std::make_shared<Button>(GA_RESOURCE_DIR"/Board/suspend.png", glm::vec2(startX, startY-buttonYSpacing*6), glm::vec2(1, 1), 60, 60);
     button -> SetVisible(true);
     Suspend_Button = button;
+    m_Root.AddChild(button);
+
+    button = std::make_shared<Button>(GA_RESOURCE_DIR"/Board/accelerate.png", glm::vec2(startX+buttonXSpacing, startY-buttonYSpacing*6), glm::vec2(1, 1), 60, 60);
+    button -> SetVisible(true);
+    Accelerate_Button = button;
     m_Root.AddChild(button);
 }
 
