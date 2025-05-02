@@ -37,7 +37,7 @@ public:
 protected:
     std::string m_ImagePath; // 存储原始图片路径
     std::string m_grayImagePath; // 存储灰色图片路径
-    bool m_Buyable{false}; // 按钮是否可购买
+    bool m_Buyable{true}; // 按钮是否可购买
     
 private:
     glm::vec2 m_Size{100.0f, 100.0f}; // 默认尺寸
